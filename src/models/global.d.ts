@@ -1,5 +1,10 @@
+import { TUser } from "./user.model";
+
 declare global {
 	namespace Express {
-		interface Request {}
+		interface Request {
+			user: TUser;
+			validUser?: TUser;
+		}
 	}
 }
