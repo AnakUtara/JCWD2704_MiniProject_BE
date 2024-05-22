@@ -1,0 +1,195 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+        enum Gender {
+          male
+          female
+          other
+        }
+        enum Role {
+          customer
+          promotor
+        }
+
+model User {
+  id String @id @default(cuid())
+  username String @db.VarChar(55)
+  fullname String @db.VarChar(85)
+  email String @db.VarChar(85)
+  password String 
+  role Role @default(customer)
+
+  phone_no String @db.VarChar(25)
+  address String @db.VarChar(255)
+  id_card String @db.VarChar(16)
+  gender Gender?
+  date_of_birth DateTime?
+  avatar Bytes? @db.Blob
+
+  referral_code String
+  reference_code String?
+  points Int?
+  points_expiry_date DateTime?
+  bank_acc_no Int?
+
+  event Event[]
+  review Review[]
+  transaction Transaction[]
+  voucher Voucher[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([username,fullname,role])
+  @@map("users")
+}
+
+        enum Venue_type {
+          indoor
+          outdoor
+        }
+        enum Status_event {
+          active
+          finished
+        }
+        enum Discount_amount {
+          a @map("5%")
+          b @map("10%")
+          c @map("15%")
+          d @map("20%")
+          e @map("25%")
+          f @map("30%")
+          g @map("35%")
+          h @map("40%")
+          i @map("45%")
+          j @map("50%")
+          k @map("60%")
+          m @map("70%")
+          n @map("80%")
+        }
+
+model Event {
+  id String @id @default(cuid())
+  title String @db.VarChar(100)
+  location String
+  city String @db.VarChar(55)
+  zip_code Int
+
+  venue_type Venue_type
+  details String @db.Text
+  roster String
+  scheduled_at DateTime
+  start_time DateTime
+  end_time DateTime
+  status Status_event @default(active)
+
+  discount_amount Discount_amount
+  ticket_price Float @db.Double
+  ticket_amount Int
+
+  assigned_pic String 
+  pic_phone_no String @db.VarChar(25)
+
+  user_id String
+  category_id Int
+  user User @relation(fields: [user_id],references: [id])
+  category Category @relation(fields: [category_id],references: [id])
+  event_image Event_image[]
+  review Review[]
+  transaction Transaction[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([title,location,scheduled_at,status,venue_type,city])
+  @@map("events")
+}
+
+    model Review {
+      review String @db.Text
+      rating Int
+
+      user_id String
+      event_id String
+      user User @relation(fields: [user_id],references: [id])
+      event Event @relation(fields: [event_id],references: [id])
+
+      @@id([user_id,event_id])
+      @@map("reviews")
+    }
+
+    model Category {
+      id Int @id @default(autoincrement())
+      name String @db.VarChar(55)
+
+      event Event[]
+
+      created_at DateTime @default(now())
+      updated_at DateTime @updatedAt
+
+      @@map("categories")
+    }
+
+    model Event_image {
+      id String @id @default(cuid())
+      image_url String
+
+      event Event @relation(fields: [event_id],references: [id])
+      event_id String
+
+      @@map("event_images")
+    }
+
+        enum Status_transaction {
+          unpaid
+          pending
+          success
+        }
+
+model Transaction {
+  id String @id @default(cuid())
+
+  ticket_bought Int
+  total_price Float @db.Double
+  transfer_proof Bytes @db.Blob
+  status Status_transaction
+
+  user_id String
+  event_id String
+  voucher_id String
+  user User @relation(fields: [user_id],references: [id])
+  event Event @relation(fields: [event_id],references: [id])
+  voucher Voucher @relation(fields: [voucher_id],references: [id])
+
+  created_at DateTime @default(now())
+  paid_at DateTime @updatedAt 
+
+  @@index([status])
+  @@map("transactions")
+}
+
+    model Voucher {
+      id String @id @default(cuid())
+      amount Int
+      is_valid Boolean
+
+      user_id String
+      user User @relation(fields: [user_id],references: [id])
+      transaction Transaction[]
+
+      used_at DateTime
+
+      @@map("vouchers")
+    }
