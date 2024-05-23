@@ -17,8 +17,11 @@ class UsersController extends EntityController {
 	}
 	async login(req: Request, res: Response, next: NextFunction) {
 		try {
-			const token = await usersService.login(req);
-			res.cookie("auth", token).send({ message: "login success" });
+			const { accessToken, refreshToken } = await usersService.login(req);
+			res
+				.cookie("access_token", accessToken)
+				.cookie("refresh_token", refreshToken)
+				.send({ message: "login success" });
 		} catch (error) {
 			next(error);
 		}

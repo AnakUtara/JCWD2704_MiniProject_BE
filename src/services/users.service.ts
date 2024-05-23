@@ -140,7 +140,9 @@ class UsersService {
 		})) as TUser;
 		req.user = data;
 		delete data?.password;
-		return createToken(data, "1hr");
+		const accessToken = createToken(data, "1hr");
+		const refreshToken = createToken({ id: data.id }, "20hr");
+		return { accessToken, refreshToken };
 	}
 }
 
