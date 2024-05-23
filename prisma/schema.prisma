@@ -26,20 +26,20 @@ enum Role {
 
 model User {
   id                 String        @id @default(cuid())
-  username           String        @db.VarChar(55)
+  username           String        @unique @db.VarChar(55)
   fullname           String        @db.VarChar(85)
-  email              String        @db.VarChar(85)
+  email              String        @unique @db.VarChar(85)
   password           String
   role               Role          @default(customer)
   phone_no           String        @db.VarChar(25)
-  address            String        @db.VarChar(255)
-  id_card            String        @db.VarChar(16)
-  gender             Gender?
+  id_card            String        @unique @db.VarChar(16)
+  gender             Gender
+  address            String?       @db.VarChar(255)
   date_of_birth      DateTime?
   avatar             Bytes?        @db.Blob
-  referral_code      String
+  referral_code      String        @unique
   reference_code     String?
-  points             Int?
+  points             Int           @default(0)
   points_expiry_date DateTime?
   bank_acc_no        Int?
   event              Event[]

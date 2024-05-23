@@ -6,7 +6,9 @@ export interface IService extends ICustomService {
 	getById: (req: Request) => Promise<TUser | null>;
 	create: (req: Request) => Promise<void | TUser>;
 	delete: (req: Request) => Promise<TUser>;
-	update: (req: Request) => Promise<TUser>;
+	update: (req: Request) => Promise<TUser | undefined>;
 }
 
-interface ICustomService {}
+interface ICustomService {
+	getByUsername?: (req: Request) => Promise<TUser | null>;
+}

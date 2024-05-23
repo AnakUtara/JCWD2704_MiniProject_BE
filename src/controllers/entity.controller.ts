@@ -8,16 +8,16 @@ export class EntityController {
 	}
 	async getAll(req: Request, res: Response, next: NextFunction) {
 		try {
-			const result = await this.service.getAll();
-			res.send({ message: "fetch all data.", data: result });
+			const data = await this.service.getAll();
+			res.send({ message: "fetch all data.", data });
 		} catch (error) {
 			next(error);
 		}
 	}
 	async getById(req: Request, res: Response, next: NextFunction) {
 		try {
-			const result = await this.service.getById(req);
-			res.send({ message: "fetch by id", data: result });
+			const data = await this.service.getById(req);
+			res.send({ message: "fetch by id", data });
 		} catch (error) {
 			next(error);
 		}
