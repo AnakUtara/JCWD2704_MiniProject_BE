@@ -7,9 +7,9 @@ class UsersController extends EntityController {
 	constructor(service: IService) {
 		super(service);
 	}
-	async getByUsername(req: Request, res: Response, next: NextFunction) {
+	async getByIdOrUsername(req: Request, res: Response, next: NextFunction) {
 		try {
-			const data = await usersService.getByUsername(req);
+			const data = await usersService.getByIdOrUsername(req);
 			res.send({ message: "fetch by username", data });
 		} catch (error) {
 			next(error);

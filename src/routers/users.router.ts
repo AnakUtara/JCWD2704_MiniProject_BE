@@ -1,15 +1,15 @@
 import usersController from "../controllers/users.controller";
 import {
 	authenticate,
-	checkExistingReferral,
-	checkExistingUser,
 	checkIsAuthorized,
-	checkRegistrationInputs,
 	verifyToken,
 } from "../middlewares/auth.middleware";
 import {
 	checkUpdateUserForm,
 	checkUserExistById,
+	checkRegistrationInputs,
+	checkIsReferralValid,
+	checkExistingUser,
 } from "../middlewares/users.middleware";
 import { EntityRouter } from "./entity.router";
 
@@ -21,8 +21,8 @@ class UsersRouter extends EntityRouter {
 	private initRouter() {
 		this.router.get("/", usersController.getAll.bind(usersController));
 		this.router.get(
-			"/:username",
-			usersController.getByUsername.bind(usersController)
+			"/:id_username",
+			usersController.getByIdOrUsername.bind(usersController)
 		);
 		this.router.post(
 			"/v1",
@@ -32,12 +32,12 @@ class UsersRouter extends EntityRouter {
 		this.router.post(
 			"/v2",
 			checkRegistrationInputs,
-			checkExistingReferral,
+			checkIsReferralValid,
 			checkExistingUser,
 			usersController.create.bind(usersController)
 		);
 		this.router.patch(
-			"/:id",
+			"/:id_username",
 			verifyToken,
 			checkIsAuthorized,
 			checkUserExistById,

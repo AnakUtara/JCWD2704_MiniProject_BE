@@ -45,7 +45,7 @@ model User {
   event              Event[]
   review             Review[]
   transaction        Transaction[]
-  voucher            Voucher[]
+  voucher            Voucher?
   is_verified        Boolean       @default(false)
   created_at         DateTime      @default(now())
   updated_at         DateTime      @updatedAt
@@ -158,7 +158,7 @@ model Transaction {
   status         Status_transaction
   user_id        String
   event_id       String
-  voucher_id     String
+  voucher_id     String             @unique
   user           User               @relation(fields: [user_id], references: [id])
   event          Event              @relation(fields: [event_id], references: [id])
   voucher        Voucher            @relation(fields: [voucher_id], references: [id])
@@ -170,13 +170,13 @@ model Transaction {
 }
 
 model Voucher {
-  id          String        @id @default(cuid())
-  amount      Int
-  is_valid    Boolean
-  user_id     String
-  user        User          @relation(fields: [user_id], references: [id])
-  transaction Transaction[]
-  used_at     DateTime
+  id          String       @id @default(cuid())
+  amount      Float        @db.Double
+  is_valid    Boolean      @default(true)
+  user_id     String       @unique
+  user        User         @relation(fields: [user_id], references: [id])
+  transaction Transaction?
+  used_at     DateTime?
 
   @@map("vouchers")
 }

@@ -9,9 +9,13 @@ import duration from "dayjs/plugin/duration";
 import { TUser } from "../models/user.model";
 import { createToken } from "../libs/jwt";
 import voucherCodes from "voucher-code-generator";
+import { TVoucher } from "../models/voucher.model";
+import { transporter } from "../libs/nodemailer";
+import { user } from "../config/config";
 dayjs.extend(duration);
 
 class UsersService {
+	[x: string]: any;
 	async getAll() {
 		const data: TUser[] = await prisma.user.findMany();
 		data.forEach((d) => {
@@ -21,69 +25,102 @@ class UsersService {
 	}
 	async getById(req: Request) {
 		const { id } = req.params;
-		const select: Prisma.UserSelect = {
-			id: true,
-			username: true,
-			fullname: true,
-			email: true,
-			role: true,
-			gender: true,
-			phone_no: true,
-			id_card: true,
-			address: true,
-			referral_code: true,
-			reference_code: true,
-		};
-		const data = await prisma.user.findFirst({ where: { id }, select });
+		const data = (await prisma.user.findFirst({
+			where: { id },
+		})) as TUser;
+		delete data?.password;
 		return data;
 	}
-	async getByUsername(req: Request) {
-		const { username } = req.params;
-		const select: Prisma.UserSelect = {
-			id: true,
-			username: true,
-			fullname: true,
-			email: true,
-			role: true,
-			gender: true,
-			phone_no: true,
-			id_card: true,
-			address: true,
-			referral_code: true,
-			reference_code: true,
-		};
-		const data = await prisma.user.findFirst({ where: { username }, select });
+	async getByIdOrUsername(req: Request) {
+		const { id_username } = req.params;
+		const data = (await prisma.user.findFirst({
+			where: { OR: [{ username: id_username }, { id: id_username }] },
+		})) as TUser;
+		delete data?.password;
 		return data;
 	}
 	async create(req: Request) {
+		//generate unique referralCode
 		const referralCode = voucherCodes.generate({
+			prefix: req?.user.username,
 			count: 1,
-			length: 8,
-			pattern: "##-###-##",
+			length: 6,
 		})[0];
+		//password hashing
 		const hashedPassword = await hashPassword(req?.user.password || "");
+		//data to be created
 		const data: Prisma.UserCreateInput = {
 			...(req?.user as User),
 			password: hashedPassword,
 			referral_code: referralCode,
 		};
-
 		return await prisma.$transaction(async (prisma) => {
 			try {
+				//run if req.body has reference_code
 				if (req?.user.reference_code) {
-					await prisma.user.update({
+					//then create new user
+					const newUser = await prisma.user.create({ data });
+					//find reference user's point data
+					const existingReferencedUser = await prisma.user.findFirst({
 						where: {
 							referral_code: req?.user.reference_code,
 						},
-						data: {
-							points: 10000,
-							points_expiry_date: dayjs()
-								.add(dayjs.duration({ months: 3 }))
-								.toDate(),
+						select: {
+							points: true,
+							points_expiry_date: true,
 						},
 					});
+					//found user current points count
+					const currentPoints = existingReferencedUser?.points || 0;
+					//if points expiry date doesn't exist
+					if (!existingReferencedUser?.points_expiry_date) {
+						//then update existing user points and set points expiry date to 3 months from now
+						await prisma.user.update({
+							where: {
+								referral_code: req?.user.reference_code,
+							},
+							data: {
+								points: currentPoints + 10000,
+								points_expiry_date: dayjs()
+									.add(dayjs.duration({ months: 3 }))
+									.toDate(),
+							},
+						});
+					} else {
+						//else update existing user points only
+						await prisma.user.update({
+							where: {
+								referral_code: req.user?.reference_code,
+							},
+							data: {
+								points: currentPoints + 10000,
+							},
+						});
+					}
+					//after new user created, create voucher
+					(await prisma.voucher.create({
+						data: {
+							amount: 0.1,
+							is_valid: true,
+							user: {
+								connect: {
+									id: newUser.id,
+								},
+							},
+						},
+					})) as TVoucher;
+				} else {
+					//run this if there's no reference code
+					await prisma.user.create({ data });
 				}
-				await prisma.user.create({ data });
+				//send verification email
+				transporter.sendMail({
+					from: user,
+					to: req?.user.email,
+					subject:
+						"Thank you for your registration! Please, verify your email.",
+					html: "<h1>Thank you for your registration!</h1>",
+				});
 			} catch (error: unknown) {
 				catchError(error);
 			}

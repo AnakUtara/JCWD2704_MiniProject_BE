@@ -10,5 +10,5 @@ export interface IService extends ICustomService {
 }
 
 interface ICustomService {
-	getByUsername?: (req: Request) => Promise<TUser | null>;
+	getByIdOrUsername?: (req: Request) => Promise<TUser | null>;
 }

@@ -1,8 +1,72 @@
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "../libs/prisma";
 import { throwErrorMessageIf } from "../utils/error";
-import { registerSchema } from "../libs/joi";
+import { registerSchema, updateSchema } from "../libs/joi";
 import referralCode from "referral-codes";
+import { User } from "@prisma/client";
+
+export async function checkRegistrationInputs(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		const { username, email, fullname, password, phone_no, id_card, gender } =
+			req.body;
+		throwErrorMessageIf(
+			!username ||
+				!email ||
+				!fullname ||
+				!password ||
+				!phone_no ||
+				!id_card ||
+				!gender,
+			"All necessary fields except reference code must be filled."
+		);
+		req.user = await registerSchema.validateAsync(req.body);
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function checkExistingUser(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		const { username, email, phone_no, id_card } = req.body;
+		const isExist = (await prisma.user.findFirst({
+			where: { OR: [{ username }, { email }, { phone_no }, { id_card }] },
+		})) as User;
+		throwErrorMessageIf(isExist !== null, "User/Email already exist.");
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function checkIsReferralValid(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		const { reference_code } = req.body;
+		if (reference_code) {
+			const isExist = await prisma.user.findFirst({
+				where: {
+					referral_code: reference_code,
+				},
+			});
+			throwErrorMessageIf(!isExist, "Referral code doesn't exist.");
+		}
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
 
 export async function checkUserExistById(
 	req: Request,
@@ -56,7 +120,7 @@ export async function checkUpdateUserForm(
 	next: NextFunction
 ) {
 	try {
-		await registerSchema.validateAsync(req.body);
+		await updateSchema.validateAsync(req.body);
 		throwErrorMessageIf(!req.body, "Fill at least one field to update");
 		next();
 	} catch (error) {
