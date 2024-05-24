@@ -33,6 +33,14 @@ class UsersController extends EntityController {
 			next(error);
 		}
 	}
+	async emailVerification(req: Request, res: Response, next: NextFunction) {
+		try {
+			await usersService.emailVerification(req);
+			res.send({ message: "verification success" });
+		} catch (error) {
+			next(error);
+		}
+	}
 }
 
 export default new UsersController(usersService);

@@ -37,6 +37,10 @@ class UsersRouter extends EntityRouter {
 			usersController.create.bind(usersController)
 		);
 		this.router.patch(
+			"/v3/:token",
+			usersController.emailVerification.bind(usersController)
+		);
+		this.router.patch(
 			"/:id_username",
 			verifyToken,
 			checkIsAuthorized,

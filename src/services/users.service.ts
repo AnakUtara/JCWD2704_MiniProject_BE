@@ -11,11 +11,13 @@ import { createToken } from "../libs/jwt";
 import voucherCodes from "voucher-code-generator";
 import { TVoucher } from "../models/voucher.model";
 import { transporter } from "../libs/nodemailer";
-import { user } from "../config/config";
+import { SECRET_KEY } from "../config/config";
+import fs from "fs";
+import { join } from "path";
+import { render } from "mustache";
+import { verify } from "jsonwebtoken";
 dayjs.extend(duration);
-
 class UsersService {
-	[x: string]: any;
 	async getAll() {
 		const data: TUser[] = await prisma.user.findMany();
 		data.forEach((d) => {
@@ -56,10 +58,11 @@ class UsersService {
 		};
 		return await prisma.$transaction(async (prisma) => {
 			try {
+				let newUser = {} as TUser;
 				//run if req.body has reference_code
 				if (req?.user.reference_code) {
 					//then create new user
-					const newUser = await prisma.user.create({ data });
+					newUser = await prisma.user.create({ data });
 					//find reference user's point data
 					const existingReferencedUser = await prisma.user.findFirst({
 						where: {
@@ -72,31 +75,20 @@ class UsersService {
 					});
 					//found user current points count
 					const currentPoints = existingReferencedUser?.points || 0;
-					//if points expiry date doesn't exist
-					if (!existingReferencedUser?.points_expiry_date) {
-						//then update existing user points and set points expiry date to 3 months from now
-						await prisma.user.update({
-							where: {
-								referral_code: req?.user.reference_code,
-							},
-							data: {
-								points: currentPoints + 10000,
-								points_expiry_date: dayjs()
-									.add(dayjs.duration({ months: 3 }))
-									.toDate(),
-							},
-						});
-					} else {
-						//else update existing user points only
-						await prisma.user.update({
-							where: {
-								referral_code: req.user?.reference_code,
-							},
-							data: {
-								points: currentPoints + 10000,
-							},
-						});
-					}
+					const currentExpDate =
+						dayjs(existingReferencedUser?.points_expiry_date) || dayjs();
+					//then update existing user points and set points expiry date to 3 months from now
+					await prisma.user.update({
+						where: {
+							referral_code: req?.user.reference_code,
+						},
+						data: {
+							points: currentPoints + 10000,
+							points_expiry_date: currentExpDate
+								.add(dayjs.duration({ months: 3 }))
+								.toDate(),
+						},
+					});
 					//after new user created, create voucher
 					(await prisma.voucher.create({
 						data: {
@@ -111,19 +103,41 @@ class UsersService {
 					})) as TVoucher;
 				} else {
 					//run this if there's no reference code
-					await prisma.user.create({ data });
+					newUser = await prisma.user.create({ data });
 				}
-				//send verification email
-				transporter.sendMail({
-					from: user,
-					to: req?.user.email,
-					subject:
-						"Thank you for your registration! Please, verify your email.",
-					html: "<h1>Thank you for your registration!</h1>",
-				});
+				const ver_token = createToken(newUser, "1hr");
+				//setup read file to read mustache html template
+				const template = fs
+					.readFileSync(join(__dirname, "../templates/verification.html"))
+					.toString();
+				//if template exist render template and send it to registered user email
+				if (template) {
+					const html = render(template, {
+						email: req.user.email,
+						verify_url: `${process.env.BASE_URL}${process.env.PORT}/v3/${ver_token}`,
+					});
+					await transporter.sendMail({
+						to: req?.user.email,
+						subject:
+							"Thank you for your registration! Please, verify your email.",
+						html,
+					});
+				}
 			} catch (error: unknown) {
 				catchError(error);
 			}
+		});
+	}
+	async emailVerification(req: Request) {
+		const { token } = req.params;
+		const { id } = verify(token, SECRET_KEY) as TUser;
+		await prisma.user.update({
+			where: {
+				id,
+			},
+			data: {
+				is_verified: true,
+			},
 		});
 	}
 	async delete(req: Request) {
