@@ -46,6 +46,7 @@ model User {
   review             Review[]
   transaction        Transaction[]
   voucher            Voucher?
+  reset_token        String?       @db.Text
   is_verified        Boolean       @default(false)
   created_at         DateTime      @default(now())
   updated_at         DateTime      @updatedAt

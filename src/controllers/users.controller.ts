@@ -41,6 +41,22 @@ class UsersController extends EntityController {
 			next(error);
 		}
 	}
+	async forgotPassword(req: Request, res: Response, next: NextFunction) {
+		try {
+			await usersService.forgotPassword(req);
+			res.send({ message: "forgot password email sent" });
+		} catch (error) {
+			next(error);
+		}
+	}
+	async updatePassword(req: Request, res: Response, next: NextFunction) {
+		try {
+			await usersService.updatePassword(req);
+			res.send({ message: "success" });
+		} catch (error) {
+			next(error);
+		}
+	}
 }
 
 export default new UsersController(usersService);

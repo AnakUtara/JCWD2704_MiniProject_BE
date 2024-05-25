@@ -11,4 +11,7 @@ export interface IService extends ICustomService {
 
 interface ICustomService {
 	getByIdOrUsername?: (req: Request) => Promise<TUser | null>;
+	emailVerification?: (req: Request) => Promise<void>;
+	forgotPassword?: (req: Request) => Promise<void>;
+	updatePassword?: (req: Request) => Promise<void>;
 }
