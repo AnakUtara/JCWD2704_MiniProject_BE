@@ -121,18 +121,16 @@ class UsersService {
 		});
 	}
 	async forgotPassword(req: Request) {
-		const emailSchema = Joi.object({
-			email: Joi.string()
-				.trim()
-				.lowercase()
-				.email({
-					minDomainSegments: 2,
-					tlds: { allow: ["com", "net"] },
-				})
-				.required(),
-		});
+		const emailSchema = Joi.string()
+			.trim()
+			.lowercase()
+			.email({
+				minDomainSegments: 2,
+				tlds: { allow: ["com", "net"] },
+			})
+			.required();
 		const { email } = req.body;
-		const validEmail = await emailSchema.validateAsync({ email });
+		const validEmail = await emailSchema.validateAsync(email);
 		await prisma.$transaction(async (prisma) => {
 			try {
 				const findExist = await prisma.user.findUnique({

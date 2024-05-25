@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { TUser } from "../models/user.model";
+import { TUser } from "./user.model";
 
 export interface IService extends ICustomService {
 	getAll: () => Promise<TUser[]>;

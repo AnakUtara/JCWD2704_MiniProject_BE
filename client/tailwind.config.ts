@@ -19,27 +19,19 @@ const config: Config = {
     themes: [
       {
         mytheme: {
-          primary: "#1977f2",
-
-          secondary: "#67b5fa",
-
-          accent: "#f97316",
-
-          neutral: "#d1d5db",
-
+          primary: "#514fff",
+          secondary: "#9099a0",
+          accent: "#000000",
+          neutral: "#eeeff3",
           "base-100": "#ffff",
-
           info: "#0000ff",
-
           success: "#00ff00",
-
           warning: "#dc2626",
-
           error: "#b91c1c",
         },
       },
     ],
   },
-  plugins: [require("daisyui")],
+  plugins: [require("daisyui"), require("@tailwindcss/typography")],
 };
 export default config;

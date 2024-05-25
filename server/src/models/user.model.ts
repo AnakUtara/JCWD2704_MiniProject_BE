@@ -4,7 +4,7 @@ export type TUser = {
 	id?: string;
 	username: string;
 	fullname: string;
-	gender: Gender;
+	gender?: Gender | null;
 	email: string;
 	password?: string;
 	role: Role;

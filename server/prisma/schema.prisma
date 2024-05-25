@@ -33,7 +33,7 @@ model User {
   role               Role          @default(customer)
   phone_no           String        @db.VarChar(25)
   id_card            String        @unique @db.VarChar(16)
-  gender             Gender
+  gender             Gender?
   address            String?       @db.VarChar(255)
   date_of_birth      DateTime?
   avatar             Bytes?        @db.Blob

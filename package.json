@@ -8,6 +8,10 @@
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"devDependencies": {
+		"@tailwindcss/typography": "^0.5.13",
 		"concurrently": "^8.2.2"
+	},
+	"dependencies": {
+		"@types/react-icons": "^3.0.0"
 	}
 }

@@ -24,7 +24,6 @@ export const registerSchema = Joi.object({
 			tlds: { allow: ["com", "net"] },
 		})
 		.required(),
-	gender: Joi.string().trim().valid(Gender.male, Gender.female).required(),
 	phone_no: Joi.string().trim().alphanum().length(13).required(),
 	id_card: Joi.string().trim().alphanum().length(16).required(),
 	reference_code: Joi.string().allow(""),
@@ -53,7 +52,7 @@ export const updateSchema = Joi.object({
 			tlds: { allow: ["com", "net"] },
 		})
 		.required(),
-	gender: Joi.string().trim().valid(Gender.male, Gender.female).required(),
+	gender: Joi.string().trim().valid(Gender.male, Gender.female),
 	phone_no: Joi.string().trim().alphanum().length(13).required(),
 	id_card: Joi.string().trim().alphanum().length(16).required(),
 	bank_acc_no: Joi.number().integer().min(8).max(12),
