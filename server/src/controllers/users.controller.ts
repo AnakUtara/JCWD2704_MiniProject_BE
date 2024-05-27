@@ -28,7 +28,8 @@ class UsersController extends EntityController {
 	}
 	async validateToken(req: Request, res: Response, next: NextFunction) {
 		try {
-			res.send({ message: "success" });
+			const accessToken = await usersService.validateToken(req);
+			res.cookie("access_token", accessToken).send({ message: "success" });
 		} catch (error) {
 			next(error);
 		}

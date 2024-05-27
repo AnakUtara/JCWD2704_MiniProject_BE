@@ -234,6 +234,13 @@ class UsersService {
 		const refreshToken = createToken({ id: data.id }, "20hr");
 		return { accessToken, refreshToken };
 	}
+	async validateToken(req: Request) {
+		const isUserExist = await prisma.user.findFirst({
+			where: { id: req?.user.id },
+		});
+		const token = createToken(isUserExist, "1hr");
+		return token;
+	}
 }
 
 export default new UsersService();
