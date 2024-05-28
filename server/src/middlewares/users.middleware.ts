@@ -11,17 +11,10 @@ export async function checkRegistrationInputs(
 	next: NextFunction
 ) {
 	try {
-		const { username, email, fullname, password, phone_no, id_card, gender } =
-			req.body;
+		const { username, email, fullname, password, phone_no, id_card } = req.body;
 		throwErrorMessageIf(
-			!username ||
-				!email ||
-				!fullname ||
-				!password ||
-				!phone_no ||
-				!id_card ||
-				!gender,
-			"All necessary fields except reference code must be filled."
+			!username || !email || !fullname || !password || !phone_no || !id_card,
+			"All necessary fields except reference code & bank_acc_no must be filled."
 		);
 		req.user = await registerSchema.validateAsync(req.body);
 		next();

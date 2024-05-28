@@ -24,9 +24,23 @@ export const registerSchema = Joi.object({
 			tlds: { allow: ["com", "net"] },
 		})
 		.required(),
-	phone_no: Joi.string().trim().alphanum().length(13).required(),
-	id_card: Joi.string().trim().alphanum().length(16).required(),
+	phone_no: Joi.string()
+		.trim()
+		.pattern(new RegExp("^[0-9]+$"))
+		.length(13)
+		.required(),
+	id_card: Joi.string()
+		.trim()
+		.pattern(new RegExp("^[0-9]+$"))
+		.length(16)
+		.required(),
 	reference_code: Joi.string().allow(""),
+	bank_acc_no: Joi.string()
+		.alphanum()
+		.trim()
+		.pattern(new RegExp("^[0-9]+$"))
+		.min(8)
+		.max(12),
 });
 
 export const updateSchema = Joi.object({

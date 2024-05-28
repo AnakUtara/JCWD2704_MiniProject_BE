@@ -6,5 +6,5 @@ export const major_mono = Major_Mono_Display({
 });
 export const plex_mono = IBM_Plex_Mono({
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400"],
+  weight: ["100", "200", "300", "400", "700"],
 });

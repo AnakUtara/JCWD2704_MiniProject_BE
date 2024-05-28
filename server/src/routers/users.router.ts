@@ -20,6 +20,11 @@ class UsersRouter extends EntityRouter {
 	}
 	private initRouter() {
 		this.router.get("/", usersController.getAll.bind(usersController));
+		this.router.get(
+			"/validate",
+			verifyToken,
+			usersController.validateToken.bind(usersController)
+		);
 		this.router.post(
 			"/v1",
 			authenticate,
@@ -43,11 +48,6 @@ class UsersRouter extends EntityRouter {
 		this.router.patch(
 			"/v5/:token",
 			usersController.updatePassword.bind(usersController)
-		);
-		this.router.get(
-			"/validate",
-			verifyToken,
-			usersController.validateToken.bind(usersController)
 		);
 		this.router.get(
 			"/:id_username",

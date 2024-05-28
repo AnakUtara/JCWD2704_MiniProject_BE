@@ -21,7 +21,6 @@ export async function authenticate(
 		throwErrorMessageIf(!isUserExist, "Invalid Username/Emai!");
 		const comparePassword: boolean | null =
 			isUserExist && (await compare(password, isUserExist.password));
-		console.log(isUserExist, comparePassword);
 		throwErrorMessageIf(!comparePassword, "Invalid Password!");
 		next();
 	} catch (error) {

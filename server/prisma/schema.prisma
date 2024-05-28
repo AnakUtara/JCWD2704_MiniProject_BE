@@ -41,7 +41,7 @@ model User {
   reference_code     String?
   points             Int           @default(0)
   points_expiry_date DateTime?
-  bank_acc_no        Int?
+  bank_acc_no        String?       @db.VarChar(75)
   event              Event[]
   review             Review[]
   transaction        Transaction[]

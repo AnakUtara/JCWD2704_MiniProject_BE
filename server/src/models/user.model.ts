@@ -17,7 +17,7 @@ export type TUser = {
 	reference_code?: string | null;
 	points?: number | null;
 	points_expiry_date?: Date | null;
-	bank_acc_no?: number | null;
+	bank_acc_no?: string | null;
 	is_verified?: Boolean;
 	reset_token?: string | null;
 	created_at?: Date;

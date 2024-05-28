@@ -9,10 +9,12 @@ export default function AuthFormWrapper({ children, title = "Login" }: Props) {
         "prose grid min-h-screen max-w-full place-items-center p-5",
       )}
     >
-      <center>
-        <h1 className={clsx(major_mono.className, "mb-4")}>{title}</h1>
+      <div className="min-w-[240px] max-w-[480px]">
+        <h1 className={clsx(major_mono.className, "mb-4 text-center")}>
+          {title}
+        </h1>
         {children}
-      </center>
+      </div>
     </div>
   );
 }

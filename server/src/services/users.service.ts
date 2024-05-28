@@ -43,11 +43,14 @@ class UsersService {
 		//password hashing
 		const hashedPassword = await hashPassword(req?.user.password || "");
 		//data to be created
+
 		const data: Prisma.UserCreateInput = {
 			...(req?.user as User),
 			password: hashedPassword,
 			referral_code: referralCode(req),
+			role: req?.user.bank_acc_no ? "promotor" : "customer",
 		};
+
 		await prisma.$transaction(async (prisma) => {
 			try {
 				let newUser = {} as TUser;
@@ -65,8 +68,9 @@ class UsersService {
 					});
 					//extract existing referenced user's current points & points expiry date
 					const currentPoints = existingReferencedUser?.points || 0;
-					const currentExpDate =
-						dayjs(existingReferencedUser?.points_expiry_date) || dayjs();
+					const currentExpDate = existingReferencedUser?.points_expiry_date
+						? dayjs(existingReferencedUser?.points_expiry_date)
+						: dayjs();
 					//update existing referenced user's points & points expiry date
 					await prisma.user.update({
 						where: {
@@ -95,7 +99,7 @@ class UsersService {
 					//run this if there's no reference code
 					newUser = await prisma.user.create({ data });
 				}
-				const ver_token = createToken(newUser.id, "1hr");
+				const ver_token = createToken({ id: newUser.id }, "1h");
 				sendEmail({
 					email_to: req.user.email,
 					template_dir: "../templates/verification.html",
@@ -138,7 +142,7 @@ class UsersService {
 						email: validEmail,
 					},
 				});
-				const reset_token = createToken(findExist?.id, "1hr");
+				const reset_token = createToken({ id: findExist?.id }, "1hr");
 				throwErrorMessageIf(!findExist, "This email doesn't exist.");
 				sendEmail({
 					email_to: req.user.email,
@@ -230,16 +234,17 @@ class UsersService {
 		})) as TUser;
 		req.user = data;
 		delete data?.password;
-		const accessToken = createToken(data, "1hr");
+		const accessToken = createToken(data, "1h");
 		const refreshToken = createToken({ id: data.id }, "20hr");
 		return { accessToken, refreshToken };
 	}
 	async validateToken(req: Request) {
-		const isUserExist = await prisma.user.findFirst({
+		const isUserExist: TUser = (await prisma.user.findFirst({
 			where: { id: req?.user.id },
-		});
-		const token = createToken(isUserExist, "1hr");
-		return token;
+		})) as TUser;
+		delete isUserExist?.password;
+		const token = createToken(isUserExist, "1h");
+		return { token, is_verified: isUserExist?.is_verified };
 	}
 }
 
