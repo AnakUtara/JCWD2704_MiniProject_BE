@@ -14,6 +14,7 @@ import { SECRET_KEY, pass } from "../config/config";
 import { verify } from "jsonwebtoken";
 import { referralCode } from "../libs/voucher-code-generator";
 import Joi from "joi";
+
 dayjs.extend(duration);
 class UsersService {
 	async getAll() {

@@ -66,51 +66,61 @@ enum Status_event {
 }
 
 enum Discount_amount {
-  a @map("5%")
-  b @map("10%")
-  c @map("15%")
-  d @map("20%")
-  e @map("25%")
-  f @map("30%")
-  g @map("35%")
-  h @map("40%")
-  i @map("45%")
-  j @map("50%")
-  k @map("60%")
-  m @map("70%")
-  n @map("80%")
+  no_disc @map("0%")
+  disc_5  @map("5%")
+  disc_10 @map("10%")
+  disc_15 @map("15%")
+  disc_20 @map("20%")
+  disc_25 @map("25%")
+  disc_30 @map("30%")
+  disc_35 @map("35%")
+  disc_40 @map("40%")
+  disc_45 @map("45%")
+  disc_50 @map("50%")
+  disc_60 @map("60%")
+  disc_70 @map("70%")
+  disc_80 @map("80%")
+}
+
+enum Category {
+  Accoustic
+  SemiPunk
+  Koplo
 }
 
 model Event {
-  id              String          @id @default(cuid())
-  title           String          @db.VarChar(100)
-  location        String
-  city            String          @db.VarChar(55)
-  zip_code        Int
-  venue_type      Venue_type
-  details         String          @db.Text
-  roster          String
-  scheduled_at    DateTime
-  start_time      DateTime
-  end_time        DateTime
-  status          Status_event    @default(active)
-  discount_amount Discount_amount
+  id       String @id @default(cuid())
+  title    String @db.VarChar(100)
+  location String
+  city     String @db.VarChar(55)
+  zip_code Int
+
+  venue_type   Venue_type
+  details      String       @db.Text
+  roster       String
+  scheduled_at DateTime     @db.Date
+  start_time   DateTime     @db.Time(0)
+  end_time     DateTime     @db.Time(0)
+  status       Status_event @default(active)
+  category     Category
+
+  discount_amount Discount_amount @default(no_disc)
   ticket_price    Float           @db.Double
   ticket_amount   Int
-  assigned_pic    String
-  pic_phone_no    String          @db.VarChar(25)
-  user_id         String
-  category_id     Int
-  user            User            @relation(fields: [user_id], references: [id])
-  category        Category        @relation(fields: [category_id], references: [id])
-  event_image     Event_image[]
-  review          Review[]
-  transaction     Transaction[]
+
+  assigned_pic String?
+  pic_phone_no String? @db.VarChar(25)
+
+  user_id     String
+  user        User          @relation(fields: [user_id], references: [id])
+  event_image Event_image[]
+  review      Review[]
+  transaction Transaction[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@index([title, location, scheduled_at, status, venue_type, city, roster])
+  @@index([title, location, scheduled_at, status, venue_type, city])
   @@map("events")
 }
 
@@ -124,16 +134,6 @@ model Review {
 
   @@id([user_id, event_id])
   @@map("reviews")
-}
-
-model Category {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(55)
-  event      Event[]
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  @@map("categories")
 }
 
 model Event_image {
