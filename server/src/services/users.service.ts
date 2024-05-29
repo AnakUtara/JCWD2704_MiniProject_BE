@@ -10,7 +10,7 @@ import { TUser } from "../models/user.model";
 import { createToken } from "../libs/jwt";
 import { TVoucher } from "../models/voucher.model";
 import { sendEmail } from "../libs/nodemailer";
-import { SECRET_KEY, pass } from "../config/config";
+import { SECRET_KEY } from "../config/config";
 import { verify } from "jsonwebtoken";
 import { referralCode } from "../libs/voucher-code-generator";
 import Joi from "joi";
