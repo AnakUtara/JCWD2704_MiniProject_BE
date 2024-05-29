@@ -9,7 +9,8 @@ export const authSlice = createSlice({
   reducers: {
     login: (state: TUser, action: PayloadAction<TUser>) => {
       state = { ...state, ...action.payload };
-      console.log("test");
+      console.log(state);
+
       return state;
     },
     logout: (state) => {

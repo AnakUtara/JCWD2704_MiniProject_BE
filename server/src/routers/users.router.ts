@@ -42,7 +42,7 @@ class UsersRouter extends EntityRouter {
 			usersController.emailVerification.bind(usersController)
 		);
 		this.router.post(
-			"/v4/:token",
+			"/v4",
 			usersController.forgotPassword.bind(usersController)
 		);
 		this.router.patch(

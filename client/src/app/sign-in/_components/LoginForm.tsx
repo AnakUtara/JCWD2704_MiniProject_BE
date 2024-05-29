@@ -6,7 +6,7 @@ import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { FaKey } from "react-icons/fa6";
 import { IoMail } from "react-icons/io5";
-import IconTextInput from "@/app/_components/IconTextInput";
+import IconTextInput from "@/app/_components/icon.text.input";
 import clsx from "clsx";
 import { loginSchema } from "@/app/_libs/yup";
 
@@ -34,6 +34,7 @@ export default function LoginForm({}: Props) {
         router.push("/");
       } catch (error: unknown) {
         if (error instanceof Error) console.log(error.message);
+        router.push("/sign-in");
       }
     },
   });

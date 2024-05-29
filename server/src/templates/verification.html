@@ -3,23 +3,17 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<script src="https://cdn.tailwindcss.com"></script>
 		<title>Verify Your Email.</title>
 	</head>
 	<body class="flex flex-col gap-3">
-		<h2 class="text-3xl font-bold">
+		<h2>
 			Hello
-			<span class="font-normal">{{email_to}}</span>!
+			<span>{{email}}</span>!
 		</h2>
 		<p>
 			Thank you very much for your registration!<br />
 			Please verify your account by clicking the button below:
 		</p>
-		<a
-			class="bg-black px-6 py-2 w-fit rounded-lg text-2xl text-white font-bold hover:bg-zinc-800"
-			href="{{href}}"
-		>
-			Verify
-		</a>
+		<a href="{{href}}" target="_blank"> Verify </a>
 	</body>
 </html>

@@ -1,5 +1,5 @@
 "use client";
-import IconTextInput from "@/app/_components/IconTextInput";
+import IconTextInput from "@/app/_components/icon.text.input";
 import { axiosInstance } from "@/app/_libs/axios.config";
 import { registerSchema } from "@/app/_libs/yup";
 import { initRegister } from "@/app/_models/user.model";

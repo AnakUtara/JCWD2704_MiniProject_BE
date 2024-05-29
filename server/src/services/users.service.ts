@@ -67,10 +67,13 @@ class UsersService {
 						},
 					});
 					//extract existing referenced user's current points & points expiry date
-					const currentPoints = existingReferencedUser?.points || 0;
 					const currentExpDate = existingReferencedUser?.points_expiry_date
 						? dayjs(existingReferencedUser?.points_expiry_date)
 						: dayjs();
+					const currentPoints =
+						!existingReferencedUser?.points || currentExpDate >= dayjs()
+							? 0
+							: existingReferencedUser.points;
 					//update existing referenced user's points & points expiry date
 					await prisma.user.update({
 						where: {
@@ -125,14 +128,7 @@ class UsersService {
 		});
 	}
 	async forgotPassword(req: Request) {
-		const emailSchema = Joi.string()
-			.trim()
-			.lowercase()
-			.email({
-				minDomainSegments: 2,
-				tlds: { allow: ["com", "net"] },
-			})
-			.required();
+		const emailSchema = Joi.string().trim().lowercase().email().required();
 		const { email } = req.body;
 		const validEmail = await emailSchema.validateAsync(email);
 		await prisma.$transaction(async (prisma) => {
@@ -142,12 +138,12 @@ class UsersService {
 						email: validEmail,
 					},
 				});
-				const reset_token = createToken({ id: findExist?.id }, "1hr");
 				throwErrorMessageIf(!findExist, "This email doesn't exist.");
+				const reset_token = createToken({ id: findExist?.id }, "40m");
 				sendEmail({
-					email_to: req.user.email,
-					template_dir: "../templates/verification.html",
-					href: `${process.env.BASE_URL}${process.env.FE_PORT}/forgot-password/${reset_token}`,
+					email_to: validEmail,
+					template_dir: "../templates/forgot-password.html",
+					href: `${process.env.BASE_URL}${process.env.FE_PORT}/forgot_password/${reset_token}`,
 					subject: "Reset Your Password",
 				});
 				await prisma.user.update({
@@ -166,21 +162,38 @@ class UsersService {
 	async updatePassword(req: Request) {
 		const { token } = req.params;
 		const { password } = req.body;
-		const { id } = verify(token, SECRET_KEY) as TUser;
-		const passSchema = Joi.object({
-			password: Joi.string()
-				.trim()
-				.min(8)
-				.max(20)
-				.pattern(new RegExp("^(?:(?=.*d)(?=.*[a-z])(?=.*[A-Z]).*)$"))
-				.required(),
-		});
-		const validPassword = await passSchema.validateAsync({ password });
-		await prisma.user.update({
-			where: { id },
-			data: {
-				password: validPassword,
-			},
+		await prisma.$transaction(async (prisma) => {
+			try {
+				const validToken = await prisma.user.findFirst({
+					where: {
+						reset_token: token,
+					},
+					select: {
+						reset_token: true,
+					},
+				});
+				throwErrorMessageIf(!token || !validToken, "Unauthorized access.");
+				const { id } = verify(
+					validToken?.reset_token || "",
+					SECRET_KEY
+				) as TUser;
+				const passSchema = Joi.string()
+					.trim()
+					.min(8)
+					.max(20)
+					.pattern(new RegExp("^(?:(?=.*d)(?=.*[a-z])(?=.*[A-Z]).*)$"))
+					.required();
+				const validPassword = await passSchema.validateAsync(password);
+				await prisma.user.update({
+					where: { id },
+					data: {
+						password: await hashPassword(validPassword),
+						reset_token: null,
+					},
+				});
+			} catch (error) {
+				catchError(error);
+			}
 		});
 	}
 	async delete(req: Request) {

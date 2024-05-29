@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import AuthFormWrapper from "../_components/AuthFormWrapper";
+import AuthFormWrapper from "../_components/auth.form.hoc";
 import { major_mono, plex_mono } from "../_utils/fonts";
 import Link from "next/link";
 import RegisterForm from "./_components/RegisterForm";

@@ -4,7 +4,7 @@
 		"client": "cd client && npm run dev",
 		"migrate": "cd server && npx prisma migrate dev",
 		"studio": "cd server && npx prisma studio",
-		"start": "concurrently \"npm run client\" \"npm run server\"",
+		"dev": "concurrently \"npm run client\" \"npm run server\"",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"devDependencies": {

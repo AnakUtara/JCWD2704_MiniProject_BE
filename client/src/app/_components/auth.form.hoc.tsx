@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { major_mono } from "../_utils/fonts";
 
 type Props = { children: React.ReactNode; title: string };
-export default function AuthFormWrapper({ children, title = "Login" }: Props) {
+export default function AuthFormHoc({ children, title = "Login" }: Props) {
   return (
     <div
       className={clsx(

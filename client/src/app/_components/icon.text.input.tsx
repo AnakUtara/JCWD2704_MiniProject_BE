@@ -11,6 +11,7 @@ type Props = {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   bottomLabel?: string;
   autoComplete?: string;
+  disabled?: boolean;
 };
 export default function IconTextInput({
   icon,
@@ -21,6 +22,7 @@ export default function IconTextInput({
   onChange,
   bottomLabel,
   autoComplete,
+  disabled = false,
 }: Props) {
   return (
     <>
@@ -38,11 +40,14 @@ export default function IconTextInput({
           value={value}
           onChange={onChange}
           autoComplete={autoComplete}
+          disabled={disabled}
         />
       </label>
       <label className="form-control mb-5 h-3 w-full max-w-xs">
         <div className="label">
-          <span className="label-text-alt text-red-700">{bottomLabel}</span>
+          <span className="label-text-alt text-nowrap text-red-700">
+            {bottomLabel}
+          </span>
         </div>
       </label>
     </>

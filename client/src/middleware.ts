@@ -1,7 +1,6 @@
-import { error } from "console";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-
+//TODO: Find out why prettier multiple OR and AND conditional wrap parenthesis in a weird way
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
@@ -18,32 +17,34 @@ export async function middleware(request: NextRequest) {
     })
       .then(async (res: Response) => {
         const data = await res.json();
-        response.cookies.set("access_token", data.accessToken);
+        if (refresh_token)
+          response.cookies.set("access_token", data.accessToken);
         return data;
       })
       .catch((error) => false);
   const isVerified = res.is_verified;
   const validate: boolean = res?.message === "success";
   const { pathname } = request.nextUrl;
-  if (
-    (pathname == "/sign-in" ||
-      pathname == "/sign-up" ||
-      pathname == "/verification" ||
-      pathname.startsWith("/verification")) &&
-    validate
-  )
+  const guestOnlyPaths: boolean =
+    pathname === "/sign-in" ||
+    pathname === "/sign-up" ||
+    pathname.startsWith("/forgot-password");
+  if (guestOnlyPaths && validate) {
     return NextResponse.redirect(new URL("/", request.url));
+  }
   if (
     pathname == "/verification" ||
     (pathname.startsWith("/verification") && isVerified)
-  )
+  ) {
     return NextResponse.redirect(new URL("/", request.url));
+  }
   return response;
 }
 
 // See "Matching Paths" below to learn more
 export const config = {
   matcher: [
+    "/forgot_password/:path*",
     "/verification/:path*",
     "/profile/:path*",
     "/sign-in",
