@@ -3,6 +3,8 @@ import type { NextRequest } from "next/server";
 //TODO: Find out why prettier multiple OR and AND conditional wrap parenthesis in a weird way
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
+  throw new Error("error");
+
   const response = NextResponse.next();
   const refresh_token = request.cookies.get("refresh_token")?.value || "";
   const res: { message: string; is_verified: boolean; accessToken: string } =

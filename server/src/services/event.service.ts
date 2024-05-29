@@ -140,57 +140,54 @@ class EventServices {
 	}
 
 	async create(req: Request) {
-		const { username } = req.params;
-		const {
-			title,
-			location,
-			city,
-			zip_code,
-			venue_type,
-			details,
-			roster,
-			scheduled_at,
-			start_time,
-			end_time,
-			ticket_price,
-			ticket_amount,
-			assigned_pic,
-			pic_phone_no,
-			category,
-			discount_amount,
-		} = req.body as TEvent;
-
-		const findUser = (await prisma.user.findFirst({
-			where: { username: username },
-			select: { id: true },
-		})) as { id: string };
-		// console.log(findUser);
-
-		validator(!findUser, "no user found");
-
-		const data = await prisma.event.create({
-			data: {
-				user_id: findUser.id,
-				title: title,
-				location: location,
-				city: city,
-				zip_code: Number(zip_code),
-				venue_type: venue_type,
-				details: details,
-				roster: roster,
-				scheduled_at: scheduled_at,
-				start_time: start_time,
-				end_time: end_time,
-				ticket_price: Number(ticket_price),
-				ticket_amount: Number(ticket_amount),
-				assigned_pic: `${assigned_pic}`,
-				pic_phone_no: `${pic_phone_no}`,
-				category: Category[category as keyof typeof Category] || undefined,
-				discount_amount:
-					Discount_amount[discount_amount as keyof typeof Discount_amount] ||
-					undefined,
-			},
-		});
+		// const { username } = req.params;
+		// const {
+		// 	title,
+		// 	location,
+		// 	city,
+		// 	zip_code,
+		// 	venue_type,
+		// 	details,
+		// 	roster,
+		// 	scheduled_at,
+		// 	start_time,
+		// 	end_time,
+		// 	ticket_price,
+		// 	ticket_amount,
+		// 	assigned_pic,
+		// 	pic_phone_no,
+		// 	category,
+		// 	discount_amount,
+		// } = req.body as TEvent;
+		// const findUser = (await prisma.user.findFirst({
+		// 	where: { username: username },
+		// 	select: { id: true },
+		// })) as { id: string };
+		// // console.log(findUser);
+		// validator(!findUser, "no user found");
+		// const data = await prisma.event.create({
+		// 	data: {
+		// 		user_id: findUser.id,
+		// 		title: title,
+		// 		location: location,
+		// 		city: city,
+		// 		zip_code: Number(zip_code),
+		// 		venue_type: venue_type,
+		// 		details: details,
+		// 		roster: roster,
+		// 		scheduled_at: scheduled_at,
+		// 		start_time: start_time,
+		// 		end_time: end_time,
+		// 		ticket_price: Number(ticket_price),
+		// 		ticket_amount: Number(ticket_amount),
+		// 		assigned_pic: `${assigned_pic}`,
+		// 		pic_phone_no: `${pic_phone_no}`,
+		// 		category: Category[category as unknown as keyof typeof Category] || undefined,
+		// 		discount_amount:
+		// 			Discount_amount[discount_amount as keyof typeof Discount_amount] ||
+		// 			undefined,
+		// 	},
+		// });
 		// console.log(data);
 		// return data;
 	}

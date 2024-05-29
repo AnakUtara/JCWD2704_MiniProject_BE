@@ -14,6 +14,7 @@ export default function EmailForm({}: Props) {
     validationSchema: Yup.object().shape({
       email: Yup.string().trim().lowercase().email().required(),
     }),
+
     onSubmit: async (values) => {
       try {
         const email = values.email;
