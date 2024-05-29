@@ -53,6 +53,7 @@ export default function EmailForm({}: Props) {
           e.preventDefault();
           router.push("/");
         }}
+        disabled={!formik.values.email ? true : false}
       >
         Cancel
       </button>

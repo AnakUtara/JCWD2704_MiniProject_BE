@@ -2,7 +2,7 @@ import { Request } from "express";
 import { TUser } from "./user.model";
 
 export interface IService extends ICustomService {
-	getAll: () => Promise<TUser[]>;
+	getAll: (req: Request) => Promise<TUser[]>;
 	getById: (req: Request) => Promise<TUser | null>;
 	create: (req: Request) => Promise<void | TUser>;
 	delete: (req: Request) => Promise<TUser>;
