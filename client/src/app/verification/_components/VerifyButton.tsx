@@ -10,7 +10,11 @@ export default function VerifyButton({ link_url, token }: Props) {
     <button
       onClick={async () => {
         try {
-          await axiosInstance().patch(`users/v3/${token}`);
+          await axiosInstance().patch(
+            `users/v3`,
+            {},
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
           alert("User has been verified.");
           router.push("/");
         } catch (error) {

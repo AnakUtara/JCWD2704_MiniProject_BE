@@ -2,6 +2,7 @@ import usersController from "../controllers/users.controller";
 import {
 	authenticate,
 	checkIsAuthorized,
+	verifyResetToken,
 	verifyToken,
 } from "../middlewares/auth.middleware";
 import {
@@ -25,6 +26,11 @@ class UsersRouter extends EntityRouter {
 			verifyToken,
 			usersController.validateToken.bind(usersController)
 		);
+		this.router.get(
+			"/validate/reset",
+			verifyResetToken,
+			usersController.validateResetToken.bind(usersController)
+		);
 		this.router.post(
 			"/v1",
 			authenticate,
@@ -38,7 +44,8 @@ class UsersRouter extends EntityRouter {
 			usersController.create.bind(usersController)
 		);
 		this.router.patch(
-			"/v3/:token",
+			"/v3",
+			verifyToken,
 			usersController.emailVerification.bind(usersController)
 		);
 		this.router.post(
@@ -46,7 +53,8 @@ class UsersRouter extends EntityRouter {
 			usersController.forgotPassword.bind(usersController)
 		);
 		this.router.patch(
-			"/v5/:token",
+			"/v5",
+			verifyResetToken,
 			usersController.updatePassword.bind(usersController)
 		);
 		this.router.get(

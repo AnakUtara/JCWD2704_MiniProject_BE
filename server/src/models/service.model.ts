@@ -4,7 +4,7 @@ import { TEvent, TEventDetails } from "./event.model";
 
 export interface IService extends ICustomService {
 	getAll: (req: Request) => Promise<TUser[] | TEvent[]>;
-	getById: (req: Request) => Promise<TUser | null>;
+	getById: (req: Request) => Promise<TUser | TEvent | null>;
 	create: (req: Request) => Promise<void | TUser | TEvent>;
 	delete: (req: Request) => Promise<TUser | TEvent>;
 	update: (req: Request) => Promise<TUser | undefined | TEvent>;

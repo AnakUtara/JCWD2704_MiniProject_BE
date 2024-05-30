@@ -1,21 +1,19 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-//TODO: Find out why prettier multiple OR and AND conditional wrap parenthesis in a weird way
+import { fetchAuth } from "./app/_utils/fetch.validate";
+
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
-  throw new Error("error");
-
   const response = NextResponse.next();
   const refresh_token = request.cookies.get("refresh_token")?.value || "";
-  const res: { message: string; is_verified: boolean; accessToken: string } =
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/validate`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${refresh_token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
+  const { pathname } = request.nextUrl;
+  const {
+    message,
+    is_verified,
+  }: { message: string; is_verified: boolean; accessToken: string } =
+    await fetchAuth({
+      base_url: `${process.env.NEXT_PUBLIC_API_URL}/users/validate`,
+      token: refresh_token,
     })
       .then(async (res: Response) => {
         const data = await res.json();
@@ -24,9 +22,8 @@ export async function middleware(request: NextRequest) {
         return data;
       })
       .catch((error) => false);
-  const isVerified = res.is_verified;
-  const validate: boolean = res?.message === "success";
-  const { pathname } = request.nextUrl;
+  // check user by token, dapet => return response, redirect "/"
+  const validate: boolean = message === "success";
   const guestOnlyPaths: boolean =
     pathname === "/sign-in" ||
     pathname === "/sign-up" ||
@@ -36,7 +33,7 @@ export async function middleware(request: NextRequest) {
   }
   if (
     pathname == "/verification" ||
-    (pathname.startsWith("/verification") && isVerified)
+    (pathname.startsWith("/verification") && is_verified)
   ) {
     return NextResponse.redirect(new URL("/", request.url));
   }

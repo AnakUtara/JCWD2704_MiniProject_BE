@@ -2,13 +2,13 @@
 import IconTextInput from "@/app/_components/icon.text.input";
 import { axiosInstance } from "@/app/_libs/axios.config";
 import { useFormik } from "formik";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { FaKey } from "react-icons/fa6";
 import * as Yup from "yup";
 import yp from "yup-password";
 yp(Yup);
 
-type Props = { token: string };
+type Props = { token: string | undefined };
 export default function UpdatePassword({ token }: Props) {
   const router = useRouter();
   const formik = useFormik({
@@ -25,14 +25,23 @@ export default function UpdatePassword({ token }: Props) {
     onSubmit: async (values) => {
       try {
         const password = values.password;
-        await axiosInstance().patch(`users/v5/${token}`, {
-          password,
-        });
+        await axiosInstance().patch(
+          `users/v5`,
+          {
+            password,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
         alert("Password successfully changed!");
         formik.resetForm();
         router.push("/");
       } catch (error) {
-        alert("Unauthorized access.");
+        alert("Session expired.");
+        redirect("/");
       }
     },
   });
@@ -51,7 +60,7 @@ export default function UpdatePassword({ token }: Props) {
       <button
         type="submit"
         className="btn btn-primary rounded-none"
-        disabled={!formik.values.password ? true : false}
+        disabled={!formik.values.password || formik.isSubmitting ? true : false}
       >
         Submit
       </button>
@@ -61,7 +70,7 @@ export default function UpdatePassword({ token }: Props) {
           e.preventDefault();
           router.push("/");
         }}
-        disabled={!formik.values.password ? true : false}
+        disabled={!formik.values.password || formik.isSubmitting ? true : false}
       >
         Cance{" "}
       </button>

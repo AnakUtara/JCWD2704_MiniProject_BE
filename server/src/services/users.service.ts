@@ -72,7 +72,7 @@ class UsersService {
 						? dayjs(existingReferencedUser?.points_expiry_date)
 						: dayjs();
 					const currentPoints =
-						!existingReferencedUser?.points || currentExpDate >= dayjs()
+						!existingReferencedUser?.points || currentExpDate > dayjs()
 							? 0
 							: existingReferencedUser.points;
 					//update existing referenced user's points & points expiry date
@@ -117,11 +117,9 @@ class UsersService {
 		});
 	}
 	async emailVerification(req: Request) {
-		const { token } = req.params;
-		const { id } = verify(token, SECRET_KEY) as TUser;
 		await prisma.user.update({
 			where: {
-				id,
+				id: req?.user.id,
 			},
 			data: {
 				is_verified: true,
@@ -140,7 +138,7 @@ class UsersService {
 					},
 				});
 				throwErrorMessageIf(!findExist, "This email doesn't exist.");
-				const reset_token = createToken({ id: findExist?.id }, "40m");
+				const reset_token = createToken({ id: findExist?.id }, "20m");
 				sendEmail({
 					email_to: validEmail,
 					template_dir: "../templates/forgot-password.html",
@@ -161,23 +159,9 @@ class UsersService {
 		});
 	}
 	async updatePassword(req: Request) {
-		const { token } = req.params;
 		const { password } = req.body;
 		await prisma.$transaction(async (prisma) => {
 			try {
-				const validToken = await prisma.user.findFirst({
-					where: {
-						reset_token: token,
-					},
-					select: {
-						reset_token: true,
-					},
-				});
-				throwErrorMessageIf(!token || !validToken, "Unauthorized access.");
-				const { id } = verify(
-					validToken?.reset_token || "",
-					SECRET_KEY
-				) as TUser;
 				const passSchema = Joi.string()
 					.trim()
 					.min(8)
@@ -186,7 +170,7 @@ class UsersService {
 					.required();
 				const validPassword = await passSchema.validateAsync(password);
 				await prisma.user.update({
-					where: { id },
+					where: { id: req?.user.id },
 					data: {
 						password: await hashPassword(validPassword),
 						reset_token: null,

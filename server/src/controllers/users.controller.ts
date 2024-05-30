@@ -59,6 +59,13 @@ class UsersController extends EntityController {
 			next(error);
 		}
 	}
+	async validateResetToken(req: Request, res: Response, next: NextFunction) {
+		try {
+			res.send({ message: "valid" });
+		} catch (error) {
+			next(error);
+		}
+	}
 }
 
 export default new UsersController(usersService);

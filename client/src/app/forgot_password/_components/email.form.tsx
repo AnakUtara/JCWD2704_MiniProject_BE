@@ -44,7 +44,7 @@ export default function EmailForm({}: Props) {
       <button
         type="submit"
         className="btn btn-primary rounded-none"
-        disabled={!formik.values.email ? true : false}
+        disabled={!formik.values.email || formik.isSubmitting ? true : false}
       >
         Submit
       </button>
@@ -54,6 +54,7 @@ export default function EmailForm({}: Props) {
           e.preventDefault();
           router.push("/");
         }}
+        disabled={!formik.values.email || formik.isSubmitting ? true : false}
       >
         Cancel
       </button>

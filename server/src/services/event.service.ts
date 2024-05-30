@@ -14,30 +14,15 @@ import { prisma } from "../libs/prisma";
 import { Order, OrderType, TEvent } from "../models/event.model";
 
 class EventServices {
-	private customSelect = {
-		title: true,
-		location: true,
-		city: true,
-		venue_type: true,
-		details: true,
-		roster: true,
-		status: true,
-		scheduled_at: true,
-		start_time: true,
-		end_time: true,
-		ticket_price: true,
-		ticket_amount: true,
-		user_id: true,
-		category: true,
-		event_image: true,
-		discount_amount: true,
-	};
-
-	async getAll(req: Request, customSelect = this.customSelect) {
-		const data = await prisma.event.findMany({
-			select: customSelect,
-		});
-
+	async getAll() {
+		const data: TEvent[] = await prisma.event.findMany();
+		return data;
+	}
+	async getById(req: Request) {
+		const { id } = req.params;
+		const data = (await prisma.event.findFirst({
+			where: { id },
+		})) as TEvent;
 		return data;
 	}
 
@@ -62,7 +47,7 @@ class EventServices {
 		return data;
 	}
 
-	async getEventsPromotor(req: Request, customSelect = this.customSelect) {
+	async getEventsPromotor(req: Request) {
 		const { id_username } = req.params;
 
 		const data = await prisma.$transaction(async (prisma: any) => {
@@ -82,7 +67,6 @@ class EventServices {
 
 				return await prisma.event.findMany({
 					where: { user_id: findUser.id },
-					select: customSelect,
 				});
 			} catch (error) {
 				throwError(error);
@@ -91,7 +75,7 @@ class EventServices {
 		return data;
 	}
 
-	async getEventsCustomer(req: Request, customSelect = this.customSelect) {}
+	async getEventsCustomer(req: Request) {}
 
 	async update(req: Request) {
 		const { username, id } = req.params;

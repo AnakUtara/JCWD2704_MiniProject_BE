@@ -34,9 +34,33 @@ export async function verifyToken(
 	next: NextFunction
 ) {
 	try {
-		const token = req.header("Authorization")?.replace("Bearer ", "") || "";
+		const token = req.header("Authorization")?.split(" ")[1] || "";
 		const verifiedUser = verify(token, SECRET_KEY);
 		throwErrorMessageIf(!token || !verifiedUser, "Unauthorized access");
+		req.user = verifiedUser as TUser;
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function verifyResetToken(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		const token = req.header("Authorization")?.split(" ")[1] || "";
+		const verifiedUser = verify(token, SECRET_KEY);
+		const findToken = await prisma.user.findFirst({
+			where: {
+				reset_token: token,
+			},
+		});
+		throwErrorMessageIf(
+			!token || !verifiedUser || !findToken,
+			"Unauthorized access"
+		);
 		req.user = verifiedUser as TUser;
 		next();
 	} catch (error) {
