@@ -3,7 +3,7 @@ enum Gender {
   female,
 }
 
-enum Role {
+export enum Role {
   customer,
   promotor,
 }

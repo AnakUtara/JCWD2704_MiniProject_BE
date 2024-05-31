@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./_components/providers/store.provider";
-
-const inter = Inter({ subsets: ["latin"] });
+import { plex_mono } from "./_utils/fonts";
 
 export const metadata: Metadata = {
   title: "Mini Project",
@@ -17,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={plex_mono.className}>
         <StoreProvider>{children}</StoreProvider>
       </body>
     </html>

@@ -22,13 +22,11 @@ export function userLogin({
         dispatch(login(jwtDecode(access_token)));
       }
       alert("Signed in.");
-      return;
     } catch (error: unknown) {
       if (error instanceof Error) console.log(error.message);
       deleteCookie("access_token");
       deleteCookie("refresh_token");
       alert("Invalid username/email/password.");
-      if (error instanceof Error) return error.message;
     }
   };
 }

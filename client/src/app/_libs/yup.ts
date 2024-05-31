@@ -14,6 +14,7 @@ export const registerSchema = Yup.object().shape({
     .trim()
     .min(8)
     .max(20)
+    .minLowercase(1)
     .minUppercase(1)
     .minNumbers(1)
     .required(),

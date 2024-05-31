@@ -18,6 +18,7 @@ export default function UpdatePassword({ token }: Props) {
         .trim()
         .min(8)
         .max(20)
+        .minLowercase(1)
         .minUppercase(1)
         .minNumbers(1)
         .required(),
@@ -26,7 +27,7 @@ export default function UpdatePassword({ token }: Props) {
       try {
         const password = values.password;
         await axiosInstance().patch(
-          `users/v5`,
+          `users/v4`,
           {
             password,
           },

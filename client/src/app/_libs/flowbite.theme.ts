@@ -1,0 +1,29 @@
+import { CustomFlowbiteTheme } from "flowbite-react";
+
+export const navItemTheme: CustomFlowbiteTheme = {
+  navbar: {
+    collapse: {
+      base: "w-full md:block md:w-auto",
+      list: "mt-4 flex flex-col md:mt-0 md:flex-row md:space-x-8 md:text-sm md:font-medium",
+      hidden: {
+        on: "hidden",
+        off: "",
+      },
+    },
+    link: {
+      base: "block py-2 pl-3 pr-4 md:p-0",
+      active: {
+        on: "bg-primary text-white dark:text-white md:bg-transparent md:text-white",
+        off: "border-b border-gray-100 text-white/50 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:hover:bg-transparent md:hover:underline md:dark:hover:bg-transparent md:dark:hover:text-white",
+      },
+      disabled: {
+        on: "text-gray-400 hover:cursor-not-allowed dark:text-gray-600",
+        off: "",
+      },
+    },
+    toggle: {
+      base: "ml-2 inline-flex items-center p-2 text-sm text-white hover:bg-gray-100/30 dark:text-gray-400 dark:hover:bg-gray-700/30 md:hidden",
+      icon: "size-6 shrink-0",
+    },
+  },
+};

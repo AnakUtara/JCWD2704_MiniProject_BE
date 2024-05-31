@@ -33,7 +33,7 @@ export default function IconTextInput({
         {icon}
         <input
           type={type}
-          className={clsx(plex_mono.className, "grow")}
+          className={clsx(plex_mono.className, "grow border-0 focus:ring-0")}
           placeholder={placeholder}
           name={name}
           id={name}

@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
     is_verified,
   }: { message: string; is_verified: boolean; accessToken: string } =
     await fetchAuth({
-      base_url: `${process.env.NEXT_PUBLIC_API_URL}/users/validate`,
+      base_url: `${process.env.NEXT_PUBLIC_API_URL}/users/validation/refresh`,
       token: refresh_token,
     })
       .then(async (res: Response) => {
@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
         return data;
       })
       .catch((error) => false);
-  // check user by token, dapet => return response, redirect "/"
+
   const validate: boolean = message === "success";
   const guestOnlyPaths: boolean =
     pathname === "/sign-in" ||

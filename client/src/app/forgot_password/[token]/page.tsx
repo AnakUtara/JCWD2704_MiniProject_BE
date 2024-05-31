@@ -7,7 +7,7 @@ type Props = { params: { token: string } };
 export default async function ChangePassword({ params }: Props) {
   const { token } = params;
   try {
-    await axiosInstance().get("users/validate/reset", {
+    await axiosInstance().get("users/validation/reset", {
       headers: { Authorization: `Bearer ${token}` },
     });
   } catch (error) {
