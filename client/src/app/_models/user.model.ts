@@ -1,11 +1,11 @@
 enum Gender {
-  male,
-  female,
+  male = "male",
+  female = "female",
 }
 
 export enum Role {
-  customer,
-  promotor,
+  customer = "customer",
+  promotor = "promotor",
 }
 
 export type TUser = {

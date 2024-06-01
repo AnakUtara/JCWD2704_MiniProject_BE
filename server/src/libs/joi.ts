@@ -10,12 +10,7 @@ export const registerSchema = Joi.object({
 		.trim()
 		.required(),
 	fullname: Joi.string().trim().lowercase().required(),
-	password: Joi.string()
-		.trim()
-		.min(8)
-		.max(20)
-		.pattern(new RegExp("^(?:(?=.*d)(?=.*[a-z])(?=.*[A-Z]).*)$"))
-		.required(),
+	password: Joi.string().trim().min(8).max(20).required(),
 	email: Joi.string()
 		.trim()
 		.lowercase()
@@ -52,12 +47,7 @@ export const updateSchema = Joi.object({
 		.trim()
 		.required(),
 	fullname: Joi.string().trim().lowercase().required(),
-	password: Joi.string()
-		.trim()
-		.min(8)
-		.max(20)
-		.pattern(new RegExp("^(?:(?=.*d)(?=.*[a-z])(?=.*[A-Z]).*)$"))
-		.required(),
+	password: Joi.string().trim().min(8).max(20).required(),
 	email: Joi.string()
 		.trim()
 		.lowercase()

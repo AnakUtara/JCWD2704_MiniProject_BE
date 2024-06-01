@@ -3,7 +3,6 @@ import { useAppDispatch } from "@/app/_libs/redux/hooks";
 import { userLogin } from "@/app/_libs/redux/middlewares/auth.middleware";
 import { plex_mono } from "@/app/_utils/fonts";
 import { useFormik } from "formik";
-import { useRouter } from "next/navigation";
 import { FaKey } from "react-icons/fa6";
 import { IoMail } from "react-icons/io5";
 import IconTextInput from "@/app/_components/icon.text.input";
@@ -13,7 +12,6 @@ import { loginSchema } from "@/app/_libs/yup";
 type Props = {};
 export default function LoginForm({}: Props) {
   const dispatch = useAppDispatch();
-  const router = useRouter();
   const initialValues: { email_username: string; password: string } = {
     email_username: "",
     password: "",

@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { FaIdBadge, FaIdCard, FaKey, FaPhone, FaUser } from "react-icons/fa6";
 import { IoMail } from "react-icons/io5";
 import { RiBankCard2Fill, RiCoupon3Fill } from "react-icons/ri";
+import { toast } from "sonner";
 import * as Yup from "yup";
 import yp from "yup-password";
 yp(Yup);
@@ -23,16 +24,18 @@ export default function RegisterForm({}: Props) {
     initialValues: initRegister,
     validationSchema: registerSchema,
     onSubmit: async (values) => {
+      if (!Object.values(values) || Object.values(values).length < 6)
+        return toast.error("Please fill all required fields.");
       try {
         await axiosInstance().post("/users/v2", {
           ...values,
         });
-        alert("New user registered.");
+        toast.success("New user registered.");
         formik.resetForm();
         router.push("/");
       } catch (error) {
         if (error instanceof Error) console.log(error.message);
-        alert("User might already exist.");
+        toast.error("User might already exist.");
       }
     },
   });

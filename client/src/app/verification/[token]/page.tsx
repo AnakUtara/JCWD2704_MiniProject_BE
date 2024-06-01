@@ -1,6 +1,5 @@
 import { major_mono, plex_mono } from "@/app/_utils/fonts";
 import clsx from "clsx";
-import VerifyButton from "../_components/VerifyButton";
 import { axiosInstance } from "@/app/_libs/axios.config";
 import { redirect } from "next/navigation";
 
@@ -21,7 +20,7 @@ export default async function VerifyUser({ params }: Props) {
     <div className="grid min-h-screen place-items-center">
       <div className={clsx(plex_mono.className, "prose w-full p-5")}>
         <h1 className={clsx(major_mono.className)}>
-          Thank you for registration!
+          Thank you for verifying your account!
         </h1>
         <h2>
           Verification in progress...

@@ -3,6 +3,7 @@ import "./globals.css";
 import StoreProvider from "./_components/providers/store.provider";
 import { plex_mono } from "./_utils/fonts";
 import { ThemeModeScript } from "flowbite-react";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Mini Project",
@@ -20,7 +21,10 @@ export default function RootLayout({
         <ThemeModeScript />
       </head>
       <body className={plex_mono.className}>
-        <StoreProvider>{children}</StoreProvider>
+        <StoreProvider>
+          {children}
+          <Toaster />
+        </StoreProvider>
       </body>
     </html>
   );

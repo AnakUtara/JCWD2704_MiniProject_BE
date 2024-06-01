@@ -3,6 +3,7 @@ import { axiosInstance } from "../../axios.config";
 import { login } from "../features/auth/auth.slice";
 import { deleteCookie, getCookie } from "cookies-next";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "sonner";
 
 export function userLogin({
   email_username,
@@ -21,13 +22,13 @@ export function userLogin({
       if (access_token) {
         dispatch(login(jwtDecode(access_token)));
       }
-      alert("Signed in.");
+      toast.success("Signed In");
       window.location.reload();
     } catch (error: unknown) {
       if (error instanceof Error) console.log(error.message);
       deleteCookie("access_token");
       deleteCookie("refresh_token");
-      alert("Invalid username/email/password.");
+      toast.error("Invalid Username/Password");
     }
   };
 }

@@ -1,5 +1,3 @@
-import clsx from "clsx";
-import { major_mono, plex_mono } from "../_utils/fonts";
 import EmailForm from "./_components/email.form";
 import ForgotPasswordHoc from "./_components/forgot_password.hoc";
 
