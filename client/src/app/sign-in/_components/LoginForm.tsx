@@ -31,17 +31,15 @@ export default function LoginForm({}: Props) {
           }),
         );
         formik.resetForm();
-        router.push("/");
       } catch (error: unknown) {
         if (error instanceof Error) console.log(error.message);
-        router.push("/sign-in");
       }
     },
   });
   const isFormEmpty: string =
     formik.values.email_username && formik.values.password;
   return (
-    <form className="border border-primary p-5" onSubmit={formik.handleSubmit}>
+    <form className="border border-black p-5" onSubmit={formik.handleSubmit}>
       <IconTextInput
         icon={<IoMail />}
         type="text"
@@ -65,7 +63,7 @@ export default function LoginForm({}: Props) {
         type="submit"
         className={clsx(
           plex_mono.className,
-          "btn btn-primary btn-block rounded-none text-white disabled:btn-disabled",
+          "btn btn-accent btn-block rounded-none text-white disabled:btn-disabled hover:bg-neutral-800",
         )}
         disabled={isFormEmpty ? false : true}
       >

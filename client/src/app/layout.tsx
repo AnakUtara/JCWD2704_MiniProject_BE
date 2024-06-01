@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import StoreProvider from "./_components/providers/store.provider";
 import { plex_mono } from "./_utils/fonts";
+import { ThemeModeScript } from "flowbite-react";
 
 export const metadata: Metadata = {
   title: "Mini Project",
@@ -14,7 +15,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeModeScript />
+      </head>
       <body className={plex_mono.className}>
         <StoreProvider>{children}</StoreProvider>
       </body>

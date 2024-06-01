@@ -10,8 +10,12 @@ import { TUser } from "../models/user.model";
 import { createToken } from "../libs/jwt";
 import { TVoucher } from "../models/voucher.model";
 import { sendEmail } from "../libs/nodemailer";
-import { SECRET_KEY, pass } from "../config/config";
-import { verify } from "jsonwebtoken";
+import {
+	ACC_SECRET_KEY,
+	FP_SECRET_KEY,
+	REFR_SECRET_KEY,
+	VERIF_SECRET_KEY,
+} from "../config/config";
 import { referralCode } from "../libs/voucher-code-generator";
 import Joi from "joi";
 
@@ -72,7 +76,7 @@ class UsersService {
 						? dayjs(existingReferencedUser?.points_expiry_date)
 						: dayjs();
 					const currentPoints =
-						!existingReferencedUser?.points || currentExpDate > dayjs()
+						!existingReferencedUser?.points || currentExpDate < dayjs()
 							? 0
 							: existingReferencedUser.points;
 					//update existing referenced user's points & points expiry date
@@ -103,13 +107,17 @@ class UsersService {
 					//run this if there's no reference code
 					newUser = await prisma.user.create({ data });
 				}
-				const ver_token = createToken({ id: newUser.id }, "1h");
+				const ver_token = createToken(
+					{ id: newUser.id },
+					VERIF_SECRET_KEY,
+					"30m"
+				);
 				sendEmail({
 					email_to: req.user.email,
 					template_dir: "../templates/verification.html",
 					href: `${process.env.BASE_URL}${process.env.FE_PORT}/verification/${ver_token}`,
 					subject:
-						"Thank you for your registration! Please, verify your email.",
+						"Thank you for your registration! Please, verify your account.",
 				});
 			} catch (error: unknown) {
 				catchError(error);
@@ -117,6 +125,24 @@ class UsersService {
 		});
 	}
 	async emailVerification(req: Request) {
+		const { email } = req.body;
+		const targetUser = (await prisma.user.findFirst({
+			where: { email },
+		})) as TUser;
+		throwErrorMessageIf(!targetUser, "Email not found");
+		const ver_token = createToken(
+			{ id: targetUser.id },
+			VERIF_SECRET_KEY,
+			"30m"
+		);
+		sendEmail({
+			email_to: targetUser.email,
+			template_dir: "../templates/verification.html",
+			href: `${process.env.BASE_URL}${process.env.FE_PORT}/verification/${ver_token}`,
+			subject: "Verify your account.",
+		});
+	}
+	async verifyUser(req: Request) {
 		await prisma.user.update({
 			where: {
 				id: req?.user.id,
@@ -138,7 +164,11 @@ class UsersService {
 					},
 				});
 				throwErrorMessageIf(!findExist, "This email doesn't exist.");
-				const reset_token = createToken({ id: findExist?.id }, "20m");
+				const reset_token = createToken(
+					{ id: findExist?.id },
+					FP_SECRET_KEY,
+					"20m"
+				);
 				sendEmail({
 					email_to: validEmail,
 					template_dir: "../templates/forgot-password.html",
@@ -181,6 +211,35 @@ class UsersService {
 			}
 		});
 	}
+	async login(req: Request) {
+		const currentExpDate = req?.user.points_expiry_date;
+		if (dayjs(currentExpDate) < dayjs())
+			await prisma.user.update({
+				where: {
+					id: req?.user.id,
+				},
+				data: {
+					points: 0,
+					points_expiry_date: null,
+				},
+			});
+		delete req.user?.password;
+		const accessToken = createToken(req?.user, ACC_SECRET_KEY, "1h");
+		const refreshToken = createToken(
+			{ id: req?.user.id },
+			REFR_SECRET_KEY,
+			"20h"
+		);
+		return { accessToken, refreshToken };
+	}
+	async validateRefreshToken(req: Request) {
+		const isUserExist: TUser = (await prisma.user.findFirst({
+			where: { id: req?.user.id },
+		})) as TUser;
+		delete isUserExist?.password;
+		const token = createToken(isUserExist, REFR_SECRET_KEY, "1h");
+		return { token, is_verified: isUserExist?.is_verified };
+	}
 	async delete(req: Request) {
 		const { id } = req.params;
 		return await prisma.user.delete({ where: { id } });
@@ -222,27 +281,6 @@ class UsersService {
 				catchError(error);
 			}
 		});
-	}
-	async login(req: Request) {
-		const { email_username } = req.body;
-		const data = (await prisma.user.findFirst({
-			where: {
-				OR: [{ username: email_username }, { email: email_username }],
-			},
-		})) as TUser;
-		req.user = data;
-		delete data?.password;
-		const accessToken = createToken(data, "1h");
-		const refreshToken = createToken({ id: data.id }, "20hr");
-		return { accessToken, refreshToken };
-	}
-	async validateToken(req: Request) {
-		const isUserExist: TUser = (await prisma.user.findFirst({
-			where: { id: req?.user.id },
-		})) as TUser;
-		delete isUserExist?.password;
-		const token = createToken(isUserExist, "1h");
-		return { token, is_verified: isUserExist?.is_verified };
 	}
 }
 

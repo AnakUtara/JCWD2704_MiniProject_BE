@@ -37,6 +37,7 @@ const config: Config = {
   plugins: [
     require("daisyui"),
     require("@tailwindcss/typography"),
+    require("tailwindcss-animate"),
     flowbite.plugin(),
   ],
 };

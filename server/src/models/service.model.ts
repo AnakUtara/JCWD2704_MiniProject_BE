@@ -17,4 +17,5 @@ interface ICustomService {
 	updatePassword?: (req: Request) => Promise<void>;
 	getWithOrder?: (req: Request) => Promise<TEvent[] | TEventDetails[]>;
 	getEventsPromotor?: (req: Request) => Promise<TEvent[]>;
+	verifyUser?: (req: Request) => Promise<void>;
 }

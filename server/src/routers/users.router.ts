@@ -2,8 +2,10 @@ import usersController from "../controllers/users.controller";
 import {
 	authenticate,
 	checkIsAuthorized,
+	verifyAccessToken,
+	verifyRefreshToken,
 	verifyResetToken,
-	verifyToken,
+	verifyVerifToken,
 } from "../middlewares/auth.middleware";
 import {
 	checkUpdateUserForm,
@@ -22,12 +24,12 @@ class UsersRouter extends EntityRouter {
 	private initRouter() {
 		this.router.get("/", usersController.getAll.bind(usersController));
 		this.router.get(
-			"/validate",
-			verifyToken,
-			usersController.validateToken.bind(usersController)
+			"/validation/refresh",
+			verifyRefreshToken,
+			usersController.validateRefreshToken.bind(usersController)
 		);
 		this.router.get(
-			"/validate/reset",
+			"/validation/reset",
 			verifyResetToken,
 			usersController.validateResetToken.bind(usersController)
 		);
@@ -43,9 +45,13 @@ class UsersRouter extends EntityRouter {
 			checkExistingUser,
 			usersController.create.bind(usersController)
 		);
-		this.router.patch(
+		this.router.get(
 			"/v3",
-			verifyToken,
+			verifyVerifToken,
+			usersController.verifyUser.bind(usersController)
+		);
+		this.router.post(
+			"/v3",
 			usersController.emailVerification.bind(usersController)
 		);
 		this.router.post(
@@ -53,7 +59,7 @@ class UsersRouter extends EntityRouter {
 			usersController.forgotPassword.bind(usersController)
 		);
 		this.router.patch(
-			"/v5",
+			"/v4",
 			verifyResetToken,
 			usersController.updatePassword.bind(usersController)
 		);
@@ -63,7 +69,7 @@ class UsersRouter extends EntityRouter {
 		);
 		this.router.patch(
 			"/:id_username",
-			verifyToken,
+			verifyAccessToken,
 			checkIsAuthorized,
 			checkUserExistById,
 			checkUpdateUserForm,

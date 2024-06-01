@@ -27,3 +27,37 @@ export const navItemTheme: CustomFlowbiteTheme = {
     },
   },
 };
+
+export const accordionCustomTheme: CustomFlowbiteTheme = {
+  accordion: {
+    root: {
+      base: "bg-neutral max-w-[400px]",
+      flush: {
+        off: "rounded-none",
+        on: "rounded-none",
+      },
+    },
+    content: {
+      base: "p-5 dark:bg-gray-900",
+    },
+    title: {
+      arrow: {
+        base: "size-6 shrink-0",
+        open: {
+          off: "",
+          on: "rotate-180",
+        },
+      },
+      base: "flex w-full items-center justify-between p-5 text-left font-medium text-gray-500 dark:text-gray-400",
+      flush: {
+        off: "hover:bg-gray-300 dark:hover:bg-gray-800",
+        on: "",
+      },
+      heading: "m-0",
+      open: {
+        off: "",
+        on: "bg-gray-300 text-gray-900 dark:bg-gray-800 dark:text-white",
+      },
+    },
+  },
+};

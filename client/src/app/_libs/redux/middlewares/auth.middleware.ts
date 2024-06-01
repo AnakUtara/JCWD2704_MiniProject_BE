@@ -22,6 +22,7 @@ export function userLogin({
         dispatch(login(jwtDecode(access_token)));
       }
       alert("Signed in.");
+      window.location.reload();
     } catch (error: unknown) {
       if (error instanceof Error) console.log(error.message);
       deleteCookie("access_token");

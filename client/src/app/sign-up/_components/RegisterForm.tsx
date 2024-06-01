@@ -1,11 +1,12 @@
 "use client";
 import IconTextInput from "@/app/_components/icon.text.input";
 import { axiosInstance } from "@/app/_libs/axios.config";
+import { accordionCustomTheme } from "@/app/_libs/flowbite.theme";
 import { registerSchema } from "@/app/_libs/yup";
 import { initRegister } from "@/app/_models/user.model";
 import { plex_mono } from "@/app/_utils/fonts";
 import clsx from "clsx";
-import { Accordion } from "flowbite-react";
+import { Accordion, Flowbite } from "flowbite-react";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { FaIdBadge, FaIdCard, FaKey, FaPhone, FaUser } from "react-icons/fa6";
@@ -38,7 +39,7 @@ export default function RegisterForm({}: Props) {
   return (
     <form
       onSubmit={formik.handleSubmit}
-      className={clsx(plex_mono.className, "border border-primary p-5")}
+      className={clsx(plex_mono.className, "border border-black p-5")}
     >
       <IconTextInput
         icon={<IoMail />}
@@ -94,39 +95,45 @@ export default function RegisterForm({}: Props) {
         name="phone_no"
         bottomLabel={formik.errors.phone_no}
       />
-      <Accordion>
-        <Accordion.Panel>
-          <Accordion.Title>Upgrade Your Membership!</Accordion.Title>
-          <Accordion.Content>
-            <IconTextInput
-              icon={<RiCoupon3Fill />}
-              type="text"
-              placeholder="Referral Code"
-              value={formik.values.reference_code}
-              onChange={formik.handleChange}
-              name="reference_code"
-              bottomLabel={formik.errors.reference_code}
-            />
-            <h3 className={"self-start text-left text-xs font-normal"}>
-              Start selling your own event tickets immediately! Fill your bank
-              account number below. (This field can be set later).
-            </h3>
-            <IconTextInput
-              icon={<RiBankCard2Fill />}
-              type="text"
-              placeholder="Bank Account No."
-              value={formik.values.bank_acc_no}
-              onChange={formik.handleChange}
-              name="bank_acc_no"
-              bottomLabel={formik.errors.bank_acc_no}
-            />
-          </Accordion.Content>
-        </Accordion.Panel>
-      </Accordion>
+      <Flowbite theme={{ theme: accordionCustomTheme }}>
+        <Accordion collapseAll>
+          <Accordion.Panel>
+            <Accordion.Title>Upgrade Your Membership!</Accordion.Title>
+            <Accordion.Content>
+              <h3 className={"self-start text-left text-xs font-normal"}>
+                Tell us who refer you to this site & grab your one time use 10%
+                off voucher. Applicable for all events.
+              </h3>
+              <IconTextInput
+                icon={<RiCoupon3Fill />}
+                type="text"
+                placeholder="Referral Code"
+                value={formik.values.reference_code}
+                onChange={formik.handleChange}
+                name="reference_code"
+                bottomLabel={formik.errors.reference_code}
+              />
+              <h3 className={"self-start text-left text-xs font-normal"}>
+                Start selling your own event tickets immediately! Fill your bank
+                account number below. (This field can be set later).
+              </h3>
+              <IconTextInput
+                icon={<RiBankCard2Fill />}
+                type="text"
+                placeholder="Bank Account No."
+                value={formik.values.bank_acc_no}
+                onChange={formik.handleChange}
+                name="bank_acc_no"
+                bottomLabel={formik.errors.bank_acc_no}
+              />
+            </Accordion.Content>
+          </Accordion.Panel>
+        </Accordion>
+      </Flowbite>
       <button
         className={clsx(
           plex_mono.className,
-          "btn btn-primary btn-block rounded-none text-white",
+          "btn btn-accent btn-block mt-5 rounded-none text-white hover:bg-neutral-800",
         )}
         disabled={
           formik.values.username &&
