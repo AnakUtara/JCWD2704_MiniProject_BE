@@ -4,6 +4,7 @@ import { throwErrorMessageIf } from "../utils/error";
 import { registerSchema, updateSchema } from "../libs/joi";
 import referralCode from "referral-codes";
 import { User } from "@prisma/client";
+import dayjs from "dayjs";
 
 export async function checkRegistrationInputs(
 	req: Request,
@@ -67,11 +68,9 @@ export async function checkUserExistById(
 	next: NextFunction
 ) {
 	try {
-		const { id } = req.params;
-		const isExist = (await prisma.user.findFirst({
-			where: { id },
-			select: { id: true },
-		})) as { id: string };
+		const isExist = await prisma.user.findFirst({
+			where: { id: req?.user.id },
+		});
 		throwErrorMessageIf(!isExist, "User does not exist.");
 		next();
 	} catch (error) {
@@ -114,7 +113,6 @@ export async function checkUpdateUserForm(
 ) {
 	try {
 		await updateSchema.validateAsync(req.body);
-		throwErrorMessageIf(!req.body, "Fill at least one field to update");
 		next();
 	} catch (error) {
 		next(error);

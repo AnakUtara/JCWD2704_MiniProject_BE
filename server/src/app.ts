@@ -3,6 +3,7 @@ import cors from "cors";
 import { PORT, corsOptions } from "./config/config";
 import usersRouter from "./routers/users.router";
 import eventRouter from "./routers/event.router";
+import multer from "multer";
 
 export default class App {
 	app: Application;

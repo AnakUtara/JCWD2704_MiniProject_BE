@@ -3,7 +3,6 @@ import { prisma } from "../libs/prisma";
 import { hashPassword } from "../libs/bcrypt";
 import { Prisma, User } from "@prisma/client";
 import { catchError, throwErrorMessageIf } from "../utils/error";
-import sharp from "sharp";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { TUser } from "../models/user.model";
@@ -18,6 +17,7 @@ import {
 } from "../config/config";
 import { referralCode } from "../libs/voucher-code-generator";
 import Joi from "joi";
+import { uploader } from "../libs/multer";
 
 dayjs.extend(duration);
 class UsersService {
@@ -192,12 +192,7 @@ class UsersService {
 		const { password } = req.body;
 		await prisma.$transaction(async (prisma) => {
 			try {
-				const passSchema = Joi.string()
-					.trim()
-					.min(8)
-					.max(20)
-					.pattern(new RegExp("^(?:(?=.*d)(?=.*[a-z])(?=.*[A-Z]).*)$"))
-					.required();
+				const passSchema = Joi.string().trim().min(8).max(20).required();
 				const validPassword = await passSchema.validateAsync(password);
 				await prisma.user.update({
 					where: { id: req?.user.id },
@@ -237,42 +232,51 @@ class UsersService {
 			where: { id: req?.user.id },
 		})) as TUser;
 		delete isUserExist?.password;
-		const token = createToken(isUserExist, REFR_SECRET_KEY, "1h");
-		return { token, is_verified: isUserExist?.is_verified };
+		const access_token = createToken(isUserExist, ACC_SECRET_KEY, "1h");
+		return { access_token, is_verified: isUserExist?.is_verified };
 	}
 	async delete(req: Request) {
 		const { id } = req.params;
 		return await prisma.user.delete({ where: { id } });
 	}
 	async update(req: Request) {
-		const { id } = req.params;
-		const { file } = req;
+		const { username } = req.params;
 		const inputEntries = Object.entries(req.body).reduce(
-			(arr: any[], [key, value]) => {
+			(arr: any[], [key, value]: [key: string, value: any]) => {
 				if (
 					key !== "id" &&
+					key !== "password" &&
 					key !== "role" &&
+					key !== "id_card" &&
 					key !== "referral_code" &&
 					key !== "reference_code" &&
 					key !== "points" &&
 					key !== "points_expiry_date" &&
+					key !== "reset_token" &&
+					key !== "is_verified" &&
 					key !== "created_at" &&
 					key !== "updated_at"
 				) {
-					value && arr.push([key, value]);
+					value &&
+						arr.push([
+							key,
+							key === "date_of_birth" ? dayjs(value).toDate() : value,
+						]);
 				}
 				return arr;
 			},
 			[]
 		);
 		const inputs = Object.fromEntries(inputEntries) as User;
-		const buffer = await sharp(req.file?.buffer).png().toBuffer();
-		if (file) inputs.avatar = buffer;
-		throwErrorMessageIf(!file, "No image uploaded");
+		console.log(inputs, req.params);
+		const image = req.file?.filename;
+		if (req.file?.fieldname && image) {
+			inputs.avatar = image;
+		}
 		return await prisma.$transaction(async (prisma) => {
 			try {
 				return await prisma.user.update({
-					where: { id },
+					where: { username },
 					data: {
 						...inputs,
 					},

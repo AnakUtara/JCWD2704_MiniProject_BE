@@ -16,7 +16,6 @@ datasource db {
 enum Gender {
   male
   female
-  other
 }
 
 enum Role {
@@ -36,7 +35,7 @@ model User {
   gender             Gender?
   address            String?       @db.VarChar(255)
   date_of_birth      DateTime?
-  avatar             Bytes?        @db.Blob
+  avatar             String?
   referral_code      String        @unique
   reference_code     String?
   points             Int           @default(0)

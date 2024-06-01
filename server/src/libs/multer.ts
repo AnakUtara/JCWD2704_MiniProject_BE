@@ -2,8 +2,9 @@ import multer, { FileFilterCallback } from "multer";
 import { join } from "path";
 import { Request } from "express";
 import { DestinationCallback, FilenameCallback } from "../models/multer.model";
+import dayjs from "dayjs";
 
-const maxSize = 1048576;
+const maxSize = 1572864;
 
 const multerConfig: multer.Options = {
 	fileFilter: (
@@ -14,9 +15,9 @@ const multerConfig: multer.Options = {
 		if (file.mimetype.split("/")[0] !== "image") {
 			return cb(new Error("file type isn't image"));
 		}
-		const fileSize = parseInt(req.headers["content-length"] || "");
-		if (fileSize > maxSize) {
-			return cb(new Error("max size 1mb"));
+		// const fileSize = parseInt(req.headers["content-length"] || "");
+		if (file.size > maxSize) {
+			return cb(new Error("max size 1.5mb"));
 		}
 		return cb(null, true);
 	},
@@ -43,7 +44,9 @@ export function uploader(filePrefix: string, folderName?: string) {
 		) => {
 			const originalNameParts = file.originalname.split(".");
 			const fileExtension = originalNameParts[originalNameParts.length - 1];
-			const newFileName = filePrefix + Date.now() + "." + fileExtension;
+			const newFileName = `${filePrefix}-${req.user.id}-${dayjs().format(
+				"YYYYMMDD"
+			)}.${fileExtension}`;
 			cb(null, newFileName);
 		},
 	});

@@ -1,4 +1,5 @@
 import usersController from "../controllers/users.controller";
+import { uploader } from "../libs/multer";
 import {
 	authenticate,
 	checkIsAuthorized,
@@ -64,14 +65,15 @@ class UsersRouter extends EntityRouter {
 			usersController.updatePassword.bind(usersController)
 		);
 		this.router.get(
-			"/:id_username",
+			"/profile/:id_username",
+			verifyAccessToken,
 			usersController.getByIdOrUsername.bind(usersController)
 		);
 		this.router.patch(
-			"/:id_username",
+			"/profile/:username",
 			verifyAccessToken,
-			checkIsAuthorized,
 			checkUserExistById,
+			uploader(`AVTR`, "avatars").single("avatar"),
 			checkUpdateUserForm,
 			usersController.update.bind(usersController)
 		);

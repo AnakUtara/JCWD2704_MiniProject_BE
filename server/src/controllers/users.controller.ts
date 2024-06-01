@@ -36,7 +36,7 @@ class UsersController extends EntityController {
 	}
 	async validateRefreshToken(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { token: accessToken, is_verified } =
+			const { access_token: accessToken, is_verified } =
 				await usersService.validateRefreshToken(req);
 			res.send({ message: "success", is_verified, accessToken });
 		} catch (error) {
