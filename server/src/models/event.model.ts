@@ -1,17 +1,11 @@
-import {
-	Category,
-	Discount_amount,
-	Status_event,
-	Venue_type,
-	Event_image,
-} from "@prisma/client";
+import { Category, Status_event, User, Venue_type } from "@prisma/client";
 
 export type TEvent = {
-	id?: string;
+	id: string;
 	title: string;
 	location: string;
 	city: string;
-	zip_code?: number;
+	zip_code: number;
 
 	venue_type: Venue_type;
 	details: string;
@@ -20,11 +14,12 @@ export type TEvent = {
 	start_time: Date;
 	end_time: Date;
 	status: Status_event;
-	event_image?: Event_image[];
+	image_url: string;
 
-	discount_amount?: Discount_amount;
-	ticket_price?: number;
-	ticket_amount: number;
+	discount_amount: number | null;
+	ticket_price?: number | undefined;
+	ticket_amount: number | undefined;
+	discountCalculation?: number | null;
 
 	assigned_pic?: string | null;
 	pic_phone_no?: string | null;

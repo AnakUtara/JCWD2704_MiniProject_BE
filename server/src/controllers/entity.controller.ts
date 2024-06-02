@@ -16,10 +16,8 @@ export class EntityController {
 	}
 	async getById(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (this.service.getById) {
-				const data = await this.service.getById(req);
-				res.send({ message: "fetch by id", data });
-			}
+			const data = await this.service.getById(req);
+			res.send({ message: "fetch by id", data });
 		} catch (error) {
 			next(error);
 		}

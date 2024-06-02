@@ -11,8 +11,10 @@ class EventRoute extends EntityRouter {
 		this.router.get("/", eventController.getAll.bind(eventController));
 		this.router.get(
 			"/orders",
+
 			eventController.getWithOrder.bind(eventController)
 		);
+		this.router.get("/evid/:id", eventController.getById.bind(eventController));
 		this.router.get(
 			"/:id_username",
 			eventController.getEventsPromotor.bind(eventController)
@@ -20,12 +22,12 @@ class EventRoute extends EntityRouter {
 
 		this.router.put("/:username", eventController.update.bind(eventController));
 		this.router.post(
-			"/:username/createevent",
+			"/:username/cr",
 			checkPromotor,
 			eventController.create.bind(eventController)
 		);
 		this.router.delete(
-			"/:username/deleteevent",
+			"/:username/dl",
 			eventController.delete.bind(eventController)
 		);
 	}

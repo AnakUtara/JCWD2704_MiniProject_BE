@@ -16,7 +16,10 @@ export default class App {
 		this.app.use(express.json());
 		this.app.use(express.urlencoded());
 		this.app.use(cors(corsOptions));
-		this.app.use("/public", express.static(__dirname + "/public"));
+		this.app.use(
+			"/public/events",
+			express.static(__dirname + "/public/images/events")
+		);
 	}
 	private routes(): void {
 		this.app.get("/", (req: Request, res: Response) => {

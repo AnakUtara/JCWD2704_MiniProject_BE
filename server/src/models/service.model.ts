@@ -4,7 +4,7 @@ import { TEvent, TEventDetails } from "./event.model";
 
 export interface IService extends ICustomService {
 	getAll: (req: Request) => Promise<TUser[] | TEvent[]>;
-	getById?: (req: Request) => Promise<TUser | null>;
+	getById: (req: Request) => Promise<TUser | TEvent | null>;
 	create: (req: Request) => Promise<void | TUser | TEvent>;
 	delete: (req: Request) => Promise<TUser | TEvent>;
 	update: (req: Request) => Promise<TUser | undefined | TEvent>;
@@ -16,6 +16,9 @@ interface ICustomService {
 	forgotPassword?: (req: Request) => Promise<void>;
 	updatePassword?: (req: Request) => Promise<void>;
 
-	getWithOrder?: (req: Request) => Promise<TEvent[] | TEventDetails[]>;
+	getWithOrder?: (
+		req: Request
+	) => Promise<{ data: TEvent[]; totalCount: number }>;
 	getEventsPromotor?: (req: Request) => Promise<TEvent[]>;
+	createEvent?: (req: Request) => Promise<TEvent | null>;
 }

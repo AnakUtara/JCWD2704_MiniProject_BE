@@ -1,13 +1,7 @@
 import { Request } from "express";
 
 import { throwError, validator } from "../utils/validator";
-import {
-	Category,
-	Discount_amount,
-	Event,
-	Prisma,
-	Venue_type,
-} from "@prisma/client";
+import { Category, Event, Prisma, Venue_type } from "@prisma/client";
 
 import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
@@ -29,27 +23,25 @@ class EventServices {
 		ticket_amount: true,
 		user_id: true,
 		category: true,
-		event_image: true,
+		image_url: true,
 		discount_amount: true,
 	};
 
-	async getAll(req: Request, customSelect = this.customSelect) {
-		const data = await prisma.event.findMany({
-			select: customSelect,
-		});
-
+	async getAll(req: Request) {
+		const data: TEvent[] = await prisma.event.findMany();
 		return data;
 	}
 
 	async getWithOrder(req: Request) {
-		const { orderType, order, filterValue } = req.body as {
+		const { orderType, order, filterValue, page, limit } = req.query as {
 			orderType: OrderType;
 			order: Prisma.SortOrder;
 			filterValue: string;
+			page: string;
+			limit: string;
 		};
 
-		const data = await prisma.event.findMany({
-			orderBy: [{ [orderType]: order }],
+		const totalCount = await prisma.event.count({
 			where: {
 				OR: [
 					{ city: { equals: filterValue } },
@@ -58,8 +50,31 @@ class EventServices {
 				],
 			},
 		});
+		console.log(totalCount);
 
-		return data;
+		const baseData = (await prisma.event.findMany({
+			orderBy: [{ [orderType]: order }],
+			skip: Number(limit) * (Number(page) - 1),
+			take: Number(limit),
+			where: {
+				OR: [
+					{ city: { contains: filterValue } },
+					{ title: { contains: filterValue } },
+					{ roster: { contains: filterValue } },
+				],
+			},
+		})) as TEvent[];
+
+		const data = baseData.map((e) => {
+			let discountCalculation: number = 0;
+			if (e.discount_amount && e.ticket_price) {
+				discountCalculation =
+					e.ticket_price - (e.discount_amount / 100) * e.ticket_price;
+			}
+			return { ...e, discountCalculation };
+		});
+
+		return { data, totalCount };
 	}
 
 	async getEventsPromotor(req: Request, customSelect = this.customSelect) {
@@ -74,7 +89,7 @@ class EventServices {
 					},
 					select: { id: true },
 				})) as TUser;
-				// console.log(findUser);
+
 				validator(
 					!findUser || !findUser.id,
 					"User is not found OR the UserID is undefined"
@@ -92,6 +107,27 @@ class EventServices {
 	}
 
 	async getEventsCustomer(req: Request, customSelect = this.customSelect) {}
+
+	async getById(req: Request) {
+		const { id } = req.params;
+		validator(!id, "event not found");
+
+		const baseData = (await prisma.event.findFirst({
+			where: { id: id },
+		})) as TEvent;
+		validator(!baseData, "event not found");
+
+		let discountCalculation: number = 0;
+		if (baseData?.discount_amount && baseData.ticket_price) {
+			discountCalculation =
+				baseData.ticket_price -
+				(baseData.discount_amount / 100) * baseData.ticket_price;
+		}
+
+		const data = { ...baseData, discountCalculation };
+
+		return data;
+	}
 
 	async update(req: Request) {
 		const { username, id } = req.params;
@@ -158,24 +194,24 @@ class EventServices {
 			pic_phone_no,
 			category,
 			discount_amount,
+			image_url,
 		} = req.body as TEvent;
 
 		const findUser = (await prisma.user.findFirst({
 			where: { username: username },
 			select: { id: true },
 		})) as { id: string };
-		// console.log(findUser);
 
 		validator(!findUser, "no user found");
 
-		const data = await prisma.event.create({
+		const createNewEvent = await prisma.event.create({
 			data: {
 				user_id: findUser.id,
 				title: title,
 				location: location,
 				city: city,
 				zip_code: Number(zip_code),
-				venue_type: venue_type,
+				venue_type: Venue_type[venue_type as keyof typeof Venue_type],
 				details: details,
 				roster: roster,
 				scheduled_at: scheduled_at,
@@ -186,13 +222,20 @@ class EventServices {
 				assigned_pic: `${assigned_pic}`,
 				pic_phone_no: `${pic_phone_no}`,
 				category: Category[category as keyof typeof Category] || undefined,
-				discount_amount:
-					Discount_amount[discount_amount as keyof typeof Discount_amount] ||
-					undefined,
+				discount_amount: Number(discount_amount),
+				image_url: image_url,
 			},
 		});
-		// console.log(data);
-		// return data;
+
+		let discountCalculation: number = 0;
+		if (createNewEvent.discount_amount) {
+			discountCalculation =
+				(createNewEvent.discount_amount / 100) * createNewEvent.ticket_price;
+		}
+
+		const data = { ...createNewEvent, discountCalculation };
+
+		return data;
 	}
 
 	async delete(req: Request) {

@@ -1,14 +1,19 @@
-import { Discount_amount, Event_image } from "@prisma/client";
 import { TEvent } from "../../models/event.model";
 
 export class EventDto {
 	title: string = "";
-	price: number = 0;
+	ticket_price?: number = 0;
 	city: string = "";
-	capacity: number = 0;
-	event_image: string[] = [];
+	ticket_amount?: number = 0;
+	// event_image: string[] = [];
+	image_url: string = "";
 	scheduled_at?: Date;
-	discount?: Discount_amount;
+	discount?: number | null;
+	discountCalculation?: number | null;
+	start_time?: Date;
+	end_time?: Date;
+	location?: string;
+	roster?: string;
 
 	constructor(Partial: Partial<EventDto>) {
 		Object.assign(this, Partial);
@@ -17,12 +22,18 @@ export class EventDto {
 	static fromEntity(event: TEvent): EventDto {
 		return new EventDto({
 			title: event.title,
-			price: event.ticket_price,
+			ticket_price: event.ticket_price,
 			city: event.city,
-			capacity: event.ticket_amount,
+			ticket_amount: event.ticket_amount,
 			scheduled_at: event.scheduled_at,
 			discount: event.discount_amount,
-			event_image: event.event_image?.map((e) => e.image_url),
+			discountCalculation: event.discountCalculation,
+			image_url: event.image_url,
+			location: event.location,
+			start_time: event.start_time,
+			end_time: event.end_time,
+			roster: event.roster,
+			// event_image: event.event_image?.map((e) => e.image_url),
 		});
 	}
 }

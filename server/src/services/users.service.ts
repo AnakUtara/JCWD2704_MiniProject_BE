@@ -17,7 +17,7 @@ import Joi from "joi";
 
 dayjs.extend(duration);
 class UsersService {
-	async getAll() {
+	async getAll(req: Request) {
 		const data: TUser[] = await prisma.user.findMany();
 		data.forEach((d) => {
 			delete d.password;

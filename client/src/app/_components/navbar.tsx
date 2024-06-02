@@ -18,7 +18,7 @@ export default function Navbar({}: Props) {
     <nav
       className={clsx(
         plex_mono.className,
-        "navbar sticky top-0 justify-between bg-primary text-base-100",
+        "navbar sticky top-0 z-10 justify-between bg-primary text-base-100",
       )}
     >
       <div>

@@ -65,22 +65,22 @@ enum Status_event {
   finished
 }
 
-enum Discount_amount {
-  no_disc @map("0%")
-  disc_5  @map("5%")
-  disc_10 @map("10%")
-  disc_15 @map("15%")
-  disc_20 @map("20%")
-  disc_25 @map("25%")
-  disc_30 @map("30%")
-  disc_35 @map("35%")
-  disc_40 @map("40%")
-  disc_45 @map("45%")
-  disc_50 @map("50%")
-  disc_60 @map("60%")
-  disc_70 @map("70%")
-  disc_80 @map("80%")
-}
+// enum Discount_amount {
+//   no_disc @map("0%")
+//   disc_5  @map("5%")
+//   disc_10 @map("10%")
+//   disc_15 @map("15%")
+//   disc_20 @map("20%")
+//   disc_25 @map("25%")
+//   disc_30 @map("30%")
+//   disc_35 @map("35%")
+//   disc_40 @map("40%")
+//   disc_45 @map("45%")
+//   disc_50 @map("50%")
+//   disc_60 @map("60%")
+//   disc_70 @map("70%")
+//   disc_80 @map("80%")
+// }
 
 enum Category {
   Accoustic
@@ -104,8 +104,9 @@ model Event {
   status       Status_event @default(active)
   category     Category
 
-  discount_amount Discount_amount @default(no_disc)
-  ticket_price    Float           @db.Double
+  // discount_amount Discount_amount @default(no_disc)
+  discount_amount Int?
+  ticket_price    Float @db.Double
   ticket_amount   Int
 
   assigned_pic String?
@@ -113,7 +114,8 @@ model Event {
 
   user_id     String
   user        User          @relation(fields: [user_id], references: [id])
-  event_image Event_image[]
+  image_url   String
+  // event_image Event_image[]
   review      Review[]
   transaction Transaction[]
 
@@ -136,14 +138,14 @@ model Review {
   @@map("reviews")
 }
 
-model Event_image {
-  id        String @id @default(cuid())
-  image_url String
-  event     Event  @relation(fields: [event_id], references: [id])
-  event_id  String
+// model Event_image {
+//   id        String @id @default(cuid())
+//   image_url String
+//   event     Event  @relation(fields: [event_id], references: [id])
+//   event_id  String
 
-  @@map("event_images")
-}
+//   @@map("event_images")
+// }
 
 enum Status_transaction {
   unpaid
