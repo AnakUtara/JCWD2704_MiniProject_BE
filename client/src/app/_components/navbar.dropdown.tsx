@@ -24,7 +24,11 @@ export default function NavbarDropdown({
         label={
           <Avatar
             alt={`${activeUser.username}'s avatar`}
-            img={!activeUser.avatar ? "" : activeUser.avatar}
+            img={
+              !activeUser.avatar
+                ? ""
+                : `${process.env.NEXT_PUBLIC_API_AVATARS_URL}/${activeUser.avatar}`
+            }
             rounded
           />
         }
