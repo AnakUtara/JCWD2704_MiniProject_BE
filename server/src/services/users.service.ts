@@ -270,9 +270,7 @@ class UsersService {
 		const inputs = Object.fromEntries(inputEntries) as User;
 		console.log(inputs, req.params);
 		const image = req.file?.filename;
-		if (req.file?.fieldname && image) {
-			inputs.avatar = image;
-		}
+		if (req.file?.fieldname && image) inputs.avatar = image;
 		return await prisma.$transaction(async (prisma) => {
 			try {
 				return await prisma.user.update({

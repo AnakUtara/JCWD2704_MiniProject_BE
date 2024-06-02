@@ -3,7 +3,6 @@ import cors from "cors";
 import { PORT, corsOptions } from "./config/config";
 import usersRouter from "./routers/users.router";
 import eventRouter from "./routers/event.router";
-import multer from "multer";
 
 export default class App {
 	app: Application;
@@ -17,7 +16,14 @@ export default class App {
 		this.app.use(express.json());
 		this.app.use(express.urlencoded());
 		this.app.use(cors(corsOptions));
-		this.app.use("/public", express.static(__dirname + "/public"));
+		this.app.use(
+			"/images/avatars",
+			express.static(__dirname + "/public/images/avatars")
+		);
+		this.app.use(
+			"/images/events",
+			express.static(__dirname + "/public/images/events")
+		);
 	}
 	private routes(): void {
 		this.app.get("/", (req: Request, res: Response) => {
