@@ -4,6 +4,7 @@ import { axiosInstance } from "@/app/_libs/axios.config";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { IoMail } from "react-icons/io5";
+import { toast } from "sonner";
 import * as Yup from "yup";
 
 type Props = {};
@@ -14,17 +15,18 @@ export default function EmailForm({}: Props) {
     validationSchema: Yup.object().shape({
       email: Yup.string().trim().lowercase().email().required(),
     }),
+
     onSubmit: async (values) => {
       try {
         const email = values.email;
         await axiosInstance().post("users/v4", {
           email,
         });
-        alert("Your change password email has been sent!");
+        toast.success("Reset password e-mail sent.");
         formik.resetForm();
         router.push("/");
       } catch (error) {
-        alert("Oops... We can't find you.");
+        toast.error("Oops... We can't find you.");
       }
     },
   });
@@ -42,18 +44,18 @@ export default function EmailForm({}: Props) {
       />
       <button
         type="submit"
-        className="btn btn-primary rounded-none"
-        disabled={!formik.values.email ? true : false}
+        className="btn btn-accent rounded-none hover:bg-neutral-800"
+        disabled={!formik.values.email || formik.isSubmitting ? true : false}
       >
         Submit
       </button>
       <button
-        className="btn btn-outline btn-primary ml-2 rounded-none"
+        className="btn btn-outline btn-accent ml-2 rounded-none"
         onClick={(e) => {
           e.preventDefault();
           router.push("/");
         }}
-        disabled={!formik.values.email ? true : false}
+        disabled={!formik.values.email || formik.isSubmitting ? true : false}
       >
         Cancel
       </button>

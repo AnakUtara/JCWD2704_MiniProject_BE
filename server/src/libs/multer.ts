@@ -2,8 +2,11 @@ import multer, { FileFilterCallback } from "multer";
 import { join } from "path";
 import { Request } from "express";
 import { DestinationCallback, FilenameCallback } from "../models/multer.model";
+import dayjs from "dayjs";
 
-const maxSize = 1048576;
+const mB = 1072864;
+export const maxAvatarSize = 1.5 * mB;
+export const maxEventSize = 11 * mB;
 
 const multerConfig: multer.Options = {
 	fileFilter: (
@@ -14,18 +17,19 @@ const multerConfig: multer.Options = {
 		if (file.mimetype.split("/")[0] !== "image") {
 			return cb(new Error("file type isn't image"));
 		}
-		const fileSize = parseInt(req.headers["content-length"] || "");
-		if (fileSize > maxSize) {
-			return cb(new Error("max size 1mb"));
+		// const fileSize = parseInt(req.headers["content-length"] || "");
+		if (file.size > maxAvatarSize || file.size > maxEventSize) {
+			return cb(new Error("max size 1.5mb"));
 		}
 		return cb(null, true);
 	},
-	limits: {
-		fileSize: maxSize,
-	},
 };
 
-export function uploader(filePrefix: string, folderName?: string) {
+export function uploader(
+	filePrefix: string,
+	fileSize: number,
+	folderName?: string
+) {
 	const defaultDir = join(__dirname, "../public/images/");
 	const storage = multer.diskStorage({
 		destination: (
@@ -43,11 +47,13 @@ export function uploader(filePrefix: string, folderName?: string) {
 		) => {
 			const originalNameParts = file.originalname.split(".");
 			const fileExtension = originalNameParts[originalNameParts.length - 1];
-			const newFileName = filePrefix + Date.now() + "." + fileExtension;
+			const newFileName = `${filePrefix}-${req.user.id}-${dayjs().format(
+				"YYYYMMDD"
+			)}.${fileExtension}`;
 			cb(null, newFileName);
 		},
 	});
-	return multer({ storage, ...multerConfig });
+	return multer({ storage, ...multerConfig, limits: { fileSize } });
 }
 
 export function blobUploader() {

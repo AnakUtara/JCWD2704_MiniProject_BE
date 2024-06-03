@@ -12,7 +12,7 @@ export type TUser = {
 	id_card: string;
 	address?: string | null;
 	date_of_birth?: Date | null;
-	avatar?: Buffer | null;
+	avatar?: string | null;
 	referral_code: string;
 	reference_code?: string | null;
 	points?: number | null;

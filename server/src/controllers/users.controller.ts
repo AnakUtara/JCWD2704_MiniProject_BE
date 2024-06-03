@@ -26,18 +26,26 @@ class UsersController extends EntityController {
 			next(error);
 		}
 	}
-	async validateToken(req: Request, res: Response, next: NextFunction) {
+	async emailVerification(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { token: accessToken, is_verified } =
-				await usersService.validateToken(req);
+			await usersService.emailVerification(req);
+			res.send({ message: "email sent" });
+		} catch (error) {
+			next(error);
+		}
+	}
+	async validateRefreshToken(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { access_token: accessToken, is_verified } =
+				await usersService.validateRefreshToken(req);
 			res.send({ message: "success", is_verified, accessToken });
 		} catch (error) {
 			next(error);
 		}
 	}
-	async emailVerification(req: Request, res: Response, next: NextFunction) {
+	async verifyUser(req: Request, res: Response, next: NextFunction) {
 		try {
-			await usersService.emailVerification(req);
+			await usersService.verifyUser(req);
 			res.send({ message: "verification success" });
 		} catch (error) {
 			next(error);
@@ -55,6 +63,13 @@ class UsersController extends EntityController {
 		try {
 			await usersService.updatePassword(req);
 			res.send({ message: "success" });
+		} catch (error) {
+			next(error);
+		}
+	}
+	async validateResetToken(req: Request, res: Response, next: NextFunction) {
+		try {
+			res.send({ message: "valid" });
 		} catch (error) {
 			next(error);
 		}

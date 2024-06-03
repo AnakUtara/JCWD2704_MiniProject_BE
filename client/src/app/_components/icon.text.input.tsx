@@ -12,6 +12,17 @@ type Props = {
   bottomLabel?: string;
   autoComplete?: string;
   disabled?: boolean;
+  ghost?: boolean;
+  inputMode?:
+    | "email"
+    | "search"
+    | "text"
+    | "none"
+    | "tel"
+    | "url"
+    | "numeric"
+    | "decimal"
+    | undefined;
 };
 export default function IconTextInput({
   icon,
@@ -23,17 +34,22 @@ export default function IconTextInput({
   bottomLabel,
   autoComplete,
   disabled = false,
+  ghost = false,
+  inputMode = "text",
 }: Props) {
   return (
-    <>
+    <div>
       <label
-        className="input input-bordered flex items-center gap-2 rounded-none focus-within:outline-primary"
+        className={clsx(
+          ghost ? "input-ghost" : "input-bordered",
+          "input flex items-center gap-2 rounded-none focus-within:outline-accent",
+        )}
         htmlFor={name}
       >
         {icon}
         <input
           type={type}
-          className={clsx(plex_mono.className, "grow")}
+          className={clsx(plex_mono.className, "grow border-0 focus:ring-0")}
           placeholder={placeholder}
           name={name}
           id={name}
@@ -41,6 +57,7 @@ export default function IconTextInput({
           onChange={onChange}
           autoComplete={autoComplete}
           disabled={disabled}
+          inputMode={inputMode}
         />
       </label>
       <label className="form-control mb-5 h-3 w-full max-w-xs">
@@ -50,6 +67,6 @@ export default function IconTextInput({
           </span>
         </div>
       </label>
-    </>
+    </div>
   );
 }

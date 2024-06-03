@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./_components/providers/store.provider";
-
-const inter = Inter({ subsets: ["latin"] });
+import { plex_mono } from "./_utils/fonts";
+import { ThemeModeScript } from "flowbite-react";
+import { Toaster } from "sonner";
+import clsx from "clsx";
 
 export const metadata: Metadata = {
   title: "Mini Project",
@@ -16,9 +17,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <StoreProvider>{children}</StoreProvider>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeModeScript />
+      </head>
+      <body className={clsx(plex_mono.className, "overscroll-none")}>
+        <StoreProvider>
+          {children}
+          <Toaster />
+        </StoreProvider>
       </body>
     </html>
   );
