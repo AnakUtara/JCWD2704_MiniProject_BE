@@ -9,7 +9,7 @@ import { FaAddressBook, FaPhone, FaUser } from "react-icons/fa";
 import { useAppSelector } from "@/app/_libs/redux/hooks";
 import { IoMail } from "react-icons/io5";
 import { FaCreditCard, FaIdBadge } from "react-icons/fa6";
-import { Gender } from "@/app/_models/user.model";
+import { Gender, Role } from "@/app/_models/user.model";
 import ProfileHeader from "./profile.head";
 import { useFormik } from "formik";
 import dayjs from "dayjs";
@@ -18,6 +18,7 @@ import { editProfileSchema } from "@/app/_libs/yup";
 import { axiosInstance } from "@/app/_libs/axios.config";
 import { getCookie } from "cookies-next";
 import { toast } from "sonner";
+import clsx from "clsx";
 
 type Props = {};
 export default function ProfileTabs({}: Props) {
@@ -189,7 +190,15 @@ export default function ProfileTabs({}: Props) {
               />
             </label>
             <label>
-              Bank Account No.:
+              Bank Account No.:{" "}
+              <span
+                className={clsx(
+                  activeUser.role === Role.promotor && "hidden",
+                  "text-xs text-zinc-500",
+                )}
+              >
+                (Fill this & be a promotor!)
+              </span>
               <IconTextInput
                 icon={<FaCreditCard />}
                 type="text"
