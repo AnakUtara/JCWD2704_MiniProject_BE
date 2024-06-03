@@ -2,9 +2,10 @@ import { NextFunction, Request, Response } from "express";
 
 import { validator } from "../utils/validator";
 import { FilterType } from "../models/event.model";
-import { Venue_type } from "@prisma/client";
+import { Role, Venue_type } from "@prisma/client";
 import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
+import { throwErrorMessageIf } from "../utils/error";
 
 export async function checkFilter(
 	req: Request,
@@ -56,22 +57,17 @@ export async function checkFilter(
 	}
 }
 
-export async function checkPromotor(
+export async function checkIsUserPromotor(
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) {
 	try {
-		const { username } = req.params;
-		const findUser = (await prisma.user.findFirst({
-			where: { username: username },
-			select: { id: true, role: true, bank_acc_no: true },
+		const { username } = req.user;
+		const findPromotor = (await prisma.user.findUnique({
+			where: { username, role: Role.promotor },
 		})) as TUser;
-
-		validator(
-			findUser.role !== "promotor" && !findUser.bank_acc_no,
-			`Account ${username} is not a promotor, unable to post event.`
-		);
+		throwErrorMessageIf(!findPromotor, "Promotor not found.");
 		next();
 	} catch (error) {
 		next(error);

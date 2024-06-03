@@ -1,17 +1,11 @@
 import { Request } from "express";
 
 import { throwError, validator } from "../utils/validator";
-import {
-	Category,
-	Discount_amount,
-	Event,
-	Prisma,
-	Venue_type,
-} from "@prisma/client";
+import { Category, Event, Prisma, Venue_type } from "@prisma/client";
 
 import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
-import { Order, OrderType, TEvent } from "../models/event.model";
+import { OrderType, TEvent } from "../models/event.model";
 
 class EventServices {
 	async getAll() {
@@ -27,7 +21,7 @@ class EventServices {
 	}
 
 	async getWithOrder(req: Request) {
-		const { orderType, order, filterValue } = req.body as {
+		const { orderType, order, filterValue } = req.query as {
 			orderType: OrderType;
 			order: Prisma.SortOrder;
 			filterValue: string;
@@ -59,7 +53,6 @@ class EventServices {
 					},
 					select: { id: true },
 				})) as TUser;
-				// console.log(findUser);
 				validator(
 					!findUser || !findUser.id,
 					"User is not found OR the UserID is undefined"

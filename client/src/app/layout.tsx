@@ -4,6 +4,7 @@ import StoreProvider from "./_components/providers/store.provider";
 import { plex_mono } from "./_utils/fonts";
 import { ThemeModeScript } from "flowbite-react";
 import { Toaster } from "sonner";
+import clsx from "clsx";
 
 export const metadata: Metadata = {
   title: "Mini Project",
@@ -20,7 +21,7 @@ export default function RootLayout({
       <head>
         <ThemeModeScript />
       </head>
-      <body className={plex_mono.className}>
+      <body className={clsx(plex_mono.className, "overscroll-none")}>
         <StoreProvider>
           {children}
           <Toaster />

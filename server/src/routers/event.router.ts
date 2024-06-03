@@ -1,5 +1,8 @@
 import eventController from "../controllers/event.controller";
-import { checkPromotor } from "../middlewares/event.middleware";
+import { maxEventSize, uploader } from "../libs/multer";
+import { verifyAccessToken } from "../middlewares/auth.middleware";
+import { checkIsUserPromotor } from "../middlewares/event.middleware";
+import { checkExistingUser } from "../middlewares/users.middleware";
 import { EntityRouter } from "./entity.router";
 
 class EventRoute extends EntityRouter {
@@ -18,14 +21,16 @@ class EventRoute extends EntityRouter {
 			eventController.getEventsPromotor.bind(eventController)
 		);
 
-		this.router.put("/:username", eventController.update.bind(eventController));
 		this.router.post(
-			"/:username/createevent",
-			checkPromotor,
+			"/",
+			verifyAccessToken,
+			checkIsUserPromotor,
+			uploader(`EVENT`, maxEventSize, "events").single("events"),
 			eventController.create.bind(eventController)
 		);
+		this.router.put("/:username", eventController.update.bind(eventController));
 		this.router.delete(
-			"/:username/deleteevent",
+			"/:username",
 			eventController.delete.bind(eventController)
 		);
 	}

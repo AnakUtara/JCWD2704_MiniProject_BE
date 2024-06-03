@@ -112,6 +112,8 @@ export async function checkUpdateUserForm(
 	next: NextFunction
 ) {
 	try {
+		if (req.body.avatar) delete req.body.avatar;
+
 		await updateSchema.validateAsync(req.body);
 		next();
 	} catch (error) {

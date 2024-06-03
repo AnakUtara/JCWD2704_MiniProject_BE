@@ -28,6 +28,8 @@ export async function middleware(request: NextRequest) {
     pathname === "/sign-in" ||
     pathname === "/sign-up" ||
     pathname.startsWith("/forgot-password");
+  const userOnlyPaths: boolean =
+    pathname === "/profile" || pathname === "/dashboard";
   if (guestOnlyPaths && validate) {
     return NextResponse.redirect(new URL("/", request.url));
   }
@@ -35,6 +37,9 @@ export async function middleware(request: NextRequest) {
     pathname == "/verification" ||
     (pathname.startsWith("/verification") && is_verified)
   ) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+  if (userOnlyPaths && !validate) {
     return NextResponse.redirect(new URL("/", request.url));
   }
   return response;

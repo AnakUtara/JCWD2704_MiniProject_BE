@@ -1,67 +1,30 @@
-import { Avatar, Dropdown, Navbar } from "flowbite-react";
+import { Dropdown, Navbar } from "flowbite-react";
 import Link from "next/link";
 import { Role, TUser } from "../_models/user.model";
-import clsx from "clsx";
-import { handleVerification } from "../_utils/handlers";
-import { FaCheckCircle } from "react-icons/fa";
-import { formatCompactNumber } from "../_utils/formatter";
+import { capitalize, formatCompactNumber } from "../_utils/formatter";
 import { logout } from "../_libs/redux/features/auth/auth.slice";
-import { useAppDispatch } from "../_libs/redux/hooks";
-import { date } from "../_libs/dayjs";
+import { useAppDispatch, useAppSelector } from "../_libs/redux/hooks";
+import { dateFormat, dayDateMonthYear } from "../_libs/dayjs";
+import UserAvatar from "./ui/user.avatar";
+import VerifiedBadge from "./ui/verified.badge";
 
 type Props = { activeUser: TUser; email: string; refresh_token: string };
-export default function NavbarDropdown({
-  activeUser,
-  email,
-  refresh_token,
-}: Props) {
+export default function NavbarDropdown() {
   const dispatch = useAppDispatch();
+  const activeUser = useAppSelector((s) => s.auth) as TUser;
+
   return (
-    <div className={" flex md:order-2"}>
+    <div className={`flex md:order-2 ${!activeUser.id && "hidden"}`}>
       <Dropdown
         arrowIcon={false}
         inline
-        label={
-          <Avatar
-            alt={`${activeUser.username}'s avatar`}
-            img={
-              !activeUser.avatar
-                ? ""
-                : `${process.env.NEXT_PUBLIC_API_AVATARS_URL}/${activeUser.avatar}`
-            }
-            rounded
-          />
-        }
+        label={<UserAvatar user={activeUser} />}
       >
         <Dropdown.Header className="flex flex-col gap-1">
           <span className="block text-sm font-bold">
-            {refresh_token &&
-              activeUser.username &&
-              activeUser?.username
-                .split(" ")
-                .map((name) => name.replace(name[0], name[0].toUpperCase()))
-                .join(" ")}
+            {capitalize(activeUser.username)}
           </span>
-          <span className="flex items-center gap-2 text-xs">
-            <FaCheckCircle
-              className={clsx(
-                activeUser.is_verified ? "text-success" : "text-zinc-600",
-              )}
-            />{" "}
-            {activeUser.is_verified ? "Verified" : "Unverified"}
-          </span>
-          {!activeUser.is_verified && (
-            <button
-              type="button"
-              className="btn btn-outline btn-accent btn-xs rounded-none  text-white"
-              onClick={(e) => {
-                e.preventDefault();
-                handleVerification(email);
-              }}
-            >
-              Verify account
-            </button>
-          )}
+          <VerifiedBadge user={activeUser} email={activeUser.email} />
           <span className="badge badge-accent block truncate text-xs font-medium text-white">
             {activeUser.role}
           </span>
@@ -80,7 +43,7 @@ export default function NavbarDropdown({
               <>
                 <span className="block truncate text-xs">Valid until:</span>
                 <span className="block truncate text-xs font-bold">
-                  {`${activeUser.points_expiry_date ? date(activeUser.points_expiry_date) : ""}`}
+                  {`${activeUser.points_expiry_date ? dateFormat(activeUser.points_expiry_date, dayDateMonthYear) : ""}`}
                 </span>
               </>
             ) : null}
@@ -112,12 +75,16 @@ export default function NavbarDropdown({
             Promotor Dashboard
           </Dropdown.Item>
         )}
-        <Dropdown.Item>Profile</Dropdown.Item>
-        <Dropdown.Item as={Link} href="/edit/profile">
-          Edit Profile
+        <Dropdown.Item as={Link} href="/profile">
+          Profile
         </Dropdown.Item>
         <Dropdown.Divider />
-        <Dropdown.Item onClick={() => dispatch(logout())}>
+        <Dropdown.Item
+          onClick={() => {
+            dispatch(logout());
+            window.location.reload();
+          }}
+        >
           Sign out
         </Dropdown.Item>
       </Dropdown>

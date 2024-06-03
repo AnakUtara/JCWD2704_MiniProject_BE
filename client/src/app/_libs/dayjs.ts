@@ -5,5 +5,9 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const tz = "Asia/Jakarta";
-export const date = (date: string) =>
-  dayjs.tz(date, tz).format("dddd DD/MM/YYYY");
+export const dayDateMonthYear = "dddd DD/MM/YYYY";
+export const monthDateYear = "MMMM D, YYYY";
+
+export function dateFormat(date: string, format: string) {
+  return dayjs.tz(date, tz).format(format);
+}

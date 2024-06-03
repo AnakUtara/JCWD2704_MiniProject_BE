@@ -1,0 +1,66 @@
+"use client";
+import UserAvatar from "@/app/_components/ui/user.avatar";
+import VerifiedBadge from "@/app/_components/ui/verified.badge";
+import { dateFormat, dayDateMonthYear } from "@/app/_libs/dayjs";
+import { TUser } from "@/app/_models/user.model";
+import { capitalize, formatCompactNumber } from "@/app/_utils/formatter";
+import clsx from "clsx";
+import { FaCamera } from "react-icons/fa";
+
+type Props = { activeUser: TUser; onClick: () => void };
+export default function ProfileHeader({ activeUser, onClick }: Props) {
+  return (
+    <>
+      <div
+        className={clsx(
+          "prose mb-5 flex items-center gap-5",
+          !activeUser.id && "hidden",
+        )}
+      >
+        <div className="flex w-fit flex-col items-center gap-y-2 self-start">
+          <UserAvatar user={activeUser} size={"lg"} bordered={true} />
+          <button
+            type="button"
+            className="btn btn-square btn-accent btn-xs absolute top-36 text-white hover:bg-gray-800"
+            onClick={onClick}
+          >
+            <FaCamera className="text-md" />
+          </button>
+          <p className="my-0 text-center text-[10px] leading-3">
+            Max avatar <br /> size: 1.5MB.
+          </p>
+        </div>
+        <div>
+          <h2 className={clsx("m-0", !activeUser.id && "hidden")}>
+            {capitalize(activeUser.username)}
+          </h2>
+          <VerifiedBadge user={activeUser} email={activeUser.email} />
+          <p className="badge badge-accent m-0 text-white">{activeUser.role}</p>
+        </div>
+      </div>
+      <div className="prose flex gap-5">
+        <div>
+          <p className="my-0 text-xs">Referral Code:</p>
+          <h4 className="mt-1 bg-black p-2 text-center text-sm font-bold text-white">
+            {activeUser.referral_code}
+          </h4>
+        </div>
+        <div>
+          <p className="my-0 text-xs">Points:</p>
+          <h4 className="my-0 text-sm">
+            {formatCompactNumber(activeUser.points || 0)}
+            {" pts."}
+          </h4>
+          {activeUser.points ? (
+            <>
+              <p className="my-0 text-xs">Valid until:</p>
+              <p className="my-0 text-xs font-bold">
+                {`${activeUser.points_expiry_date ? dateFormat(activeUser.points_expiry_date, dayDateMonthYear) : ""}`}
+              </p>
+            </>
+          ) : null}
+        </div>
+      </div>
+    </>
+  );
+}
