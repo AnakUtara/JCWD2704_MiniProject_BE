@@ -6,6 +6,7 @@ import { Venue_type } from "@prisma/client";
 import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
 import eventService from "../services/event.service";
+import { eventSchema } from "../libs/joi";
 // import calculateDiscount from "../libs/discount-calculation";
 
 export async function checkFilter(
@@ -73,6 +74,50 @@ export async function checkPromotor(
 			findUser.role !== "promotor" && !findUser.bank_acc_no,
 			`Account ${username} is not a promotor, unable to post event.`
 		);
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function checkCreateEvent(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		const {
+			title,
+			location,
+			city,
+			zip_code,
+			venue_type,
+			details,
+			roster,
+			scheduled_at,
+			start_time,
+			end_time,
+			ticket_price,
+			ticket_amount,
+			category,
+		} = req.body;
+		validator(
+			!title ||
+				!location ||
+				!city ||
+				!zip_code ||
+				!venue_type ||
+				!details ||
+				!roster ||
+				!scheduled_at ||
+				!start_time ||
+				!end_time ||
+				!ticket_price ||
+				!ticket_amount ||
+				!category,
+			"All necessary fields except discount, and PIC Info must be filled"
+		);
+		req.user = await eventSchema.validateAsync(req.body);
 		next();
 	} catch (error) {
 		next(error);

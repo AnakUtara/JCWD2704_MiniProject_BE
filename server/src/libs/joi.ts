@@ -1,4 +1,4 @@
-import { Gender } from "@prisma/client";
+import { Category, Gender, Status_event, Venue_type } from "@prisma/client";
 import Joi from "joi";
 
 export const registerSchema = Joi.object({
@@ -10,12 +10,7 @@ export const registerSchema = Joi.object({
 		.trim()
 		.required(),
 	fullname: Joi.string().trim().lowercase().required(),
-	password: Joi.string()
-		.trim()
-		.min(8)
-		.max(20)
-		.pattern(new RegExp("^(?:(?=.*d)(?=.*[a-z])(?=.*[A-Z]).*)$"))
-		.required(),
+	password: Joi.string().trim().min(8).max(20).required(),
 	email: Joi.string()
 		.trim()
 		.lowercase()
@@ -44,32 +39,48 @@ export const registerSchema = Joi.object({
 });
 
 export const updateSchema = Joi.object({
-	username: Joi.string()
-		.alphanum()
-		.lowercase()
-		.min(3)
-		.max(30)
-		.trim()
-		.required(),
-	fullname: Joi.string().trim().lowercase().required(),
-	password: Joi.string()
-		.trim()
-		.min(8)
-		.max(20)
-		.pattern(new RegExp("^(?:(?=.*d)(?=.*[a-z])(?=.*[A-Z]).*)$"))
-		.required(),
+	username: Joi.string().alphanum().lowercase().min(3).max(30).trim(),
+	fullname: Joi.string().trim().lowercase(),
 	email: Joi.string()
 		.trim()
 		.lowercase()
 		.email({
 			minDomainSegments: 2,
 			tlds: { allow: ["com", "net"] },
-		})
-		.required(),
+		}),
 	gender: Joi.string().trim().valid(Gender.male, Gender.female),
-	phone_no: Joi.string().trim().alphanum().length(13).required(),
-	id_card: Joi.string().trim().alphanum().length(16).required(),
-	bank_acc_no: Joi.number().integer().min(8).max(12),
+	phone_no: Joi.string().trim().alphanum().length(13),
+	date_of_birth: Joi.date(),
+	bank_acc_no: Joi.string()
+		.alphanum()
+		.trim()
+		.pattern(new RegExp("^[0-9]+$"))
+		.min(8)
+		.max(12),
 	address: Joi.string().trim().max(200),
-	avatar: Joi.binary(),
+});
+
+export const eventSchema = Joi.object({
+	title: Joi.string().trim().min(4).max(200).required(),
+	location: Joi.string().trim().min(1).max(500).required(),
+	city: Joi.string().trim().min(4).max(50).required(),
+	zip_code: Joi.number().min(5).required(),
+	venue_type: Joi.valid(Venue_type.indoor, Venue_type.outdoor),
+	details: Joi.string().trim().min(1).max(2000).required(),
+	roster: Joi.string().trim().required(),
+	scheduled_at: Joi.date().required(),
+	start_time: Joi.date().required(),
+	end_time: Joi.date().required(),
+	// status: Joi.string()
+	// 	.trim()
+	// 	.valid(Status_event.active, Status_event.finished)
+	// 	.required(),
+	discount_amount: Joi.number(),
+	ticket_price: Joi.number().required(),
+	ticket_amount: Joi.number().required(),
+	assigned_pic: Joi.string().allow(""),
+	pic_phone_no: Joi.string().allow(""),
+	category: Joi.string()
+		.valid(Category.Accoustic, Category.SemiPunk, Category.Koplo)
+		.required(),
 });
