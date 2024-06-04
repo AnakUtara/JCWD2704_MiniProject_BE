@@ -67,7 +67,7 @@ export default function SearchForm() {
             <select
               id="orderType"
               name="orderType"
-              className="rounded-md border bg-slate-500 p-2"
+              className="rounded-md border p-2 hover:bg-slate-300"
               onChange={(e) =>
                 formik.setFieldValue("orderType", e.target.value)
               }
@@ -87,7 +87,7 @@ export default function SearchForm() {
               name="order"
               onChange={formik.handleChange}
               value={formik.values.order}
-              className="rounded-md border bg-slate-500 p-2"
+              className="rounded-md border p-2 hover:bg-slate-300"
             >
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>
@@ -162,7 +162,7 @@ export default function SearchForm() {
                     </p>
                   </div>
                   <div className="text-xs">
-                    <p>{event.city}</p>
+                    <p>{`${event.city}, ${event.location}`}</p>
                   </div>
                 </div>
               </div>
@@ -174,7 +174,7 @@ export default function SearchForm() {
         <button
           type="button"
           onClick={() => handlePageChange(currentPage - 1)}
-          className="w-[100px] rounded-md border bg-slate-500 p-2"
+          className="w-[100px] rounded-md border-[1px] border-gray-500 p-2 hover:bg-slate-300"
           disabled={currentPage === 1}
         >
           Previous
@@ -183,7 +183,7 @@ export default function SearchForm() {
         <button
           type="button"
           onClick={() => handlePageChange(currentPage + 1)}
-          className="w-[100px] rounded-md border bg-slate-500 p-2"
+          className="w-[100px] rounded-md border-[1px] border-gray-500 p-2 hover:bg-slate-300"
           disabled={currentPage === pages}
         >
           Next

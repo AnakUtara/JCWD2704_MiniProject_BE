@@ -24,6 +24,22 @@ const config: Config = {
         lg: "2rem",
       },
     },
+    button: {
+      center: true,
+      padding: {
+        DEFAULT: "2px",
+        md: "4px",
+        lg: "6px",
+      },
+      width: {
+        DEFAULT: "2rem",
+        md: "2.5rem",
+        lg: "3rem",
+      },
+      height: "30px",
+      borderWidth: "1px",
+      borderRadius: "0.375rem",
+    },
     screens: {
       xs: "320px",
       sm: "600px",

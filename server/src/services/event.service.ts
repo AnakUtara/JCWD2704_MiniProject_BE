@@ -176,7 +176,7 @@ class EventServices {
 	}
 
 	async create(req: Request) {
-		const { username } = req.params;
+		// const { username } = req.params;
 		const {
 			title,
 			location,
@@ -197,16 +197,18 @@ class EventServices {
 			image_url,
 		} = req.body as TEvent;
 
-		const findUser = (await prisma.user.findFirst({
-			where: { username: username },
-			select: { id: true },
-		})) as { id: string };
+		// const findUser = (await prisma.user.findFirst({
+		// 	where: { username: username },
+		// 	select: { id: true },
+		// })) as { id: string };
 
-		validator(!findUser, "no user found");
+		// validator(!findUser, "no user found");
 
 		const createNewEvent = await prisma.event.create({
 			data: {
-				user_id: findUser.id,
+				user: {
+					connect: { id: req?.user.id },
+				},
 				title: title,
 				location: location,
 				city: city,

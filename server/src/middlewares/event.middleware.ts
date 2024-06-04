@@ -64,10 +64,9 @@ export async function checkPromotor(
 	next: NextFunction
 ) {
 	try {
-		const { username } = req.params;
+		const { username } = req.user;
 		const findUser = (await prisma.user.findFirst({
-			where: { username: username },
-			select: { id: true, role: true, bank_acc_no: true },
+			where: { username: username, role: "promotor" },
 		})) as TUser;
 
 		validator(

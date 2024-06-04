@@ -1,8 +1,12 @@
 import usersController from "../controllers/users.controller";
+import { maxAvatarSize, uploader } from "../libs/multer";
 import {
 	authenticate,
 	checkIsAuthorized,
-	verifyToken,
+	verifyAccessToken,
+	verifyRefreshToken,
+	verifyResetToken,
+	verifyVerifToken,
 } from "../middlewares/auth.middleware";
 import {
 	checkUpdateUserForm,
@@ -21,9 +25,14 @@ class UsersRouter extends EntityRouter {
 	private initRouter() {
 		this.router.get("/", usersController.getAll.bind(usersController));
 		this.router.get(
-			"/validate",
-			verifyToken,
-			usersController.validateToken.bind(usersController)
+			"/validation/refresh",
+			verifyRefreshToken,
+			usersController.validateRefreshToken.bind(usersController)
+		);
+		this.router.get(
+			"/validation/reset",
+			verifyResetToken,
+			usersController.validateResetToken.bind(usersController)
 		);
 		this.router.post(
 			"/v1",
@@ -37,8 +46,13 @@ class UsersRouter extends EntityRouter {
 			checkExistingUser,
 			usersController.create.bind(usersController)
 		);
-		this.router.patch(
-			"/v3/:token",
+		this.router.get(
+			"/v3",
+			verifyVerifToken,
+			usersController.verifyUser.bind(usersController)
+		);
+		this.router.post(
+			"/v3",
 			usersController.emailVerification.bind(usersController)
 		);
 		this.router.post(
@@ -46,18 +60,20 @@ class UsersRouter extends EntityRouter {
 			usersController.forgotPassword.bind(usersController)
 		);
 		this.router.patch(
-			"/v5/:token",
+			"/v4",
+			verifyResetToken,
 			usersController.updatePassword.bind(usersController)
 		);
 		this.router.get(
-			"/:id_username",
+			"/profile/:id_username",
+			verifyAccessToken,
 			usersController.getByIdOrUsername.bind(usersController)
 		);
 		this.router.patch(
-			"/:id_username",
-			verifyToken,
-			checkIsAuthorized,
+			"/profile/:username",
+			verifyAccessToken,
 			checkUserExistById,
+			uploader(`AVTR`, maxAvatarSize, "avatars").single("avatar"),
 			checkUpdateUserForm,
 			usersController.update.bind(usersController)
 		);
