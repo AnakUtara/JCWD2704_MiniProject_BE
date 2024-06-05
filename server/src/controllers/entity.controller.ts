@@ -25,7 +25,7 @@ export class EntityController {
 	async create(req: Request, res: Response, next: NextFunction) {
 		try {
 			await this.service.create(req);
-			res.status(201).send({ message: "success" });
+			res.status(201).send({ message: "success in creating data" });
 		} catch (error) {
 			next(error);
 		}
@@ -33,7 +33,7 @@ export class EntityController {
 	async update(req: Request, res: Response, next: NextFunction) {
 		try {
 			await this.service.update(req);
-			res.send({ message: "success" });
+			res.send({ message: "success in updating data" });
 		} catch (error) {
 			next(error);
 		}
@@ -41,7 +41,7 @@ export class EntityController {
 	async delete(req: Request, res: Response, next: NextFunction) {
 		try {
 			await this.service.delete(req);
-			res.send({ message: "deleted" });
+			res.send({ message: "success, the chosen data is deleted" });
 		} catch (error) {
 			next(error);
 		}

@@ -3,7 +3,9 @@ import { maxEventSize, uploader } from "../libs/multer";
 import { verifyAccessToken } from "../middlewares/auth.middleware";
 import {
 	checkCreateEvent,
+	checkEventIsExist,
 	checkPromotor,
+	checkUpdateEventForm,
 } from "../middlewares/event.middleware";
 import { EntityRouter } from "./entity.router";
 
@@ -18,7 +20,7 @@ class EventRoute extends EntityRouter {
 			"/orders",
 			eventController.getWithOrder.bind(eventController)
 		);
-		this.router.get("/evid/:id", eventController.getById.bind(eventController));
+		this.router.get("/:id", eventController.getById.bind(eventController));
 
 		// ROUTE FOR FETCH EVENT DATA HANDLED BY PROMOTOR
 		this.router.get(
@@ -29,11 +31,13 @@ class EventRoute extends EntityRouter {
 		);
 
 		// ROUTE FOR UPDATE EVENT DATA
-		this.router.put(
-			"/",
+		this.router.patch(
+			"/:id",
 			verifyAccessToken,
 			checkPromotor,
+			checkEventIsExist,
 			uploader("EVNT", maxEventSize, "events").single("image_url"),
+			checkUpdateEventForm,
 			eventController.update.bind(eventController)
 		);
 
@@ -49,7 +53,7 @@ class EventRoute extends EntityRouter {
 
 		// ROUTE FOR DELETE EVENT DATA
 		this.router.delete(
-			"/",
+			"/:id",
 			verifyAccessToken,
 			checkPromotor,
 			eventController.delete.bind(eventController)

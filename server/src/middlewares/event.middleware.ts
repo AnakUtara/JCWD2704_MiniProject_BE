@@ -6,7 +6,7 @@ import { Venue_type } from "@prisma/client";
 import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
 import eventService from "../services/event.service";
-import { eventSchema } from "../libs/joi";
+import { eventSchema, updateEventSchema } from "../libs/joi";
 // import calculateDiscount from "../libs/discount-calculation";
 
 export async function checkFilter(
@@ -107,7 +107,6 @@ export async function checkCreateEvent(
 				!city ||
 				!zip_code ||
 				!venue_type ||
-				!details ||
 				!roster ||
 				!scheduled_at ||
 				!start_time ||
@@ -117,43 +116,56 @@ export async function checkCreateEvent(
 				!category,
 			"All necessary fields except discount, and PIC Info must be filled"
 		);
-		req.user = await eventSchema.validateAsync(req.body);
+		req.event = await eventSchema.validateAsync(req.body);
 		next();
 	} catch (error) {
 		next(error);
 	}
 }
 
-// export async function checkDiscount(
-// 	req: Request,
-// 	res: Response,
-// 	next: NextFunction
-// ) {
-// 	try {
-// 		const { discount_amount } = req.query as {
-// 			discount_amount: Discount_amount;
-// 		};
-// 		const { data, totalCount } = await eventService.getWithOrder(req);
-// 		if (discount_amount && data) {
-// 			const discountPrice = data.map((e) => ({
-// 				...event,
-// 				discount_price: calculateDiscount(e.ticket_price, discount_amount),
-// 			}));
-// 			res.json({ data: discountPrice });
-// 			console.log(discountPrice);
-// 		}
-// 		next();
-// 	} catch (error) {
-// 		next(error);
-// 	}
-// }
+export async function checkDiscount(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	const { discount_amount, ticket_price } = req.body;
+	let discountCalculation: number = 0;
+	if (discount_amount && ticket_price) {
+		discountCalculation = (discount_amount / 100) * ticket_price;
+	}
+	req.discountCalculation = discountCalculation;
+	try {
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
 
-export async function checkExistEvent(
+export async function checkEventIsExist(
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) {
 	try {
+		const { id } = req.params;
+		const isExist = await prisma.event.findFirst({
+			where: { id },
+		});
+		validator(!isExist, "Event does not exist.");
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function checkUpdateEventForm(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		req.event = await updateEventSchema.validateAsync(req.body);
+		next();
 	} catch (error) {
 		next(error);
 	}

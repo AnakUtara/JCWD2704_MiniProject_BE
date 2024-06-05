@@ -66,11 +66,10 @@ class UsersRouter extends EntityRouter {
 		);
 		this.router.get(
 			"/profile/:id_username",
-			verifyAccessToken,
 			usersController.getByIdOrUsername.bind(usersController)
 		);
 		this.router.patch(
-			"/profile/:username",
+			"/",
 			verifyAccessToken,
 			checkUserExistById,
 			uploader(`AVTR`, maxAvatarSize, "avatars").single("avatar"),

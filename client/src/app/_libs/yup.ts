@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 import yp from "yup-password";
+import { Gender } from "../_models/user.model";
 yp(Yup);
 
 export const loginSchema = Yup.object().shape({
@@ -14,6 +15,7 @@ export const registerSchema = Yup.object().shape({
     .trim()
     .min(8)
     .max(20)
+    .minLowercase(1)
     .minUppercase(1)
     .minNumbers(1)
     .required(),
@@ -30,12 +32,27 @@ export const registerSchema = Yup.object().shape({
     .max(12),
 });
 
-export const eventSchema = Yup.object({
-  title: Yup.string().required(),
-  location: Yup.string().required(),
-  city: Yup.string().required(),
+export const editProfileSchema = Yup.object().shape({
+  username: Yup.string().lowercase().min(3).max(30).trim().required(),
+  fullname: Yup.string().trim().lowercase().required(),
+  email: Yup.string().trim().lowercase().email().required(),
+  phone_no: Yup.string().trim().length(13).required(),
+  bank_acc_no: Yup.string()
+    .trim()
+    .matches(/^[a-z0-9]+$/i)
+    .min(8)
+    .max(12),
+  date_of_birth: Yup.string().trim(),
+  address: Yup.string().min(3).trim(),
+  gender: Yup.string(),
+});
+
+export const eventSchema = Yup.object().shape({
+  title: Yup.string().lowercase().required(),
+  location: Yup.string().lowercase().required(),
+  city: Yup.string().lowercase().required(),
   zip_code: Yup.string().required(),
-  venue_type: Yup.string().required(),
+  venue_type: Yup.string().lowercase().required(),
   details: Yup.string().required(),
   roster: Yup.string().required(),
   scheduled_at: Yup.string().required(),
@@ -45,7 +62,7 @@ export const eventSchema = Yup.object({
   ticket_amount: Yup.string().required(),
   assigned_pic: Yup.string(),
   pic_phone_no: Yup.string(),
-  category: Yup.string().required(),
+  category: Yup.string().lowercase().required(),
   discount_amount: Yup.string().required(),
   image_url: Yup.string().required(),
 });

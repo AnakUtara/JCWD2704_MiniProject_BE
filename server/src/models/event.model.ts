@@ -1,4 +1,5 @@
 import { Category, Status_event, User, Venue_type } from "@prisma/client";
+import { TUser } from "./user.model";
 
 export type TEvent = {
 	id: string;
@@ -14,7 +15,7 @@ export type TEvent = {
 	start_time: Date;
 	end_time: Date;
 	status: Status_event;
-	image_url: string;
+	image_url: string | undefined;
 
 	discount_amount: number | null;
 	ticket_price?: number | undefined;
@@ -25,23 +26,11 @@ export type TEvent = {
 	pic_phone_no?: string | null;
 
 	user_id?: string;
-	category?: Category;
+	category: Category;
 
 	created_at?: Date;
 	updated_at?: Date;
-};
-
-export type TEventDetails = {
-	title: string;
-	location: string;
-	city: string;
-	venue_type: Venue_type;
-	details: string;
-	scheduled_at: Date;
-	start_time: Date;
-	end_time: Date;
-	ticket_amount: number;
-	category?: Category;
+	user?: TUser | undefined;
 };
 
 export type FilterType = "venue_type" | "status" | "city";

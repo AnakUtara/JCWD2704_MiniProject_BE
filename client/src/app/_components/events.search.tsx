@@ -8,6 +8,7 @@ import * as Yup from "yup";
 import { formatDate, formatPrice } from "../_utils/formatData";
 import { orderType } from "../_models/event.model";
 import { useDebouncedCallback } from "use-debounce";
+import Link from "next/link";
 
 export default function SearchForm() {
   const [data, setData] = useState<any[]>([]);
@@ -38,7 +39,7 @@ export default function SearchForm() {
     validationSchema: Yup.object({
       orderType: Yup.string().required(),
       order: Yup.string().required(),
-      filterValue: Yup.string(),
+      filterValue: Yup.string().lowercase(),
     }),
     onSubmit: (values) => {
       fetchData(values);
@@ -108,65 +109,65 @@ export default function SearchForm() {
       </div>
       <div className="my-[4vh] grid w-full grid-cols-5 grid-rows-2 gap-6 ">
         {data.map((event: any) => {
+          // console.log(event.id);
           return (
-            <div
-              key={event.id}
-              className=" w-full rounded-md border-[1px] border-gray-400 transition-transform duration-200 hover:scale-105"
-            >
-              <div className=" relative h-[130px] w-full">
-                <Image
-                  src={post_url + event.image_url}
-                  alt="1"
-                  layout="fill"
-                  objectFit="cover"
-                  className="rounded-t-md"
-                />
-              </div>
-              <div className="flex flex-col justify-between px-4 pt-2">
-                <p className="text-lg font-semibold"> {event.title}</p>
-                <div className="mb-2 text-sm">
-                  <div className="flex ">
-                    <p
-                      className={`${event.discountCalculation !== 0 ? "text-gray-400 line-through" : "font-semibold"}`}
-                    >
-                      {event.ticket_price !== 0
-                        ? formatPrice(event.ticket_price)
-                        : "Free Event"}
-                    </p>
-                    {event.discountCalculation !== 0 ? (
-                      <div className="ml-2 flex items-center rounded-md bg-[#80d1a8] px-2">
-                        <p className="text-xs font-semibold text-[#4f6853]">
-                          Disc. {event.discount}%
-                        </p>
-                      </div>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                  <div className="flex min-h-[20px] items-center">
-                    <p className=" font-semibold">
-                      {event.discountCalculation
-                        ? formatPrice(event.discountCalculation)
-                        : ""}
-                    </p>
-                  </div>
+            <Link key={event.id} href={`/event_contents/details/${event.id}`}>
+              <div className=" w-full rounded-md border-[1px] border-gray-400 transition-transform duration-200 hover:scale-105">
+                <div className=" relative h-[130px] w-full">
+                  <Image
+                    src={post_url + event.image_url}
+                    alt="1"
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-t-md"
+                  />
                 </div>
-                <div className="mb-4">
+                <div className="flex flex-col justify-between px-4 pt-2">
+                  <p className="text-lg font-semibold"> {event.title}</p>
                   <div className="mb-2 text-sm">
-                    <p> {formatDate(event.scheduled_at)}</p>
-                    <p className="flex">
-                      Available seats:
-                      <p className="ml-2 font-medium">
-                        {event.ticket_amount}
-                      </p>{" "}
-                    </p>
+                    <div className="flex justify-between">
+                      <p
+                        className={`${event.discountCalculation !== 0 ? "text-gray-400 line-through" : "font-semibold"}`}
+                      >
+                        {event.ticket_price !== 0
+                          ? formatPrice(event.ticket_price)
+                          : "Free Event"}
+                      </p>
+                      {event.discountCalculation !== 0 ? (
+                        <div className=" flex items-center justify-between gap-3 rounded-md bg-[#80d1a8] px-2">
+                          <p className="text-[10px] font-semibold text-[#4f6853]">
+                            Disc. {event.discount}%
+                          </p>
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                    <div className="flex min-h-[20px] items-center">
+                      <p className=" font-semibold">
+                        {event.discountCalculation
+                          ? formatPrice(event.discountCalculation)
+                          : ""}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-xs">
-                    <p>{`${event.city}, ${event.location}`}</p>
+                  <div className="mb-4">
+                    <div className="mb-2 text-sm">
+                      <p> {formatDate(event.scheduled_at)}</p>
+                      <p className="flex">
+                        Available seats:
+                        <p className="ml-2 font-medium">
+                          {event.ticket_amount}
+                        </p>{" "}
+                      </p>
+                    </div>
+                    <div className="text-xs">
+                      <p>{`${event.city}, ${event.location}`}</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

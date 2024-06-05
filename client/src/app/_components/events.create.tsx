@@ -6,12 +6,9 @@ import { initEvent } from "../_models/event.model";
 import { eventSchema } from "../_libs/yup";
 
 export default function PostEvent() {
-  const [user, setUser] = useState("axtonishing");
-
   const postData = async (user_params: string, body: any) => {
     try {
-      const res = await axiosInstance().post("/events/cr", {
-        params: user_params,
+      const res = await axiosInstance().post("/events", {
         data: body,
       });
       console.log(res.data.data);

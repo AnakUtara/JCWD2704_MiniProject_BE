@@ -84,3 +84,30 @@ export const eventSchema = Joi.object({
 		.valid(Category.Accoustic, Category.SemiPunk, Category.Koplo)
 		.required(),
 });
+
+export const updateEventSchema = Joi.object({
+	title: Joi.string().trim().min(4).max(200),
+	location: Joi.string().trim().min(1).max(500),
+	city: Joi.string().trim().min(4).max(50),
+	zip_code: Joi.number().min(5),
+	venue_type: Joi.valid(Venue_type.indoor, Venue_type.outdoor),
+	details: Joi.string().trim().min(1).max(2000),
+	roster: Joi.string().trim(),
+	scheduled_at: Joi.date(),
+	start_time: Joi.date(),
+	end_time: Joi.date(),
+	// status: Joi.string()
+	// 	.trim()
+	// 	.valid(Status_event.active, Status_event.finished)
+	// 	,
+	discount_amount: Joi.number(),
+	ticket_price: Joi.number(),
+	ticket_amount: Joi.number(),
+	assigned_pic: Joi.string().allow(""),
+	pic_phone_no: Joi.string().allow(""),
+	category: Joi.string().valid(
+		Category.Accoustic,
+		Category.SemiPunk,
+		Category.Koplo
+	),
+});

@@ -2,13 +2,14 @@
 import IconTextInput from "@/app/_components/icon.text.input";
 import { axiosInstance } from "@/app/_libs/axios.config";
 import { useFormik } from "formik";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { FaKey } from "react-icons/fa6";
+import { toast } from "sonner";
 import * as Yup from "yup";
 import yp from "yup-password";
 yp(Yup);
 
-type Props = { token: string };
+type Props = { token: string | undefined };
 export default function UpdatePassword({ token }: Props) {
   const router = useRouter();
   const formik = useFormik({
@@ -18,6 +19,7 @@ export default function UpdatePassword({ token }: Props) {
         .trim()
         .min(8)
         .max(20)
+        .minLowercase(1)
         .minUppercase(1)
         .minNumbers(1)
         .required(),
@@ -25,14 +27,23 @@ export default function UpdatePassword({ token }: Props) {
     onSubmit: async (values) => {
       try {
         const password = values.password;
-        await axiosInstance().patch(`users/v5/${token}`, {
-          password,
-        });
-        alert("Password successfully changed!");
+        await axiosInstance().patch(
+          `users/v4`,
+          {
+            password,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        toast.success("Password successfully changed!");
         formik.resetForm();
-        router.push("/");
+        redirect("/");
       } catch (error) {
-        alert("Unauthorized access.");
+        toast.error("Session expired.");
+        redirect("/");
       }
     },
   });
@@ -50,20 +61,20 @@ export default function UpdatePassword({ token }: Props) {
       />
       <button
         type="submit"
-        className="btn btn-primary rounded-none"
-        disabled={!formik.values.password ? true : false}
+        className="btn btn-accent rounded-none hover:bg-neutral-800"
+        disabled={!formik.values.password || formik.isSubmitting ? true : false}
       >
         Submit
       </button>
       <button
-        className="btn btn-outline btn-primary ml-2 rounded-none"
+        className="btn btn-outline btn-accent ml-2 rounded-none"
         onClick={(e) => {
           e.preventDefault();
           router.push("/");
         }}
-        disabled={!formik.values.password ? true : false}
+        disabled={!formik.values.password || formik.isSubmitting ? true : false}
       >
-        Cance{" "}
+        Cancel{" "}
       </button>
     </form>
   );

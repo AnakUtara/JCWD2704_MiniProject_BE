@@ -1,7 +1,7 @@
 import { Request } from "express";
 import { prisma } from "../libs/prisma";
 import { hashPassword } from "../libs/bcrypt";
-import { Prisma, User } from "@prisma/client";
+import { Prisma, Role, User } from "@prisma/client";
 import { catchError, throwErrorMessageIf } from "../utils/error";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
@@ -17,7 +17,6 @@ import {
 } from "../config/config";
 import { referralCode } from "../libs/voucher-code-generator";
 import Joi from "joi";
-import { uploader } from "../libs/multer";
 
 dayjs.extend(duration);
 class UsersService {
@@ -240,7 +239,7 @@ class UsersService {
 		return await prisma.user.delete({ where: { id } });
 	}
 	async update(req: Request) {
-		const { username } = req.params;
+		const { username } = req?.user;
 		const inputEntries = Object.entries(req.body).reduce(
 			(arr: any[], [key, value]: [key: string, value: any]) => {
 				if (
@@ -268,7 +267,7 @@ class UsersService {
 			[]
 		);
 		const inputs = Object.fromEntries(inputEntries) as User;
-		console.log(inputs, req.params);
+		if (inputs.bank_acc_no) inputs.role = Role.promotor;
 		const image = req.file?.filename;
 		if (req.file?.fieldname && image) inputs.avatar = image;
 		return await prisma.$transaction(async (prisma) => {

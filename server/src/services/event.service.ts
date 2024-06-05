@@ -6,6 +6,7 @@ import { Category, Event, Prisma, Venue_type } from "@prisma/client";
 import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
 import { Order, OrderType, TEvent } from "../models/event.model";
+import { user } from "../config/config";
 
 class EventServices {
 	private customSelect = {
@@ -64,6 +65,8 @@ class EventServices {
 				],
 			},
 		})) as TEvent[];
+
+		// const data = {...baseData}
 
 		const data = baseData.map((e) => {
 			let discountCalculation: number = 0;
@@ -130,9 +133,7 @@ class EventServices {
 	}
 
 	async update(req: Request) {
-		const { username, id } = req.params;
-		// const { id } = req.query as { id: string };
-
+		const { id } = req.params;
 		const inputEntries = Object.entries(req.body).reduce(
 			(arr: any[], [key, value]) => {
 				if (
@@ -149,83 +150,60 @@ class EventServices {
 			},
 			[]
 		);
-		const inputs = Object.fromEntries(inputEntries) as Event;
+
+		const inputs = Object.fromEntries(inputEntries) as TEvent;
+		console.log(req.file?.fieldname);
+		const image = req.file?.filename as string;
+
+		if (req.file?.fieldname && image) inputs.image_url = image;
+
+		if (typeof inputs.zip_code === "string")
+			inputs.zip_code = Number(inputs.zip_code);
+		if (typeof inputs.ticket_price === "string")
+			inputs.ticket_price = Number(inputs.ticket_price);
+		if (typeof inputs.ticket_amount === "string")
+			inputs.ticket_amount = Number(inputs.ticket_amount);
+		if (typeof inputs.discount_amount === "string")
+			inputs.discount_amount = Number(inputs.discount_amount);
 
 		const data = await prisma.$transaction(async (prisma: any) => {
 			try {
-				const findUser = (await prisma.user.findFirst({
-					where: { username: username, role: "promotor" },
-					select: { id: true },
-				})) as TUser;
-				// console.log(findUser);
-
-				validator(
-					!findUser || !findUser.id,
-					"User is not found OR the UserID is undefined"
-				);
-
 				return await prisma.event.update({
-					where: { id, user_id: findUser.id },
-					data: { ...inputs },
+					where: { id },
+					data: { ...inputs, user: { connect: { id: req.user.id } } },
 				});
 			} catch (error) {
 				throwError(error);
 			}
 		});
-		return data;
 	}
 
 	async create(req: Request) {
-		// const { username } = req.params;
-		const {
-			title,
-			location,
-			city,
-			zip_code,
-			venue_type,
-			details,
-			roster,
-			scheduled_at,
-			start_time,
-			end_time,
-			ticket_price,
-			ticket_amount,
-			assigned_pic,
-			pic_phone_no,
-			category,
-			discount_amount,
-			image_url,
-		} = req.body as TEvent;
-
-		// const findUser = (await prisma.user.findFirst({
-		// 	where: { username: username },
-		// 	select: { id: true },
-		// })) as { id: string };
-
-		// validator(!findUser, "no user found");
+		const image = req.file?.filename as string;
+		// console.log(req.user);
 
 		const createNewEvent = await prisma.event.create({
 			data: {
 				user: {
 					connect: { id: req?.user.id },
 				},
-				title: title,
-				location: location,
-				city: city,
-				zip_code: Number(zip_code),
-				venue_type: Venue_type[venue_type as keyof typeof Venue_type],
-				details: details,
-				roster: roster,
-				scheduled_at: scheduled_at,
-				start_time: start_time,
-				end_time: end_time,
-				ticket_price: Number(ticket_price),
-				ticket_amount: Number(ticket_amount),
-				assigned_pic: `${assigned_pic}`,
-				pic_phone_no: `${pic_phone_no}`,
-				category: Category[category as keyof typeof Category] || undefined,
-				discount_amount: Number(discount_amount),
-				image_url: image_url,
+				title: req.event.title,
+				location: req.event.location,
+				city: req.event.city,
+				zip_code: Number(req.event.zip_code),
+				venue_type: req.event.venue_type,
+				details: req.event.details,
+				roster: req.event.roster,
+				scheduled_at: req.event.scheduled_at,
+				start_time: req.event.start_time,
+				end_time: req.event.end_time,
+				ticket_price: Number(req.event.ticket_price),
+				ticket_amount: Number(req.event.ticket_amount),
+				assigned_pic: `${req.event.assigned_pic}`,
+				pic_phone_no: `${req.event.pic_phone_no}`,
+				category: req?.event.category,
+				discount_amount: Number(req.event.discount_amount),
+				image_url: image,
 			},
 		});
 
@@ -241,23 +219,11 @@ class EventServices {
 	}
 
 	async delete(req: Request) {
-		const { username } = req.params;
-		const { title } = req.body as { title: string };
+		const { id } = req.params;
 
-		const findUser = (await prisma.user.findFirst({
-			where: { username: username },
-			select: { id: true },
-		})) as { id: string };
-		const findEvent = (await prisma.event.findFirst({
-			where: { user_id: findUser.id, title: { contains: `${title}` } },
-			select: { id: true },
-		})) as { id: string };
-
-		console.log(findUser);
 		const data = await prisma.event.delete({
-			where: { id: findEvent.id },
+			where: { id },
 		});
-		return data;
 	}
 }
 

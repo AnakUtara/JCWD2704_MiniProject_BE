@@ -49,7 +49,7 @@ const config: Config = {
       smMax: { max: "600px" },
     },
   },
-  daisyui: {
+  ddaisyui: {
     themes: [
       {
         mytheme: {

@@ -6,8 +6,8 @@ export interface IService extends ICustomService {
 	getAll: (req: Request) => Promise<TUser[] | TEvent[]>;
 	getById: (req: Request) => Promise<TUser | TEvent | null>;
 	create: (req: Request) => Promise<void | TUser | TEvent>;
-	delete: (req: Request) => Promise<TUser | TEvent>;
-	update: (req: Request) => Promise<TUser | undefined | TEvent>;
+	delete: (req: Request) => Promise<TUser | TEvent | void>;
+	update: (req: Request) => Promise<TUser | void | TEvent>;
 }
 
 interface ICustomService {
