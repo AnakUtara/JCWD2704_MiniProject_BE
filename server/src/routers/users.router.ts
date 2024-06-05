@@ -2,7 +2,6 @@ import usersController from "../controllers/users.controller";
 import { maxAvatarSize, uploader } from "../libs/multer";
 import {
 	authenticate,
-	checkIsAuthorized,
 	verifyAccessToken,
 	verifyRefreshToken,
 	verifyResetToken,

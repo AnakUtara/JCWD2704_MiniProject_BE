@@ -90,7 +90,6 @@ model Event {
   category        Category
   discount_amount Int?
   ticket_price    Float         @db.Double
-  discount_price  Float?        @db.Double
   ticket_amount   Int
   assigned_pic    String?
   pic_phone_no    String?       @db.VarChar(25)
@@ -127,22 +126,22 @@ enum Status_transaction {
 
 model Transaction {
   id              String             @id @default(cuid())
-  invoice_no      String
+  invoice_code    String
   ticket_bought   Int
   total_price     Float              @db.Double
-  ticket_discount Float              @db.Double
+  ticket_discount Int?
   transfer_proof  String?
-  status          Status_transaction
+  status          Status_transaction @default(unpaid)
   user_id         String
   event_id        String
-  voucher_id      String             @unique
+  voucher_id      String?            @unique
   user            User               @relation(fields: [user_id], references: [id])
   event           Event              @relation(fields: [event_id], references: [id])
-  voucher         Voucher            @relation(fields: [voucher_id], references: [id])
+  voucher         Voucher?           @relation(fields: [voucher_id], references: [id])
   created_at      DateTime           @default(now())
   paid_at         DateTime           @updatedAt
 
-  @@index([invoice_no, status, user_id, event_id])
+  @@index([invoice_code, status, user_id, event_id])
   @@map("transactions")
 }
 

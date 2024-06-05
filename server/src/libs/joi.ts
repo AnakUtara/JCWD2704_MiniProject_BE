@@ -1,6 +1,5 @@
 import { Category, Gender, Status_event, Venue_type } from "@prisma/client";
 import Joi from "joi";
-import { Discount } from "../models/event.model";
 
 export const registerSchema = Joi.object({
 	username: Joi.string()
@@ -76,20 +75,7 @@ export const eventSchema = Joi.object({
 		.trim()
 		.valid(Status_event.finished, Status_event.published)
 		.required(),
-	discount_amount: Joi.number().valid(
-		Discount.d10,
-		Discount.d15,
-		Discount.d20,
-		Discount.d25,
-		Discount.d30,
-		Discount.d35,
-		Discount.d40,
-		Discount.d5,
-		Discount.d50,
-		Discount.d60,
-		Discount.d70,
-		Discount.d80
-	),
+	discount_amount: Joi.number(),
 	ticket_price: Joi.number().required(),
 	ticket_amount: Joi.number().required(),
 	discount_price: Joi.number(),
@@ -106,4 +92,9 @@ export const eventSchema = Joi.object({
 			Category.Rock
 		)
 		.required(),
+});
+
+export const transactionSchema = Joi.object({
+	ticket_bought: Joi.number().required(),
+	ticket_amount: Joi.number().required(),
 });

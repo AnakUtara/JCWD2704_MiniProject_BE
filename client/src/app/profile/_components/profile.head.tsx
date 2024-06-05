@@ -38,7 +38,7 @@ export default function ProfileHeader({ activeUser, onClick }: Props) {
           <p className="badge badge-accent m-0 text-white">{activeUser.role}</p>
         </div>
       </div>
-      <div className="prose flex gap-5">
+      <div className="prose flex flex-wrap gap-5">
         <div>
           <p className="my-0 text-xs">Referral Code:</p>
           <h4 className="mt-1 bg-black p-2 text-center text-sm font-bold text-white">
@@ -51,14 +51,24 @@ export default function ProfileHeader({ activeUser, onClick }: Props) {
             {formatCompactNumber(activeUser.points || 0)}
             {" pts."}
           </h4>
-          {activeUser.points ? (
-            <>
-              <p className="my-0 text-xs">Valid until:</p>
-              <p className="my-0 text-xs font-bold">
-                {`${activeUser.points_expiry_date ? dateFormat(activeUser.points_expiry_date, dayDateMonthYear) : ""}`}
-              </p>
-            </>
-          ) : null}
+          <p className="my-0 text-xs">Valid until:</p>
+          <p
+            className={clsx(
+              !activeUser.points_expiry_date && "hidden",
+              "my-0 text-xs font-bold",
+            )}
+          >
+            {`${activeUser.points_expiry_date ? dateFormat(activeUser.points_expiry_date, dayDateMonthYear) : ""}`}
+          </p>
+        </div>
+        <div className={clsx(!activeUser.voucher && "hidden")}>
+          <p className="my-0 text-xs">10% off referral voucher:</p>
+          <h4 className="mt-1 bg-black p-2 text-center text-sm font-bold text-white">
+            {activeUser.voucher?.id}
+          </h4>
+          <p className="my-0 text-xs">
+            *Apply this to any event of your choice.
+          </p>
         </div>
       </div>
     </>

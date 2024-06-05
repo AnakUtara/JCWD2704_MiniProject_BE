@@ -15,7 +15,10 @@ interface ICustomService {
 	emailVerification?: (req: Request) => Promise<void>;
 	forgotPassword?: (req: Request) => Promise<void>;
 	updatePassword?: (req: Request) => Promise<void>;
-	getWithOrder?: (req: Request) => Promise<TEvent[] | TEventDetails[]>;
+	getWithOrder?: (
+		req: Request
+	) => Promise<{ data: TEvent[]; totalCount: number }>;
 	getEventsPromotor?: (req: Request) => Promise<TEvent[]>;
 	verifyUser?: (req: Request) => Promise<void>;
+	confirm?: (req: Request) => Promise<void>;
 }

@@ -22,6 +22,9 @@ export async function authenticate(
 			where: {
 				OR: [{ username: email_username }, { email: email_username }],
 			},
+			include: {
+				voucher: { select: { id: true, is_valid: true, amount: true } },
+			},
 		});
 		throwErrorMessageIf(!isUserExist, "Invalid Username/Emai!");
 		const comparePassword: boolean | null =

@@ -1,3 +1,5 @@
+import { TVoucher } from "./voucher.model";
+
 export enum Gender {
   male = "male",
   female = "female",
@@ -30,6 +32,7 @@ export type TUser = {
   reset_token?: string | null;
   created_at?: string;
   updated_at?: string;
+  voucher?: TVoucher | null;
 };
 
 export const initUser: TUser = {

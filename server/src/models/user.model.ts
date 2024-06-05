@@ -1,4 +1,5 @@
 import { Gender, Role } from "@prisma/client";
+import { TVoucher } from "./voucher.model";
 
 export type TUser = {
 	id?: string;
@@ -9,7 +10,7 @@ export type TUser = {
 	password?: string;
 	role: Role;
 	phone_no: string;
-	id_card: string;
+	id_card?: string | null;
 	address?: string | null;
 	date_of_birth?: Date | null;
 	avatar?: string | null;
@@ -22,4 +23,5 @@ export type TUser = {
 	reset_token?: string | null;
 	created_at?: Date;
 	updated_at?: Date;
+	voucher?: TVoucher | null;
 };

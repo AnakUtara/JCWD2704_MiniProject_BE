@@ -218,6 +218,10 @@ class UsersService {
 				},
 			});
 		delete req.user?.password;
+		delete req.user?.id_card;
+		delete req.user?.reset_token;
+		console.log(req?.user);
+
 		const accessToken = createToken(req?.user, ACC_SECRET_KEY, "1h");
 		const refreshToken = createToken(
 			{ id: req?.user.id },
@@ -229,8 +233,13 @@ class UsersService {
 	async validateRefreshToken(req: Request) {
 		const isUserExist: TUser = (await prisma.user.findFirst({
 			where: { id: req?.user.id },
+			include: {
+				voucher: { select: { id: true, is_valid: true, amount: true } },
+			},
 		})) as TUser;
 		delete isUserExist?.password;
+		delete isUserExist?.id_card;
+		delete isUserExist?.reset_token;
 		const access_token = createToken(isUserExist, ACC_SECRET_KEY, "1h");
 		return { access_token, is_verified: isUserExist?.is_verified };
 	}

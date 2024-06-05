@@ -3,6 +3,7 @@ import cors from "cors";
 import { PORT, corsOptions } from "./config/config";
 import usersRouter from "./routers/users.router";
 import eventRouter from "./routers/event.router";
+import transactionsRouter from "./routers/transactions.router";
 
 export default class App {
 	app: Application;
@@ -31,6 +32,7 @@ export default class App {
 		});
 		this.app.use("/users", usersRouter.getRouter());
 		this.app.use("/events", eventRouter.getRouter());
+		this.app.use("/transactions", transactionsRouter.getRouter());
 	}
 	private errorHandler(): void {
 		this.app.use("/*", (req: Request, res: Response) => {

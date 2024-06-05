@@ -1,22 +1,8 @@
 import { Category, Status_event, Venue_type } from "@prisma/client";
-
-export enum Discount {
-	d5 = 5,
-	d10 = 10,
-	d15 = 15,
-	d20 = 20,
-	d25 = 25,
-	d30 = 30,
-	d35 = 35,
-	d40 = 40,
-	d50 = 50,
-	d60 = 60,
-	d70 = 70,
-	d80 = 80,
-}
+import { TUser } from "./user.model";
 
 export type TEvent = {
-	id?: string;
+	id: string;
 	title: string;
 	location: string;
 	city: string;
@@ -29,16 +15,17 @@ export type TEvent = {
 	end_time: Date;
 	status: Status_event;
 	image_url: string;
-	discount_amount?: number | null;
+	discount_amount: number | null;
 	ticket_price?: number | undefined;
 	ticket_amount: number | undefined;
-	discount_price?: number | null;
+	discountCalculation?: number | null;
 	assigned_pic?: string | null;
 	pic_phone_no?: string | null;
 	user_id?: string;
 	category?: Category;
 	created_at?: Date;
 	updated_at?: Date;
+	user?: TUser | undefined | null;
 };
 
 export type TEventDetails = {
