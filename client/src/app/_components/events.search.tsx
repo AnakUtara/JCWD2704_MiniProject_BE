@@ -22,7 +22,6 @@ export default function SearchForm() {
       const res = await axiosInstance().get("/events/orders", {
         params: { ...queryParams, page: currentPage, limit: size },
       });
-      console.log("res data fetched in order:", res);
       setData(res.data.result);
       setPages(res.data.total_page);
     } catch (error) {
@@ -54,7 +53,6 @@ export default function SearchForm() {
 
   useEffect(() => {
     debouncedData(formik.values);
-    // console.log(formik.values.filterValue);
   }, [currentPage, size, formik.values]);
 
   return (
@@ -69,7 +67,7 @@ export default function SearchForm() {
             <select
               id="orderType"
               name="orderType"
-              className="rounded-md border p-2 hover:bg-slate-300"
+              className="w-full rounded-md border p-2 hover:bg-slate-300"
               onChange={(e) =>
                 formik.setFieldValue("orderType", e.target.value)
               }
@@ -89,7 +87,7 @@ export default function SearchForm() {
               name="order"
               onChange={formik.handleChange}
               value={formik.values.order}
-              className="rounded-md border p-2 hover:bg-slate-300"
+              className="w-full rounded-md border p-2 hover:bg-slate-300"
             >
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>
@@ -108,19 +106,21 @@ export default function SearchForm() {
           </div>
         </form>
       </div>
-      <div className="my-[4vh] grid w-full grid-cols-5 grid-rows-2 gap-6 ">
+      <div className="my-[4vh] grid w-full grid-cols-1 grid-rows-2 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
         {data.map((event: any) => {
           // console.log(event.id);
           return (
-            <Link key={event.id} href={`/event_contents/details/${event.id}`}>
+            <Link key={event.id} href={`/event/${event.id}`}>
               <div className=" w-full rounded-md border-[1px] border-gray-400 transition-transform duration-200 hover:scale-105">
                 <div className=" relative h-[130px] w-full">
                   <Image
                     src={imageUrl + "/events/" + event.image_url}
                     alt="1"
-                    layout="fill"
-                    objectFit="cover"
-                    className="rounded-t-md"
+                    // width={100}
+                    // height={100}
+                    fill={true}
+                    sizes="100%"
+                    className="rounded-t-md object-cover"
                   />
                 </div>
                 <div className="flex flex-col justify-between px-4 pt-2">

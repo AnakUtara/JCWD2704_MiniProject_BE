@@ -1,14 +1,29 @@
-import EventFeatures from "./_components/events.feature";
+import EventsCarousel from "./_components/events.carousel";
 import SearchForm from "./_components/events.search";
+import { axiosInstance } from "./_libs/axios.config";
+import { TEvent } from "./_models/event.model";
+import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+dayjs.extend(localizedFormat);
 
-export default function Home() {
+export default async function Home() {
+  const res = await axiosInstance().get("/events/orders", {
+    params: {
+      order: "asc",
+      orderType: "scheduled_at",
+      filterValue: "Bandung",
+      page: "1",
+      limit: "4",
+    },
+  });
+  const { result }: { result: TEvent[] } = res.data;
+
   return (
-    <div className=" py-10">
-      <div className="container px-10">
-        <p className="text-4xl font-bold">THIS IS STARTER FOR MINPRO</p>
+    <div className="flex justify-center">
+      <div className="container">
+        <EventsCarousel result={result} />
+        <SearchForm />
       </div>
-      <EventFeatures />
-      <SearchForm />
     </div>
   );
 }
