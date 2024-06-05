@@ -31,6 +31,15 @@ class EventControllers extends EntityController {
 			next(error);
 		}
 	}
+
+	// async createEvent(req: Request, res: Response, next: NextFunction) {
+	// 	try {
+	// 		const { data } = await eventService.createEvent(req);
+	// 		res.send({ message: "Succeed!, new event data is posted!", data });
+	// 	} catch (error) {
+	// 		next(error);
+	// 	}
+	// }
 }
 
 export default new EventControllers(eventService);

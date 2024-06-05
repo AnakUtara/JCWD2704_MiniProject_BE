@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 
 const mB = 1072864;
 export const maxAvatarSize = 1.5 * mB;
-export const maxEventSize = 11 * mB;
+export const maxEventSize = 10 * mB;
 
 const multerConfig: multer.Options = {
 	fileFilter: (

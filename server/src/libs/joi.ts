@@ -60,9 +60,14 @@ export const updateSchema = Joi.object({
 	address: Joi.string().trim().max(200),
 });
 
+export const transactionSchema = Joi.object({
+	ticket_bought: Joi.number().required(),
+	ticket_amount: Joi.number().required(),
+});
+
 export const eventSchema = Joi.object({
 	title: Joi.string().trim().min(4).max(200).required(),
-	location: Joi.string().trim().min(1).max(500),
+	location: Joi.string().trim().min(1).max(500).required(),
 	city: Joi.string().trim().min(4).max(50).required(),
 	zip_code: Joi.number().min(5).required(),
 	venue_type: Joi.valid(Venue_type.indoor, Venue_type.outdoor),
@@ -73,28 +78,52 @@ export const eventSchema = Joi.object({
 	end_time: Joi.date().required(),
 	status: Joi.string()
 		.trim()
-		.valid(Status_event.finished, Status_event.published)
+		.valid(Status_event.published, Status_event.finished)
 		.required(),
 	discount_amount: Joi.number(),
 	ticket_price: Joi.number().required(),
 	ticket_amount: Joi.number().required(),
-	discount_price: Joi.number(),
 	assigned_pic: Joi.string().allow(""),
 	pic_phone_no: Joi.string().allow(""),
 	category: Joi.string()
 		.valid(
 			Category.Acoustic,
+			Category.Punk,
 			Category.Electronic,
-			Category.Experimental,
 			Category.Metal,
 			Category.Pop,
-			Category.Punk,
-			Category.Rock
+			Category.Rock,
+			Category.Experimental
 		)
 		.required(),
 });
 
-export const transactionSchema = Joi.object({
-	ticket_bought: Joi.number().required(),
-	ticket_amount: Joi.number().required(),
+export const updateEventSchema = Joi.object({
+	title: Joi.string().trim().min(4).max(200),
+	location: Joi.string().trim().min(1).max(500),
+	city: Joi.string().trim().min(4).max(50),
+	zip_code: Joi.number().min(5),
+	venue_type: Joi.valid(Venue_type.indoor, Venue_type.outdoor),
+	details: Joi.string().trim().min(1).max(2000),
+	roster: Joi.string().trim(),
+	scheduled_at: Joi.date(),
+	start_time: Joi.date(),
+	end_time: Joi.date(),
+	status: Joi.string()
+		.trim()
+		.valid(Status_event.published, Status_event.finished),
+	discount_amount: Joi.number(),
+	ticket_price: Joi.number(),
+	ticket_amount: Joi.number(),
+	assigned_pic: Joi.string().allow(""),
+	pic_phone_no: Joi.string().allow(""),
+	category: Joi.string().valid(
+		Category.Acoustic,
+		Category.Punk,
+		Category.Electronic,
+		Category.Metal,
+		Category.Pop,
+		Category.Rock,
+		Category.Experimental
+	),
 });

@@ -2,10 +2,11 @@ import { NextFunction, Request, Response, response } from "express";
 
 import { validator } from "../utils/validator";
 import { FilterType } from "../models/event.model";
-import { Role, Venue_type } from "@prisma/client";
+import { Venue_type } from "@prisma/client";
 import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
 import eventService from "../services/event.service";
+import { eventSchema, updateEventSchema } from "../libs/joi";
 // import calculateDiscount from "../libs/discount-calculation";
 
 export async function checkFilter(
@@ -66,45 +67,105 @@ export async function checkPromotor(
 	try {
 		const { username } = req.user;
 		const findUser = (await prisma.user.findFirst({
-			where: { username, role: Role.promotor },
+			where: { username: username, role: "promotor" },
 		})) as TUser;
-		validator(!findUser, `User not found.`);
+
+		validator(
+			findUser.role !== "promotor" && !findUser.bank_acc_no,
+			`Account ${username} is not a promotor, unable to post event.`
+		);
 		next();
 	} catch (error) {
 		next(error);
 	}
 }
 
-// export async function checkDiscount(
-// 	req: Request,
-// 	res: Response,
-// 	next: NextFunction
-// ) {
-// 	try {
-// 		const { discount_amount } = req.query as {
-// 			discount_amount: Discount_amount;
-// 		};
-// 		const { data, totalCount } = await eventService.getWithOrder(req);
-// 		if (discount_amount && data) {
-// 			const discountPrice = data.map((e) => ({
-// 				...event,
-// 				discount_price: calculateDiscount(e.ticket_price, discount_amount),
-// 			}));
-// 			res.json({ data: discountPrice });
-// 			console.log(discountPrice);
-// 		}
-// 		next();
-// 	} catch (error) {
-// 		next(error);
-// 	}
-// }
-
-export async function checkExistEvent(
+export async function checkCreateEvent(
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) {
 	try {
+		const {
+			title,
+			location,
+			city,
+			zip_code,
+			venue_type,
+			details,
+			roster,
+			scheduled_at,
+			start_time,
+			end_time,
+			ticket_price,
+			ticket_amount,
+			category,
+		} = req.body;
+		validator(
+			!title ||
+				!location ||
+				!city ||
+				!zip_code ||
+				!venue_type ||
+				!roster ||
+				!scheduled_at ||
+				!start_time ||
+				!end_time ||
+				!ticket_price ||
+				!ticket_amount ||
+				!category,
+			"All necessary fields except discount, and PIC Info must be filled"
+		);
+		req.event = await eventSchema.validateAsync(req.body);
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function checkDiscount(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	const { discount_amount, ticket_price } = req.body;
+	let discountCalculation: number = 0;
+	if (discount_amount && ticket_price) {
+		discountCalculation = (discount_amount / 100) * ticket_price;
+	}
+	req.discountCalculation = discountCalculation;
+	try {
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function checkEventIsExist(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		const { id } = req.params;
+		const isExist = await prisma.event.findFirst({
+			where: { id },
+		});
+		validator(!isExist, "Event does not exist.");
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function checkUpdateEventForm(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		req.event = await updateEventSchema.validateAsync(req.body);
+		next();
 	} catch (error) {
 		next(error);
 	}

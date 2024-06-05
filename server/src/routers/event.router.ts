@@ -1,8 +1,12 @@
 import eventController from "../controllers/event.controller";
 import { maxEventSize, uploader } from "../libs/multer";
 import { verifyAccessToken } from "../middlewares/auth.middleware";
-import { checkPromotor } from "../middlewares/event.middleware";
-import { checkExistingUser } from "../middlewares/users.middleware";
+import {
+	checkCreateEvent,
+	checkEventIsExist,
+	checkPromotor,
+	checkUpdateEventForm,
+} from "../middlewares/event.middleware";
 import { EntityRouter } from "./entity.router";
 
 class EventRoute extends EntityRouter {
@@ -16,21 +20,42 @@ class EventRoute extends EntityRouter {
 			"/orders",
 			eventController.getWithOrder.bind(eventController)
 		);
+		this.router.get("/:id", eventController.getById.bind(eventController));
+
+		// ROUTE FOR FETCH EVENT DATA HANDLED BY PROMOTOR
 		this.router.get(
-			"/:id_username",
+			"/",
+			verifyAccessToken,
+			checkPromotor,
 			eventController.getEventsPromotor.bind(eventController)
 		);
 
+		// ROUTE FOR UPDATE EVENT DATA
+		this.router.patch(
+			"/:id",
+			verifyAccessToken,
+			checkPromotor,
+			checkEventIsExist,
+			uploader("EVNT", maxEventSize, "events").single("image_url"),
+			checkUpdateEventForm,
+			eventController.update.bind(eventController)
+		);
+
+		// ROUTE FOR CREATE EVENT DATA
 		this.router.post(
 			"/",
 			verifyAccessToken,
 			checkPromotor,
-			uploader(`EVENT`, maxEventSize, "events").single("image"),
+			uploader("EVNT", maxEventSize, "events").single("image_url"),
+			checkCreateEvent,
 			eventController.create.bind(eventController)
 		);
-		this.router.put("/:username", eventController.update.bind(eventController));
+
+		// ROUTE FOR DELETE EVENT DATA
 		this.router.delete(
-			"/:username",
+			"/:id",
+			verifyAccessToken,
+			checkPromotor,
 			eventController.delete.bind(eventController)
 		);
 	}

@@ -46,3 +46,23 @@ export const editProfileSchema = Yup.object().shape({
   address: Yup.string().min(3).trim(),
   gender: Yup.string(),
 });
+
+export const eventSchema = Yup.object().shape({
+  title: Yup.string().lowercase().required(),
+  location: Yup.string().lowercase().required(),
+  city: Yup.string().lowercase().required(),
+  zip_code: Yup.string().required(),
+  venue_type: Yup.string().lowercase().required(),
+  details: Yup.string().required(),
+  roster: Yup.string().required(),
+  scheduled_at: Yup.string().required(),
+  start_time: Yup.string().required(),
+  end_time: Yup.string().required(),
+  ticket_price: Yup.string(),
+  ticket_amount: Yup.string().required(),
+  assigned_pic: Yup.string(),
+  pic_phone_no: Yup.string(),
+  category: Yup.string().lowercase().required(),
+  discount_amount: Yup.string().required(),
+  image_url: Yup.string().required(),
+});

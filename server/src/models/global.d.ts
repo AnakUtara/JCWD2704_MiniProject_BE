@@ -6,6 +6,7 @@ declare global {
 		interface Request {
 			user: TUser;
 			event: TEvent;
+			discountCalculation?: number;
 		}
 	}
 }
