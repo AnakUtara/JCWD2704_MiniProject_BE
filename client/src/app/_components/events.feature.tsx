@@ -33,12 +33,12 @@ export default function EventFeatures() {
       setPages(res.data.total_page);
     } catch (error) {
       console.error(`Error in fetching data`, error);
+      if (error instanceof Error) throw error;
     }
   };
 
   useEffect(() => {
     fetchData({});
-    console.log(data);
   }, [currentPage, size]);
 
   return (

@@ -27,6 +27,7 @@ export default function SearchForm() {
       setPages(res.data.total_page);
     } catch (error) {
       console.error(`Error in fetching data`, error);
+      if (error instanceof Error) throw error;
     }
   };
 

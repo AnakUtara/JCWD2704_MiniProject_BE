@@ -76,8 +76,6 @@ class EventServices {
 			}
 			return { ...e, discountCalculation };
 		});
-		console.log(data);
-
 		return { data, totalCount };
 	}
 

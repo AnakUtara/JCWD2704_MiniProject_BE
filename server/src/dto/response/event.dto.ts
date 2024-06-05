@@ -1,6 +1,7 @@
 import { TEvent } from "../../models/event.model";
 
 export class EventDto {
+	id?: string;
 	title: string = "";
 	ticket_price?: number = 0;
 	city: string = "";
@@ -21,6 +22,7 @@ export class EventDto {
 
 	static fromEntity(event: TEvent): EventDto {
 		return new EventDto({
+			id: event.id,
 			title: event.title,
 			ticket_price: event.ticket_price,
 			city: event.city,

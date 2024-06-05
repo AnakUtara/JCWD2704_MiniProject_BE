@@ -13,6 +13,8 @@ class EventControllers extends EntityController {
 		try {
 			const { data, totalCount } = await eventService.getWithOrder(req);
 			const result = data.map((e: any) => EventDto.fromEntity(e));
+			console.log(data);
+
 			res.send({
 				message: "data fetched successfully",
 				result,
@@ -31,15 +33,6 @@ class EventControllers extends EntityController {
 			next(error);
 		}
 	}
-
-	// async createEvent(req: Request, res: Response, next: NextFunction) {
-	// 	try {
-	// 		const { data } = await eventService.createEvent(req);
-	// 		res.send({ message: "Succeed!, new event data is posted!", data });
-	// 	} catch (error) {
-	// 		next(error);
-	// 	}
-	// }
 }
 
 export default new EventControllers(eventService);
