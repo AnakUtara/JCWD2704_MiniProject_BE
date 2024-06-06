@@ -209,6 +209,7 @@ class EventServices {
 		let discountCalculation: number = 0;
 		if (createNewEvent.discount_amount) {
 			discountCalculation =
+				createNewEvent.ticket_price -
 				(createNewEvent.discount_amount / 100) * createNewEvent.ticket_price;
 		}
 

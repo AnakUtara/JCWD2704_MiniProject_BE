@@ -1,13 +1,12 @@
 import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import LocalizedFormat from "dayjs/plugin/localizedFormat";
+dayjs.extend(LocalizedFormat);
 dayjs.extend(utc);
-dayjs.extend(timezone);
 
-const tz = "Asia/Jakarta";
-export const dayDateMonthYear = "dddd DD/MM/YYYY";
-export const monthDateYear = "MMMM D, YYYY";
+export const dayDateMonthYear = "L";
+export const monthDateYear = "LL";
 
 export function dateFormat(date: string, format: string) {
-  return dayjs.tz(date, tz).format(format);
+  return dayjs(date).format(format);
 }

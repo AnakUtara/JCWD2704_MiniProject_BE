@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response, response } from "express";
 
 import { validator } from "../utils/validator";
-import { FilterType } from "../models/event.model";
-import { Venue_type } from "@prisma/client";
+import { FilterType, TEvent } from "../models/event.model";
+import { Status_event, Venue_type } from "@prisma/client";
 import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
 import eventService from "../services/event.service";
 import { eventSchema, updateEventSchema } from "../libs/joi";
+import { throwErrorMessageIf } from "../utils/error";
 // import calculateDiscount from "../libs/discount-calculation";
 
 export async function checkFilter(
@@ -165,6 +166,27 @@ export async function checkUpdateEventForm(
 ) {
 	try {
 		req.event = await updateEventSchema.validateAsync(req.body);
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function checkEventStatus(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		const { event_id } = req.body;
+		const isEventDone = await prisma.event.findFirst({
+			where: { id: event_id },
+		});
+		throwErrorMessageIf(
+			isEventDone?.status === Status_event.finished || !isEventDone,
+			"Event has ended."
+		);
+		req.event = isEventDone as TEvent;
 		next();
 	} catch (error) {
 		next(error);

@@ -11,7 +11,7 @@ export default function PostEvent() {
       const res = await axiosInstance().post("/events", {
         data: body,
       });
-      console.log(res.data.data);
+      // console.log(res.data.data);
     } catch (error) {
       console.error("Error in fetching data", error);
     }

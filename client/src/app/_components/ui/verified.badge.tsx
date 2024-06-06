@@ -2,7 +2,6 @@
 import { TUser } from "@/app/_models/user.model";
 import { handleVerification } from "@/app/_utils/handlers";
 import clsx from "clsx";
-import { useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 
 type Props = { user: TUser; email: string };

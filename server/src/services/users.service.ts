@@ -114,7 +114,7 @@ class UsersService {
 				sendEmail({
 					email_to: req.user.email,
 					template_dir: "../templates/verification.html",
-					href: `${process.env.BASE_URL}${process.env.FE_PORT}/verification/${ver_token}`,
+					href: `${process.env.FE_URL}/verification/${ver_token}`,
 					subject:
 						"Thank you for your registration! Please, verify your account.",
 				});
@@ -137,7 +137,7 @@ class UsersService {
 		sendEmail({
 			email_to: targetUser.email,
 			template_dir: "../templates/verification.html",
-			href: `${process.env.BASE_URL}${process.env.FE_PORT}/verification/${ver_token}`,
+			href: `${process.env.FE_URL}/verification/${ver_token}`,
 			subject: "Verify your account.",
 		});
 	}
@@ -171,7 +171,7 @@ class UsersService {
 				sendEmail({
 					email_to: validEmail,
 					template_dir: "../templates/forgot-password.html",
-					href: `${process.env.BASE_URL}${process.env.FE_PORT}/forgot_password/${reset_token}`,
+					href: `${process.env.FE_URL}/forgot_password/${reset_token}`,
 					subject: "Reset Your Password",
 				});
 				await prisma.user.update({

@@ -3,6 +3,8 @@ import { prisma } from "../libs/prisma";
 import { Prisma, Status_transaction, Transaction } from "@prisma/client";
 import dayjs from "dayjs";
 import { throwErrorMessageIf } from "../utils/error";
+import { TEvent } from "../models/event.model";
+import { discCalc } from "../utils/calc";
 
 class TransactionService {
 	async getCustomerTransactions(req: Request) {
@@ -15,26 +17,49 @@ class TransactionService {
 	async getPromotorTransactions(req: Request) {
 		//TODO: Get transaction list made by customers
 		//to events created by logged in Promotor
+		const {
+			sort_by,
+			sort,
+			search,
+			status,
+		}: {
+			sort_by: string;
+			sort: string;
+			search: string;
+			status: Status_transaction;
+		} = req.body;
+		const { id } = req?.user;
+		const data = await prisma.transaction.findMany({
+			where: {
+				user_id: id,
+				OR: [
+					{ invoice_code: { contains: search } },
+					{ status: { equals: status } },
+				],
+			},
+			orderBy: [{ [sort_by]: sort }],
+		});
+		throwErrorMessageIf(!data, "Transaction not found.");
+		return data;
 	}
 	async create(req: Request) {
-		const { event_id } = req.params;
+		const { id: event_id } = req.event as TEvent;
 		const {
 			ticket_bought,
-			total_price,
 			voucher_id,
-			event_discount,
 		}: {
 			ticket_bought: number;
-			total_price: number;
-			voucher_id: string;
-			event_discount: number;
+			voucher_id?: string;
 		} = req.body;
+		throwErrorMessageIf(!ticket_bought, "Specify amount of ticket to buy.");
+		let total_price = req.event.ticket_price! * Number(ticket_bought);
+		console.log(req.body, total_price);
 		await prisma.$transaction(async (prisma) => {
 			let data: Prisma.TransactionCreateInput = {
 				invoice_code: `INV/${dayjs().format("YYYYMMDD/hhmm")}-${
 					req.user.username
 				}`,
-				ticket_bought,
+				ticket_bought: Number(ticket_bought),
 				total_price,
 				user: {
 					connect: {
@@ -60,13 +85,20 @@ class TransactionService {
 					},
 				});
 				throwErrorMessageIf(!voucher, "Voucher not found.");
-				data.voucher!.connect!.id = voucher_id;
-				data.total_price = total_price * (voucher!.amount / 100);
+				data = { ...data, voucher: { connect: { id: voucher_id } } };
+				data.total_price = total_price -= discCalc(total_price, voucher.amount);
 			}
-			if (event_discount) {
-				data.ticket_discount = event_discount;
-				data.total_price = total_price * (event_discount / 100);
+			if (req.event.discount_amount) {
+				data.ticket_discount = req.event.discount_amount;
+				data.total_price = total_price -= discCalc(
+					total_price,
+					req.event.discount_amount
+				);
 			}
+			throwErrorMessageIf(
+				req.event.ticket_amount! < ticket_bought,
+				"Limit exceeded."
+			);
 			await prisma.transaction.create({
 				data,
 			});
@@ -112,22 +144,30 @@ class TransactionService {
 	}
 	async delete(req: Request) {
 		const { id } = req.params;
-		//TODO: if selected transaction left unpaid until
-		//today is greater than transaction created date
-		//enable delete selected transaction.
+		//TODO: if transaction deleted, return ticket_bought + ticket_amount
+		//of selected event.
 		const payment = await prisma.transaction.findFirst({
 			where: { id },
 			select: {
 				paid_at: true,
 				created_at: true,
+				event_id: true,
+				ticket_bought: true,
 			},
 		});
+		throwErrorMessageIf(!payment, "Transaction not found.");
 		throwErrorMessageIf(
 			dayjs(payment?.created_at) > dayjs() && payment?.paid_at !== null,
 			"Not permitted."
 		);
-		await prisma.transaction.delete({
-			where: { id },
+		await prisma.$transaction(async (prisma) => {
+			await prisma.transaction.delete({
+				where: { id },
+			});
+			await prisma.event.update({
+				where: { id: payment?.event_id },
+				data: {},
+			});
 		});
 	}
 }
