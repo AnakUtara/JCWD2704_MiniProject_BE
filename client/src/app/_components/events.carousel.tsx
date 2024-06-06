@@ -17,10 +17,10 @@ export default function EventsCarousel({ result }: Props) {
             <Image
               src={imageUrl + "/events/" + e.image_url}
               alt={`${e.title} image`}
-              width={320}
-              height={320}
+              layout="fill"
+              objectFit="cover"
               priority
-              className="size-full object-cover"
+              className="size-full "
             />
             <div className="absolute left-5 top-5">
               <p className=" bg-gray-600 bg-opacity-70 text-xl text-white md:text-4xl">

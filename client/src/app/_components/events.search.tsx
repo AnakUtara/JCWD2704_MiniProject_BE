@@ -116,8 +116,6 @@ export default function SearchForm() {
                   <Image
                     src={imageUrl + "/events/" + event.image_url}
                     alt="1"
-                    // width={100}
-                    // height={100}
                     fill={true}
                     sizes="100%"
                     className="rounded-t-md object-cover"
@@ -172,7 +170,7 @@ export default function SearchForm() {
           );
         })}
       </div>
-      <div className="flex flex-row justify-center gap-10">
+      <div className="flex flex-row items-center justify-center gap-10">
         <button
           type="button"
           onClick={() => handlePageChange(currentPage - 1)}
@@ -181,7 +179,9 @@ export default function SearchForm() {
         >
           Previous
         </button>
-        <button></button>
+        <p>
+          page {currentPage} of {pages}
+        </p>
         <button
           type="button"
           onClick={() => handlePageChange(currentPage + 1)}
@@ -190,9 +190,6 @@ export default function SearchForm() {
         >
           Next
         </button>
-        <p>
-          page {currentPage} of {pages}
-        </p>
       </div>
     </div>
   );
