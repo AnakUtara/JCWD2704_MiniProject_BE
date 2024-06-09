@@ -26,8 +26,8 @@ export class EntityController {
 	}
 	async create(req: Request, res: Response, next: NextFunction) {
 		try {
-			await this.service.create(req);
-			res.status(201).send({ message: "success" });
+			const data = await this.service.create(req);
+			res.status(201).send({ message: "success", data });
 		} catch (error) {
 			next(error);
 		}

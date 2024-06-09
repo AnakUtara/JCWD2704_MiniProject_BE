@@ -103,7 +103,7 @@ export const updateEventSchema = Joi.object({
 	location: Joi.string().trim().min(1).max(500),
 	city: Joi.string().trim().min(4).max(50),
 	zip_code: Joi.number().min(5),
-	venue_type: Joi.valid(Venue_type.indoor, Venue_type.outdoor),
+	venue_type: Joi.string().valid(Venue_type.indoor, Venue_type.outdoor),
 	details: Joi.string().trim().min(1).max(2000),
 	roster: Joi.string().trim(),
 	scheduled_at: Joi.date(),
@@ -117,13 +117,15 @@ export const updateEventSchema = Joi.object({
 	ticket_amount: Joi.number(),
 	assigned_pic: Joi.string().allow(""),
 	pic_phone_no: Joi.string().allow(""),
-	category: Joi.string().valid(
-		Category.Acoustic,
-		Category.Punk,
-		Category.Electronic,
-		Category.Metal,
-		Category.Pop,
-		Category.Rock,
-		Category.Experimental
-	),
+	category: Joi.string()
+		.trim()
+		.valid(
+			Category.Acoustic,
+			Category.Punk,
+			Category.Electronic,
+			Category.Metal,
+			Category.Pop,
+			Category.Rock,
+			Category.Experimental
+		),
 });

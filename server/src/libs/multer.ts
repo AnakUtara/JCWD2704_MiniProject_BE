@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 
 const mB = 1072864;
 export const maxAvatarSize = 1.5 * mB;
-export const maxEventSize = 10 * mB;
+export const maxEventSize = 20 * mB;
 
 const multerConfig: multer.Options = {
 	fileFilter: (
@@ -48,7 +48,7 @@ export function uploader(
 			const originalNameParts = file.originalname.split(".");
 			const fileExtension = originalNameParts[originalNameParts.length - 1];
 			const newFileName = `${filePrefix}-${req.user.id}-${dayjs().format(
-				"YYYYMMDD"
+				"YYYYMMDD-HH:mmss"
 			)}.${fileExtension}`;
 			cb(null, newFileName);
 		},

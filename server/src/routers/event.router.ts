@@ -36,7 +36,7 @@ class EventRoute extends EntityRouter {
 			verifyAccessToken,
 			checkPromotor,
 			checkEventIsExist,
-			uploader("EVNT", maxEventSize, "events").single("image_url"),
+			uploader("EVNT", maxEventSize, "events").single("image"),
 			checkUpdateEventForm,
 			eventController.update.bind(eventController)
 		);
@@ -46,7 +46,7 @@ class EventRoute extends EntityRouter {
 			"/",
 			verifyAccessToken,
 			checkPromotor,
-			uploader("EVNT", maxEventSize, "events").single("image_url"),
+			uploader("EVNT", maxEventSize, "events").single("image"),
 			checkCreateEvent,
 			eventController.create.bind(eventController)
 		);

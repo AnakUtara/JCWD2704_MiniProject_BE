@@ -2,58 +2,55 @@
 import IconTextInput from "@/app/_components/icon.text.input";
 import { axiosInstance } from "@/app/_libs/axios.config";
 import { dateFormat, monthDateYear } from "@/app/_libs/dayjs";
-import { editEventSchema } from "@/app/_libs/yup";
-import { TEvent, Venue_type } from "@/app/_models/event.model";
-import dayjs from "dayjs";
-import { Datepicker } from "flowbite-react";
-import { useFormik } from "formik";
-import { IoMail } from "react-icons/io5";
-import { toast } from "sonner";
-import localizedFormat from "dayjs/plugin/localizedFormat";
+import { eventSchema } from "@/app/_libs/yup";
+import { Status_event, Venue_type } from "@/app/_models/event.model";
+import { imageUrl } from "@/app/_utils/config";
+import { categoryData, discountOption } from "@/app/_utils/event.data";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { useEffect, useRef } from "react";
 import { getCookie } from "cookies-next";
-import { imageUrl } from "@/app/_utils/config";
+import dayjs from "dayjs";
+import { Datepicker } from "flowbite-react";
+import { useFormik } from "formik";
 import Image from "next/image";
-import { categoryData, discountOption } from "@/app/_utils/event.data";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MdEventSeat, MdOutlineDescription, MdTitle } from "react-icons/md";
-import { FaLocationDot, FaPerson, FaPersonDress } from "react-icons/fa6";
+import { useEffect, useRef } from "react";
 import { FaCity, FaDollarSign, FaPhone } from "react-icons/fa";
+import { FaLocationDot, FaPerson, FaPersonDress } from "react-icons/fa6";
+import { IoMail } from "react-icons/io5";
+import { MdEventSeat, MdOutlineDescription, MdTitle } from "react-icons/md";
+import { toast } from "sonner";
 
-dayjs.extend(localizedFormat);
-
-type Props = { result: TEvent };
-export default function UpdateForm({ result }: Props) {
+export default function CreateForm() {
   const router = useRouter();
   const formik = useFormik({
     initialValues: {
       image: null,
-      title: result.title,
-      location: result.location,
-      city: result.city,
-      zip_code: result.zip_code,
-      venue_type: result.venue_type,
-      details: result.details,
-      roster: result.roster,
-      scheduled_at: dateFormat(String(result.scheduled_at), monthDateYear),
-      start_time: dayjs(result.start_time),
-      end_time: dayjs(result.end_time),
-      ticket_price: result.ticket_price,
-      ticket_amount: result.ticket_amount,
-      assigned_pic: result.assigned_pic,
-      pic_phone_no: result.pic_phone_no,
-      category: result.category,
-      discount_amount: String(result.discount_amount),
+      title: "",
+      location: "",
+      city: "",
+      zip_code: "",
+      venue_type: "indoor",
+      details: "",
+      roster: "",
+      scheduled_at: "",
+      start_time: "",
+      end_time: "",
+      ticket_price: 0,
+      ticket_amount: 0,
+      assigned_pic: "",
+      pic_phone_no: "",
+      category: "Acoustic",
+      discount_amount: 0,
+      status: Status_event.published,
     },
-    validationSchema: editEventSchema,
+    validationSchema: eventSchema,
     onSubmit: async (values) => {
       try {
-        await axiosInstance().patch(
-          `/events/${result.id}`,
+        await axiosInstance().post(
+          `/events`,
           {
             ...values,
             scheduled_at: dayjs(values.scheduled_at).toDate(),
@@ -71,27 +68,25 @@ export default function UpdateForm({ result }: Props) {
             },
           },
         );
-        console.log(values.scheduled_at);
-        toast.success("Event data updated!");
-        router.push(`/event/${result.id}`);
+        console.log(values);
+        toast.success("New event data created!");
+        router.push("/dashboard");
+        // window.location.reload();
       } catch (error) {
         if (error instanceof Error) console.error;
-        toast.error("failed in updating event data");
+        toast.error("failed in creating event data");
       }
     },
   });
-
   const eventRef = useRef<HTMLInputElement>(null);
   function handleOpenFileinput() {
     if (eventRef.current) {
       eventRef.current.click();
     }
   }
-
-  useEffect(() => {
-    console.log(formik.values);
-  }, [formik.values]);
-
+  // useEffect(() => {
+  //   console.log(formik.values);
+  // }, [formik.values]);
   const formData = [
     {
       label: "Event title :",
@@ -142,12 +137,11 @@ export default function UpdateForm({ result }: Props) {
       bl: formik.errors.roster,
     },
   ];
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div>
         <div className="bg-slate-900 text-5xl font-bold text-white">
-          Update event .
+          Create new event .
         </div>
         <form onSubmit={formik.handleSubmit}>
           <div className="flex flex-col md:flex-row">
@@ -157,7 +151,7 @@ export default function UpdateForm({ result }: Props) {
                   src={
                     formik.values.image
                       ? window.URL.createObjectURL(formik.values.image)
-                      : imageUrl + "/events/" + result.image_url
+                      : imageUrl + "/events/"
                   }
                   alt="1"
                   fill={true}
@@ -218,7 +212,6 @@ export default function UpdateForm({ result }: Props) {
               htmlFor="start_time"
               className="flex flex-1 flex-col gap-2 font-semibold"
             >
-              {" "}
               Event starts at :
               <TimePicker
                 className="w-full"
@@ -233,12 +226,11 @@ export default function UpdateForm({ result }: Props) {
               htmlFor="end_time"
               className="flex  flex-1 flex-col gap-2 font-semibold"
             >
-              {" "}
               Event closes at :
               <TimePicker
                 className="w-full"
                 defaultValue={dayjs(formik.values.end_time)}
-                minTime={formik.values.start_time}
+                minTime={dayjs(formik.values.start_time)}
                 onChange={(value: any) => {
                   formik.setFieldValue("end_time", dayjs(value.toString()));
                 }}
@@ -250,7 +242,7 @@ export default function UpdateForm({ result }: Props) {
               Event ticket price (IDR) :
               <IconTextInput
                 icon={<FaDollarSign />}
-                placeholder={String(result.ticket_price)}
+                placeholder={String(formik.initialValues.ticket_price)}
                 name="ticket_price"
                 value={formik.values.ticket_price}
                 onChange={formik.handleChange}
@@ -261,7 +253,7 @@ export default function UpdateForm({ result }: Props) {
               Event Capacity :
               <IconTextInput
                 icon={<MdEventSeat />}
-                placeholder={String(result.ticket_amount)}
+                placeholder={String(formik.initialValues.ticket_amount)}
                 name="ticket_amount"
                 value={formik.values.ticket_amount}
                 onChange={formik.handleChange}
@@ -375,9 +367,9 @@ export default function UpdateForm({ result }: Props) {
               className="btn btn-accent mt-6 rounded-none text-white hover:bg-zinc-800"
               disabled={formik.isSubmitting ? true : false}
             >
-              Update event
+              Create Event
             </button>
-            <Link href={`/event/${result.id}`}>
+            <Link href={`/dashboard`}>
               <button
                 type="button"
                 className="btn btn-accent mt-6 rounded-none text-white hover:bg-zinc-800"

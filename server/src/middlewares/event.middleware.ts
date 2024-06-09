@@ -69,6 +69,7 @@ export async function checkPromotor(
 		const findUser = (await prisma.user.findFirst({
 			where: { username: username, role: "promotor" },
 		})) as TUser;
+		// console.log(findUser);
 
 		validator(
 			findUser.role !== "promotor" && !findUser.bank_acc_no,

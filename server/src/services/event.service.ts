@@ -214,7 +214,7 @@ class EventServices {
 		}
 
 		const data = { ...createNewEvent, discountCalculation };
-
+		console.log(data);
 		return data;
 	}
 
