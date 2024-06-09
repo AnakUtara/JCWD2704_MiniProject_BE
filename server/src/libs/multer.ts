@@ -48,7 +48,7 @@ export function uploader(
 			const originalNameParts = file.originalname.split(".");
 			const fileExtension = originalNameParts[originalNameParts.length - 1];
 			const newFileName = `${filePrefix}-${req.user.id}-${dayjs().format(
-				"YYYYMMDD"
+				"YYYYMMDD-HHmmss"
 			)}.${fileExtension}`;
 			cb(null, newFileName);
 		},

@@ -51,6 +51,7 @@ export const config = {
     "/forgot_password/:path*",
     "/verification/:path*",
     "/profile/:path*",
+    "/dashboard/:path*",
     "/sign-in",
     "/sign-up",
     "/",

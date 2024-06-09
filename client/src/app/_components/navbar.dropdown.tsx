@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "../_libs/redux/hooks";
 import { dateFormat, dayDateMonthYear } from "../_libs/dayjs";
 import UserAvatar from "./ui/user.avatar";
 import VerifiedBadge from "./ui/verified.badge";
+import { toast } from "sonner";
 
 type Props = { activeUser: TUser; email: string; refresh_token: string };
 export default function NavbarDropdown() {
@@ -82,6 +83,7 @@ export default function NavbarDropdown() {
         <Dropdown.Item
           onClick={() => {
             dispatch(logout());
+            toast.success("Signed Out.");
             window.location.reload();
           }}
         >

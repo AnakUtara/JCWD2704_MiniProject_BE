@@ -2,7 +2,7 @@ import { NextFunction, Request, Response, response } from "express";
 
 import { validator } from "../utils/validator";
 import { FilterType, TEvent } from "../models/event.model";
-import { Status_event, Venue_type } from "@prisma/client";
+import { Role, Status_event, Venue_type } from "@prisma/client";
 import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
 import eventService from "../services/event.service";
@@ -68,13 +68,9 @@ export async function checkPromotor(
 	try {
 		const { username } = req.user;
 		const findUser = (await prisma.user.findFirst({
-			where: { username: username, role: "promotor" },
+			where: { username, role: Role.promotor },
 		})) as TUser;
-
-		validator(
-			findUser.role !== "promotor" && !findUser.bank_acc_no,
-			`Account ${username} is not a promotor, unable to post event.`
-		);
+		validator(!findUser, `Unauthorized.`);
 		next();
 	} catch (error) {
 		next(error);
@@ -178,9 +174,9 @@ export async function checkEventStatus(
 	next: NextFunction
 ) {
 	try {
-		const { event_id } = req.body;
+		const { event_id: id } = req.body;
 		const isEventDone = await prisma.event.findFirst({
-			where: { id: event_id },
+			where: { id },
 		});
 		throwErrorMessageIf(
 			isEventDone?.status === Status_event.finished || !isEventDone,

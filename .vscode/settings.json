@@ -1,0 +1,17 @@
+{
+	"sqltools.connections": [
+		{
+			"mysqlOptions": {
+				"authProtocol": "default",
+				"enableSsl": "Disabled"
+			},
+			"previewLimit": 50,
+			"server": "riady.pw",
+			"port": 3306,
+			"driver": "MySQL",
+			"name": "vps riady",
+			"username": "riady",
+			"database": "jcwd2704_event_ticketing_db"
+		}
+	]
+}

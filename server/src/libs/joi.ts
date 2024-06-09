@@ -35,7 +35,8 @@ export const registerSchema = Joi.object({
 		.trim()
 		.pattern(new RegExp("^[0-9]+$"))
 		.min(8)
-		.max(12),
+		.max(12)
+		.allow(""),
 });
 
 export const updateSchema = Joi.object({
@@ -57,7 +58,7 @@ export const updateSchema = Joi.object({
 		.pattern(new RegExp("^[0-9]+$"))
 		.min(8)
 		.max(12),
-	address: Joi.string().trim().max(200),
+	address: Joi.string().trim().max(200).allow(""),
 });
 
 export const transactionSchema = Joi.object({
