@@ -167,24 +167,3 @@ export async function checkUpdateEventForm(
 		next(error);
 	}
 }
-
-export async function checkEventStatus(
-	req: Request,
-	res: Response,
-	next: NextFunction
-) {
-	try {
-		const { event_id: id } = req.body;
-		const isEventDone = await prisma.event.findFirst({
-			where: { id },
-		});
-		throwErrorMessageIf(
-			isEventDone?.status === Status_event.finished || !isEventDone,
-			"Event has ended."
-		);
-		req.event = isEventDone as TEvent;
-		next();
-	} catch (error) {
-		next(error);
-	}
-}

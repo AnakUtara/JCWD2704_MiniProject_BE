@@ -34,7 +34,10 @@ export async function checkEventOwner(
 		const isEventOwner = await prisma.event.findFirst({
 			where: { AND: [{ user_id: id }, { id: event_id }] },
 		});
-		throwErrorMessageIf(isEventOwner !== null, "Forbidden.");
+		throwErrorMessageIf(
+			isEventOwner !== null,
+			"Unable to purchase owned event."
+		);
 		next();
 	} catch (error) {
 		next(error);

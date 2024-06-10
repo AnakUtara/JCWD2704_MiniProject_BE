@@ -9,7 +9,7 @@ export class TransactionController {
 	) {
 		try {
 			const data = await transactionsService.getCustomerTransactions(req);
-			res.send({ message: "fetch customer transactions." });
+			res.send({ message: "fetch customer's transactions.", data });
 		} catch (error) {
 			next(error);
 		}
@@ -21,7 +21,7 @@ export class TransactionController {
 	) {
 		try {
 			const data = await transactionsService.getPromotorTransactions(req);
-			res.send({ message: "fetch promotor transactions.", data });
+			res.send({ message: "fetch promotor's transactions.", data });
 		} catch (error) {
 			next(error);
 		}

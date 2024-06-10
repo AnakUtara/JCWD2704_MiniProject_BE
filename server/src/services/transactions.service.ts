@@ -33,12 +33,15 @@ class TransactionService {
 		return data;
 	}
 	async getCustomerTransactions(req: Request) {
-		const { sort_by, sort, search, status } = req.query as {
+		//TODO: Add pagination feature
+		const { sort_by, sort, search, status, page } = req.query as {
 			sort_by: string;
 			sort: string;
 			search: string;
-			status: Status_transaction;
+			status?: Status_transaction;
+			page: string;
 		};
+		const limit = 2;
 		const { id: user_id } = req?.user;
 		const data = await prisma.transaction.findMany({
 			where: {
@@ -70,11 +73,14 @@ class TransactionService {
 							select: {
 								avatar: true,
 								username: true,
+								bank_acc_no: true,
 							},
 						},
 					},
 				},
 			},
+			take: limit,
+			skip: (Number(page) - 1) * limit,
 		});
 		throwErrorMessageIf(!data, "Transaction not found.");
 		return data;
@@ -83,12 +89,15 @@ class TransactionService {
 	async getPromotorTransactions(req: Request) {
 		//Get transaction list made by customers
 		//to events created by logged in Promotor
-		const { sort_by, sort, search, status } = req.query as {
+		//TODO: Add pagination feature
+		const { sort_by, sort, search, status, page } = req.query as unknown as {
 			sort_by: string;
 			sort: string;
 			search: string;
-			status: Status_transaction;
+			status?: Status_transaction;
+			page: string;
 		};
+		const limit = 10;
 		const { id: user_id } = req?.user;
 		const data = await prisma.transaction.findMany({
 			where: {
@@ -137,6 +146,8 @@ class TransactionService {
 				},
 			},
 			orderBy: [{ [sort_by]: sort }],
+			take: limit,
+			skip: (Number(page) - 1) * limit,
 		});
 		throwErrorMessageIf(!data, "Transaction not found.");
 		return data;
@@ -154,7 +165,6 @@ class TransactionService {
 		} = req.body;
 		throwErrorMessageIf(!ticket_bought, "Specify amount of ticket to buy.");
 		let total_price = req.event.ticket_price! * Number(ticket_bought);
-		console.log(req.body, total_price);
 		await prisma.$transaction(async (prisma) => {
 			try {
 				let data: Prisma.TransactionCreateInput = {
@@ -341,9 +351,16 @@ class TransactionService {
 					event_id: true,
 					ticket_bought: true,
 					voucher_id: true,
+					points_used: true,
 					event: {
 						select: {
 							ticket_amount: true,
+						},
+					},
+					user: {
+						select: {
+							id: true,
+							points: true,
 						},
 					},
 				},
@@ -365,6 +382,16 @@ class TransactionService {
 					where: { id: payment.voucher_id },
 					data: {
 						is_valid: true,
+					},
+				});
+			}
+			if (payment?.points_used) {
+				await prisma.user.update({
+					where: {
+						id: payment.user.id,
+					},
+					data: {
+						points: payment.user.points + payment.points_used,
 					},
 				});
 			}
