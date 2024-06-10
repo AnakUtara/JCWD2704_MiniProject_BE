@@ -4,6 +4,7 @@ import { TEvent } from "@/app/_models/event.model";
 import { useFormik } from "formik";
 import UpdateForm from "./_components/update_form";
 import dynamic from "next/dynamic";
+import DeleteEvent from "./_components/delete_event";
 
 type Props = { params: { event_id: string } };
 export default async function UpdateEvent({ params }: Props) {
@@ -19,5 +20,10 @@ export default async function UpdateEvent({ params }: Props) {
   const res = await axiosInstance().get(`/events/${event_id}`);
   const { data }: { data: TEvent } = await res.data;
 
-  return <UpdateForm result={data} />;
+  return (
+    <>
+      <UpdateForm result={data} />
+      <DeleteEvent result={data} />
+    </>
+  );
 }

@@ -17,6 +17,7 @@ export default async function EventDetails({ params }: Props) {
             src={imageUrl + "/events/" + data.image_url}
             alt="1"
             fill={true}
+            priority
             className=" rounded-md object-cover"
           />
         </div>
