@@ -15,7 +15,7 @@ export default function Navigation() {
   // const refresh_token = getCookie("refresh_token");
   const navLinks: { path: string; label: string }[] = [
     { path: "/", label: "Home" },
-    { path: "/explore", label: "Explore" },
+    { path: "/about-us", label: "About Us" },
     { path: "/sign-in", label: "Sign In" },
     { path: "/sign-up", label: "Sign Up" },
   ];

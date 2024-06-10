@@ -3,7 +3,7 @@
 import { Datepicker, Tabs } from "flowbite-react";
 import { HiUserCircle } from "react-icons/hi";
 import { MdDashboard } from "react-icons/md";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import IconTextInput from "@/app/_components/icon.text.input";
 import { FaAddressBook, FaPhone, FaUser } from "react-icons/fa";
 import { useAppSelector } from "@/app/_libs/redux/hooks";
@@ -20,8 +20,8 @@ import { getCookie } from "cookies-next";
 import { toast } from "sonner";
 import clsx from "clsx";
 
-type Props = {};
-export default function ProfileTabs({}: Props) {
+type Props = { children: React.ReactNode };
+export default function ProfileTabs({ children }: Props) {
   const activeUser = useAppSelector((s) => s.auth);
   const formik = useFormik({
     initialValues: {
@@ -67,9 +67,6 @@ export default function ProfileTabs({}: Props) {
       avatarRef.current.click();
     }
   }
-  useEffect(() => {
-    console.log(formik.values, formik.errors);
-  }, [formik]);
   return (
     <>
       <ProfileHeader activeUser={activeUser} onClick={handleOpenFileInput} />
@@ -221,13 +218,7 @@ export default function ProfileTabs({}: Props) {
           </form>
         </Tabs.Item>
         <Tabs.Item title="Purchases" icon={MdDashboard}>
-          This is{" "}
-          <span className="font-medium text-gray-800 dark:text-white">
-            Dashboard tab's associated content
-          </span>
-          . Clicking another tab will toggle the visibility of this one for the
-          next. The tab JavaScript swaps classes to control the content
-          visibility and styling.
+          {children}
         </Tabs.Item>
       </Tabs>
     </>

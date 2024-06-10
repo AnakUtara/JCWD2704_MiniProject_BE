@@ -76,7 +76,10 @@ export default function NavbarDropdown() {
             Promotor Dashboard
           </Dropdown.Item>
         )}
-        <Dropdown.Item as={Link} href="/profile">
+        <Dropdown.Item
+          as={Link}
+          href="/profile?sort=desc&sort_by=created_at&page=1"
+        >
           Profile
         </Dropdown.Item>
         <Dropdown.Divider />

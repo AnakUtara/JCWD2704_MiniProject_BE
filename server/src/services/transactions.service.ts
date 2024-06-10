@@ -33,7 +33,6 @@ class TransactionService {
 		return data;
 	}
 	async getCustomerTransactions(req: Request) {
-		//TODO: Add pagination feature
 		const { sort_by, sort, search, status, page } = req.query as {
 			sort_by: string;
 			sort: string;
@@ -41,21 +40,19 @@ class TransactionService {
 			status?: Status_transaction;
 			page: string;
 		};
-		const limit = 2;
+		const limit = 10;
 		const { id: user_id } = req?.user;
 		const data = await prisma.transaction.findMany({
 			where: {
 				user_id,
 				status,
-				OR: [
-					{ invoice_code: { contains: search } },
+				AND: [
 					{
-						event: {
-							title: { contains: search },
-							user: {
-								username: { contains: search },
-							},
-						},
+						OR: [
+							{ invoice_code: { contains: search } },
+							{ event: { title: { contains: search } } },
+							{ event: { user: { username: { contains: search } } } },
+						],
 					},
 				],
 			},
@@ -87,9 +84,6 @@ class TransactionService {
 	}
 
 	async getPromotorTransactions(req: Request) {
-		//Get transaction list made by customers
-		//to events created by logged in Promotor
-		//TODO: Add pagination feature
 		const { sort_by, sort, search, status, page } = req.query as unknown as {
 			sort_by: string;
 			sort: string;
