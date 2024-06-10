@@ -135,7 +135,7 @@ export default function SearchForm() {
                       {event.discountCalculation !== 0 ? (
                         <div className=" flex items-center justify-between gap-3 rounded-md bg-[#80d1a8] px-2">
                           <p className="text-[10px] font-semibold text-[#4f6853]">
-                            Disc. {event.discount}%
+                            {event.discount}% OFF!
                           </p>
                         </div>
                       ) : (
