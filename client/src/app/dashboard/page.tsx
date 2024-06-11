@@ -30,7 +30,7 @@ export default async function Dashboard({ searchParams }: Props) {
       tab1={<div>Events</div>}
       tab2={
         <div>
-          <Search />
+          <Search placeholder="Search transactions..." />
           <PromotorTransactionsList data={data} />
         </div>
       }

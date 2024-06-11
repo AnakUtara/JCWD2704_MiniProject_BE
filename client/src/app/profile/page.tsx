@@ -37,7 +37,7 @@ export default async function Profile({ searchParams }: Props) {
   });
   return (
     <ProfileTabs>
-      <Search />
+      <Search placeholder="Search purchases..." />
       <Suspense
         key={searchParams.search + searchParams.page}
         fallback={<span className="loading loading-bars"></span>}

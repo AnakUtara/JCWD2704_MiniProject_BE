@@ -1,4 +1,5 @@
 import { TransactionController } from "../controllers/transaction.controller";
+import { maxAvatarSize, uploader } from "../libs/multer";
 import { verifyAccessToken } from "../middlewares/auth.middleware";
 import { checkPromotor } from "../middlewares/event.middleware";
 import {
@@ -36,6 +37,15 @@ class TransactionsRouter extends EntityRouter {
 			checkVoucher,
 			checkEventStatus,
 			this.transactionController.create
+		);
+		this.router.patch(
+			"/:id",
+			verifyAccessToken,
+			checkPromotor,
+			uploader("PROOF", maxAvatarSize, "transfer_proof").single(
+				"transfer_proof"
+			),
+			this.transactionController.update
 		);
 		this.router.delete(
 			"/:id",
