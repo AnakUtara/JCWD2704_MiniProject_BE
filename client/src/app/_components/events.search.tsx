@@ -17,7 +17,6 @@ export default function SearchForm() {
   const [pages, setPages] = useState(1);
 
   const fetchData = async (queryParams: any) => {
-    // console.log("from fetchdata", queryParams);
     try {
       const res = await axiosInstance().get("/events/orders", {
         params: { ...queryParams, page: currentPage, limit: size },

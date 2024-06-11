@@ -29,7 +29,11 @@ export async function middleware(request: NextRequest) {
     pathname === "/sign-up" ||
     pathname.startsWith("/forgot-password");
   const userOnlyPaths: boolean =
-    pathname === "/profile" || pathname === "/dashboard";
+    pathname.startsWith("/profile") || pathname.startsWith("/dashboard");
+  const verifiedUserOnlyPaths: boolean =
+    pathname.startsWith("/transaction") ||
+    pathname === "/event/create" ||
+    pathname === "/event/update";
   if (guestOnlyPaths && validate) {
     return NextResponse.redirect(new URL("/", request.url));
   }
@@ -42,6 +46,12 @@ export async function middleware(request: NextRequest) {
   if (userOnlyPaths && !validate) {
     return NextResponse.redirect(new URL("/", request.url));
   }
+  if (
+    (verifiedUserOnlyPaths && !validate) ||
+    (verifiedUserOnlyPaths && !is_verified)
+  ) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
   return response;
 }
 
@@ -49,8 +59,11 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/forgot_password/:path*",
+    "/event/:path*",
     "/verification/:path*",
-    "/profile/:path*",
+    "/profile",
+    "/dashboard",
+    "/transaction/:path*",
     "/sign-in",
     "/sign-up",
     "/",

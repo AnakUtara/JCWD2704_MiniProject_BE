@@ -20,7 +20,11 @@ class EventRoute extends EntityRouter {
 			"/orders",
 			eventController.getWithOrder.bind(eventController)
 		);
-		this.router.get("/:id", eventController.getById.bind(eventController));
+		this.router.get(
+			"/:id",
+			verifyAccessToken,
+			eventController.getById.bind(eventController)
+		);
 
 		// ROUTE FOR FETCH EVENT DATA HANDLED BY PROMOTOR
 		this.router.get(

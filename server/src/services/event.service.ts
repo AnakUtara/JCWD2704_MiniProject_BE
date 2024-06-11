@@ -51,7 +51,7 @@ class EventServices {
 				],
 			},
 		});
-		console.log(totalCount);
+		// console.log(totalCount);
 
 		const baseData = (await prisma.event.findMany({
 			orderBy: [{ [orderType]: order }],
@@ -112,10 +112,20 @@ class EventServices {
 
 	async getById(req: Request) {
 		const { id } = req.params;
-		validator(!id, "event not found");
 
 		const baseData = (await prisma.event.findFirst({
-			where: { id: id },
+			where: { id },
+			include: {
+				user: {
+					select: {
+						username: true,
+						avatar: true,
+						email: true,
+						phone_no: true,
+						bank_acc_no: true,
+					},
+				},
+			},
 		})) as TEvent;
 		validator(!baseData, "event not found");
 
@@ -151,7 +161,7 @@ class EventServices {
 		);
 
 		const inputs = Object.fromEntries(inputEntries) as TEvent;
-		console.log(req.file?.fieldname);
+		// console.log(req.file?.fieldname);
 		const image = req.file?.filename as string;
 
 		if (req.file?.fieldname && image) inputs.image_url = image;

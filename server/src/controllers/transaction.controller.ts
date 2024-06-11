@@ -2,6 +2,30 @@ import { NextFunction, Request, Response } from "express";
 import transactionsService from "../services/transactions.service";
 
 export class TransactionController {
+	async getCustomerTransactions(
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			const data = await transactionsService.getCustomerTransactions(req);
+			res.send({ message: "fetch customer's transactions.", data });
+		} catch (error) {
+			next(error);
+		}
+	}
+	async getPromotorTransactions(
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			const data = await transactionsService.getPromotorTransactions(req);
+			res.send({ message: "fetch promotor's transactions.", data });
+		} catch (error) {
+			next(error);
+		}
+	}
 	async create(req: Request, res: Response, next: NextFunction) {
 		try {
 			await transactionsService.create(req);

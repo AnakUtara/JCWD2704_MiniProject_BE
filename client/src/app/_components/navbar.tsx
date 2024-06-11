@@ -11,12 +11,11 @@ import NavbarDropdown from "./navbar.dropdown";
 
 export default function Navigation() {
   const activeUser = useAppSelector((s) => s.auth) as TUser;
-  const { email } = activeUser;
   const pathname = usePathname();
   // const refresh_token = getCookie("refresh_token");
   const navLinks: { path: string; label: string }[] = [
     { path: "/", label: "Home" },
-    { path: "/explore", label: "Explore" },
+    { path: "/about-us", label: "About Us" },
     { path: "/sign-in", label: "Sign In" },
     { path: "/sign-up", label: "Sign Up" },
   ];
@@ -30,7 +29,7 @@ export default function Navigation() {
           "top-0 z-50 w-full bg-black text-white",
         )}
       >
-        <Navbar.Brand href="https://flowbite-react.com">
+        <Navbar.Brand href="/">
           <span
             className={clsx(
               major_mono.className,

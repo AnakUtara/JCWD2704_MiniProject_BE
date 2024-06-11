@@ -93,7 +93,7 @@ class UsersService {
 					//create voucher for registered user with referral code
 					(await prisma.voucher.create({
 						data: {
-							amount: 0.1,
+							amount: 10,
 							is_valid: true,
 							user: {
 								connect: {
@@ -207,7 +207,7 @@ class UsersService {
 	}
 	async login(req: Request) {
 		const currentExpDate = req?.user.points_expiry_date;
-		if (dayjs(currentExpDate) < dayjs())
+		if (dayjs(currentExpDate) < dayjs() || req.user.points === 0)
 			await prisma.user.update({
 				where: {
 					id: req?.user.id,
