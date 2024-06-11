@@ -7,8 +7,8 @@ import { FaMagnifyingGlass } from "react-icons/fa6";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 
-type Props = {};
-export default function Search({}: Props) {
+type Props = { placeholder: string };
+export default function Search({ placeholder }: Props) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -66,7 +66,7 @@ export default function Search({}: Props) {
       </select>
       <IconTextInput
         icon={<FaMagnifyingGlass />}
-        placeholder="Search purchases..."
+        placeholder={placeholder}
         name="search"
         onChange={(e) => {
           handleChange({ search: e.target.value });
