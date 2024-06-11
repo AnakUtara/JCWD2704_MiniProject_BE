@@ -61,3 +61,28 @@ export const accordionCustomTheme: CustomFlowbiteTheme = {
     },
   },
 };
+
+export const tabsCustomTheme: CustomFlowbiteTheme = {
+  tabs: {
+    tablist: {
+      tabitem: {
+        base: "flex items-center justify-center rounded-t-lg p-4 text-sm font-medium first:ml-0 disabled:cursor-not-allowed disabled:text-gray-400 disabled:dark:text-gray-500",
+        styles: {
+          default: {
+            active: {
+              on: "bg-black text-black dark:bg-gray-800 dark:text-white",
+              off: "text-gray-500 hover:bg-gray-50 hover:text-gray-600 dark:text-gray-400 dark:hover:bg-gray-800  dark:hover:text-gray-300",
+            },
+          },
+          underline: {
+            base: "rounded-t-lg",
+            active: {
+              on: "active rounded-t-lg border-b-2 border-black text-black dark:border-white dark:text-white",
+              off: "border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300",
+            },
+          },
+        },
+      },
+    },
+  },
+};

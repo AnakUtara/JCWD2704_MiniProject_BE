@@ -4,7 +4,7 @@ import { TTransaction } from "@/app/_models/transaction.model";
 import { Table } from "flowbite-react";
 
 type Props = { data: TTransaction[] };
-export default function TransactionList({ data }: Props) {
+export default function PromotorTransactionsList({ data }: Props) {
   return (
     <div className="w-full overflow-x-auto">
       <Table className="bg-transparent shadow-none" hoverable>
@@ -15,8 +15,7 @@ export default function TransactionList({ data }: Props) {
           <Table.HeadCell>Event Discount</Table.HeadCell>
           <Table.HeadCell>Points Used</Table.HeadCell>
           <Table.HeadCell>Event</Table.HeadCell>
-          <Table.HeadCell>Event Creator</Table.HeadCell>
-          <Table.HeadCell>Promotor's Bank Account No.</Table.HeadCell>
+          <Table.HeadCell>Purchased By</Table.HeadCell>
           <Table.HeadCell>Applied Voucher</Table.HeadCell>
           <Table.HeadCell>Transfer Proof</Table.HeadCell>
           <Table.HeadCell>Status</Table.HeadCell>
@@ -35,14 +34,11 @@ export default function TransactionList({ data }: Props) {
                 {trans.points_used ? trans.points_used : "none"}
               </Table.Cell>
               <Table.Cell>{trans.event.title}</Table.Cell>
-              <Table.Cell>{trans.event.user.username}</Table.Cell>
-              <Table.Cell>{trans.event.user.bank_acc_no}</Table.Cell>
+              <Table.Cell>{trans.user.username}</Table.Cell>
               <Table.Cell>
                 {trans.voucher_id ? trans.voucher_id : "none"}
               </Table.Cell>
-              <Table.Cell>
-                {trans.transfer_proof ? trans.transfer_proof : "upload"}
-              </Table.Cell>
+              <Table.Cell>{trans.transfer_proof ? "view" : "none"}</Table.Cell>
               <Table.Cell>{trans.status}</Table.Cell>
               <Table.Cell>
                 {dateFormat(trans.created_at.toString(), monthDateYear)}

@@ -5,7 +5,6 @@ import { sort_order, sort_via } from "@/app/_models/sort.model";
 import { trans_status } from "@/app/_models/transaction.model";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 type Props = {};

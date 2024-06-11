@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import TransactionList from "./_components/transaction.list";
-import Search from "./_components/search";
+import Search from "../_components/search";
 import { sort_order, sort_via } from "../_models/sort.model";
 import { TTransaction, trans_status } from "../_models/transaction.model";
 import { Suspense } from "react";

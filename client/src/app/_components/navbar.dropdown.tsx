@@ -72,9 +72,17 @@ export default function NavbarDropdown() {
           </span>
         </Dropdown.Header>
         {activeUser.role === Role.promotor && (
-          <Dropdown.Item as={Link} href="/dashboard">
-            Promotor Dashboard
-          </Dropdown.Item>
+          <>
+            <Dropdown.Item as={Link} href="/event/create">
+              Create Event
+            </Dropdown.Item>
+            <Dropdown.Item
+              as={Link}
+              href="/dashboard?sort=desc&sort_by=created_at&page=1"
+            >
+              Promotor Dashboard
+            </Dropdown.Item>
+          </>
         )}
         <Dropdown.Item
           as={Link}
