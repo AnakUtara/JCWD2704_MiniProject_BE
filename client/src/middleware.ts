@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
     pathname === "/sign-up" ||
     pathname.startsWith("/forgot-password");
   const userOnlyPaths: boolean =
-    pathname.startsWith("/profile") || pathname.startsWith("/dashboard");
+    pathname === "/profile" || pathname === "/dashboard";
   const verifiedUserOnlyPaths: boolean =
     pathname.startsWith("/transaction") ||
     pathname === "/event/create" ||

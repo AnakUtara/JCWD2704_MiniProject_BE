@@ -26,7 +26,6 @@ export default function Search({ placeholder }: Props) {
       status?: trans_status | undefined | string;
       page?: string;
     }) => {
-      console.log(search);
       const inputs = { search, sort, sort_by, status, page };
       const entries = Object.entries(inputs);
       const params = new URLSearchParams(searchParams);
