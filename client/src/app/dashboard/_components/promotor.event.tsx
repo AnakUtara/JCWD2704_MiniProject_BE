@@ -1,16 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { axiosInstance } from "../_libs/axios.config";
-import { imageUrl } from "../_utils/config";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { formatDate, formatPrice } from "../_utils/formatter";
-import { orderType } from "../_models/event.model";
 import { useDebouncedCallback } from "use-debounce";
 import Link from "next/link";
+import { axiosInstance } from "@/app/_libs/axios.config";
+import { imageUrl } from "@/app/_utils/config";
+import { orderType } from "@/app/_models/event.model";
+import { formatDate } from "@/app/_utils/formatter";
 
-export default function SearchForm() {
+export default function PromotorEvent() {
   const [data, setData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
@@ -18,10 +18,11 @@ export default function SearchForm() {
 
   const fetchData = async (queryParams: any) => {
     try {
-      const res = await axiosInstance().get("/events/orders", {
+      const res = await axiosInstance().get("/events/promotor", {
         params: { ...queryParams, page: currentPage, limit: size },
       });
-      setData(res.data.data);
+
+      setData(res.data.result);
       setPages(res.data.total_page);
     } catch (error) {
       console.error(`Error in fetching data`, error);
@@ -51,11 +52,13 @@ export default function SearchForm() {
   };
 
   useEffect(() => {
+    console.log();
+
     debouncedData(formik.values);
   }, [currentPage, size, formik.values]);
 
   return (
-    <div className="container">
+    <div className="w-full md:px-8 lg:px-12">
       <div className=" my-[4vh] w-full rounded-md border-[1px] border-gray-400 p-4">
         <form
           onSubmit={formik.handleSubmit}
@@ -72,7 +75,7 @@ export default function SearchForm() {
               }
               value={formik.values.orderType}
             >
-              {orderType.map((o) => (
+              {orderType.map((o: any) => (
                 <option key={o.value} value={o.value} className="">
                   {o.name}
                 </option>
@@ -124,33 +127,7 @@ export default function SearchForm() {
                 </div>
                 <div className="flex flex-col justify-between px-4 pt-2">
                   <p className="text-lg font-semibold"> {event.title}</p>
-                  <div className="mb-2 text-sm">
-                    <div className="flex justify-between">
-                      <p
-                        className={`${event.discountCalculation !== 0 ? "text-gray-400 line-through" : "font-semibold"}`}
-                      >
-                        {event.ticket_price !== 0
-                          ? formatPrice(event.ticket_price)
-                          : "Free Event"}
-                      </p>
-                      {event.discountCalculation !== 0 ? (
-                        <div className=" flex items-center justify-between gap-3 rounded-md bg-[#80d1a8] px-2">
-                          <p className="text-[10px] font-semibold text-[#4f6853]">
-                            Disc. {event.discount}%
-                          </p>
-                        </div>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                    <div className="flex min-h-[20px] items-center">
-                      <p className=" font-semibold">
-                        {event.discountCalculation
-                          ? formatPrice(event.discountCalculation)
-                          : ""}
-                      </p>
-                    </div>
-                  </div>
+
                   <div className="mb-4">
                     <div className="mb-2 text-sm">
                       <p> {formatDate(event.scheduled_at)}</p>
@@ -180,7 +157,9 @@ export default function SearchForm() {
         >
           Previous
         </button>
-        <button></button>
+        <p>
+          page {currentPage} of {pages}
+        </p>
         <button
           type="button"
           onClick={() => handlePageChange(currentPage + 1)}
@@ -189,9 +168,6 @@ export default function SearchForm() {
         >
           Next
         </button>
-        <p>
-          page {currentPage} of {pages}
-        </p>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ export const FP_SECRET_KEY = process.env.FP_SECRET_KEY || "";
 export const VERIF_SECRET_KEY = process.env.VERIF_SECRET_KEY || "";
 
 export const corsOptions: CorsOptions = {
-	origin: [`${process.env.BASE_URL}${process.env.FE_PORT}`],
+	origin: [`${process.env.FE_URL}`],
 	credentials: true,
 };
 

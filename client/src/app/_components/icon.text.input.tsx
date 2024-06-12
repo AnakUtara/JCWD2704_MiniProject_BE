@@ -13,6 +13,7 @@ type Props = {
   autoComplete?: string;
   disabled?: boolean;
   ghost?: boolean;
+  full?: boolean;
   inputMode?:
     | "email"
     | "search"
@@ -36,9 +37,10 @@ export default function IconTextInput({
   disabled = false,
   ghost = false,
   inputMode = "text",
+  full = false,
 }: Props) {
   return (
-    <div>
+    <div className={clsx(full && "grow")}>
       <label
         className={clsx(
           ghost ? "input-ghost" : "input-bordered",

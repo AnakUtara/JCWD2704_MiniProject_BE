@@ -1,3 +1,5 @@
+import { TUser } from "./user.model";
+
 export const orderType = [
   { value: "title", name: "By Title" },
   { value: "scheduled_at", name: "By Date" },
@@ -55,6 +57,9 @@ export type TEvent = {
 
   created_at?: Date;
   updated_at?: Date;
+
+  user: TUser;
+  ratingEvent?: number | null;
 };
 
 export enum Category {

@@ -11,7 +11,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { getCookie } from "cookies-next";
 import dayjs from "dayjs";
-import { Datepicker } from "flowbite-react";
+import { Datepicker, Spinner } from "flowbite-react";
 import { useFormik } from "formik";
 import Image from "next/image";
 import Link from "next/link";
@@ -63,7 +63,6 @@ export default function CreateForm() {
           },
           {
             headers: {
-              Authorization: `Bearer ${getCookie("access_token")}`,
               "content-type": "multipart/form-data",
             },
           },
@@ -367,7 +366,7 @@ export default function CreateForm() {
               className="btn btn-accent mt-6 rounded-none text-white hover:bg-zinc-800"
               disabled={formik.isSubmitting ? true : false}
             >
-              Create Event
+              {formik.isSubmitting ? <Spinner></Spinner> : "Create Event"}
             </button>
             <Link href={`/dashboard`}>
               <button

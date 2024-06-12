@@ -1,10 +1,17 @@
 import { axiosInstance } from "@/app/_libs/axios.config";
 import { dateFormat, hourOnly, monthDateYear } from "@/app/_libs/dayjs";
 import { TEvent } from "@/app/_models/event.model";
+import { TReview } from "@/app/_models/review.model";
 import { imageUrl } from "@/app/_utils/config";
 import { formatPrice } from "@/app/_utils/formatter";
 import Image from "next/image";
 import Link from "next/link";
+import EventReview from "./_components/event_review";
+import CreateReview from "./_components/add_review";
+import StarRating from "./_components/starRating";
+import EventTabs from "./_components/event.tabs";
+import ReviewTabs from "./_components/review.tabs";
+import Details from "./_components/details.data";
 
 type Props = { params: { event_id: string } };
 export default async function EventDetails({ params }: Props) {
@@ -12,10 +19,12 @@ export default async function EventDetails({ params }: Props) {
   const res = await axiosInstance().get(`/events/${event_id}`);
   const { data }: { data: TEvent } = await res.data;
 
+  console.log(data);
+
   return (
     <div className=" w-full">
       <div className="gap-6 md:flex md:flex-row">
-        <div className="relative h-[130px] w-full md:h-[89vh] md:w-[70%]">
+        <div className="relative h-[130px] w-full md:h-[87vh] md:w-[40%]">
           <Image
             src={imageUrl + "/events/" + data.image_url}
             alt="1"
@@ -26,23 +35,29 @@ export default async function EventDetails({ params }: Props) {
           <div className="absolute left-5 top-5 bg-slate-600 bg-opacity-50 text-4xl text-white">
             {data.title}
           </div>
+          <div className="absolute bottom-5 right-5 ">
+            <StarRating
+              rating={data.ratingEvent}
+              size="lg"
+              colour="white"
+              name="ratingEvent"
+            />
+          </div>
         </div>
         {/* detail content */}
         <div className=" mt-4 flex flex-col gap-4 md:mt-0 md:w-[60%] md:gap-6">
-          <div className="relative w-full rounded-md border-[1px] border-slate-500 p-2 ">
-            <p className="border-b-[1px] border-slate-500 bg-slate-500 text-lg font-normal text-white md:text-2xl">
-              Event Description :
-            </p>
-            {data.details}
-            <div className="flex justify-end ">
-              <Link href={`/event/update/${data.id}`}>
-                <button className="btn btn-accent mt-6  rounded-none text-white hover:bg-zinc-800">
-                  Edit event
-                </button>
-              </Link>
-            </div>
+          <div className="mb-auto h-[60%]">
+            <EventTabs
+              tab1={<Details data={data} />}
+              tab2={<div>event transaction</div>}
+            />
           </div>
-          <div className="flex flex-col gap-4 md:flex-row md:gap-6">
+
+          <div className="mt-auto h-[40%]">
+            <ReviewTabs tab1={<CreateReview data={data} />} />
+          </div>
+
+          {/* <div className="flex flex-col gap-4 md:flex-row md:gap-6">
             <div className=" flex w-full flex-col gap-2 rounded-md border-[1px] border-slate-500 p-2 md:gap-4">
               <div className="md:mb-10">
                 <p className="border-b-[1px] border-slate-500 bg-slate-500 text-lg font-normal text-white md:text-lg">
@@ -142,23 +157,15 @@ export default async function EventDetails({ params }: Props) {
                 </button>
               )}
             </div>
-          </div>
-          <div className="h-full w-full rounded-md border-[1px] border-slate-500 p-2">
+          </div> */}
+          {/* <div className="mt-auto h-[40%] w-full rounded-md border-[1px] border-slate-500 p-2">
             <p className="border-b-[1px] border-slate-500 bg-slate-500 text-lg font-normal text-white md:text-2xl">
-              {" "}
               Event Reviews :
             </p>
-            <div></div>
-          </div>
+            <CreateReview data={data} />
+          </div> */}
         </div>
       </div>
-      {/* <div>
-        <Link href={`/event/update/${data.id}`}>
-          <button className="btn btn-accent mt-6 rounded-none text-white hover:bg-zinc-800">
-            Edit event
-          </button>
-        </Link>
-      </div> */}
     </div>
   );
 }

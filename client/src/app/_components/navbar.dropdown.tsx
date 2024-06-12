@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "../_libs/redux/hooks";
 import { dateFormat, dayDateMonthYear } from "../_libs/dayjs";
 import UserAvatar from "./ui/user.avatar";
 import VerifiedBadge from "./ui/verified.badge";
+import { toast } from "sonner";
 
 type Props = { activeUser: TUser; email: string; refresh_token: string };
 export default function NavbarDropdown() {
@@ -71,17 +72,29 @@ export default function NavbarDropdown() {
           </span>
         </Dropdown.Header>
         {activeUser.role === Role.promotor && (
-          <Dropdown.Item as={Link} href="/dashboard">
-            Promotor Dashboard
-          </Dropdown.Item>
+          <>
+            <Dropdown.Item as={Link} href="/event/create">
+              Create Event
+            </Dropdown.Item>
+            <Dropdown.Item
+              as={Link}
+              href="/dashboard?sort=desc&sort_by=created_at&page=1"
+            >
+              Promotor Dashboard
+            </Dropdown.Item>
+          </>
         )}
-        <Dropdown.Item as={Link} href="/profile">
+        <Dropdown.Item
+          as={Link}
+          href="/profile?sort=desc&sort_by=created_at&page=1"
+        >
           Profile
         </Dropdown.Item>
         <Dropdown.Divider />
         <Dropdown.Item
           onClick={() => {
             dispatch(logout());
+            toast.success("Signed Out.");
             window.location.reload();
           }}
         >

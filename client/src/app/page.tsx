@@ -16,12 +16,12 @@ export default async function Home() {
       limit: "4",
     },
   });
-  const { result }: { result: TEvent[] } = res.data;
+  const { data}: { data: TEvent[] } = res.data;
 
   return (
     <div className="flex justify-center">
       <div className="container">
-        <EventsCarousel result={result} />
+        <EventsCarousel data={data} />
         <SearchForm />
       </div>
     </div>

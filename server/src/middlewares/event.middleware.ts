@@ -73,7 +73,7 @@ export async function checkPromotor(
 
 		validator(
 			findUser.role !== "promotor" && !findUser.bank_acc_no,
-			`Account ${username} is not a promotor, unable to post event.`
+			`Account ${username} is not a promotor, unable to post/create event.`
 		);
 		next();
 	} catch (error) {

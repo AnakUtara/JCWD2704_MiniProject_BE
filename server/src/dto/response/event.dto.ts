@@ -15,6 +15,7 @@ export class EventDto {
 	end_time?: Date;
 	location?: string;
 	roster?: string;
+	rating?: number[];
 
 	constructor(Partial: Partial<EventDto>) {
 		Object.assign(this, Partial);
@@ -35,6 +36,7 @@ export class EventDto {
 			start_time: event.start_time,
 			end_time: event.end_time,
 			roster: event.roster,
+
 			// event_image: event.event_image?.map((e) => e.image_url),
 		});
 	}

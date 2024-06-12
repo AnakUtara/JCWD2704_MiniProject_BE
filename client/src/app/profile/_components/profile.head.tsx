@@ -9,6 +9,7 @@ import { FaCamera } from "react-icons/fa";
 
 type Props = { activeUser: TUser; onClick: () => void };
 export default function ProfileHeader({ activeUser, onClick }: Props) {
+  const isVoucherValid = !activeUser.voucher || !activeUser.voucher.is_valid;
   return (
     <>
       <div
@@ -35,7 +36,9 @@ export default function ProfileHeader({ activeUser, onClick }: Props) {
             {capitalize(activeUser.username)}
           </h2>
           <VerifiedBadge user={activeUser} email={activeUser.email} />
-          <p className="badge badge-accent m-0 text-white">{activeUser.role}</p>
+          <p className="badge badge-accent m-0 ml-1 text-white">
+            {activeUser.role}
+          </p>
         </div>
       </div>
       <div className="prose flex flex-wrap gap-5">
@@ -61,7 +64,7 @@ export default function ProfileHeader({ activeUser, onClick }: Props) {
             {`${activeUser.points_expiry_date ? dateFormat(activeUser.points_expiry_date, dayDateMonthYear) : ""}`}
           </p>
         </div>
-        <div className={clsx(!activeUser.voucher && "hidden")}>
+        <div className={clsx(isVoucherValid && "hidden")}>
           <p className="my-0 text-xs">10% off referral voucher:</p>
           <h4 className="mt-1 bg-black p-2 text-center text-sm font-bold text-white">
             {activeUser.voucher?.id}

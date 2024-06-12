@@ -11,11 +11,7 @@ export default async function DeleteEvent({ result }: Props) {
   const router = useRouter();
   const deleteData = async ({ result }: Props) => {
     try {
-      await axiosInstance().delete(`/events/${result.id}`, {
-        headers: {
-          Authorization: `Bearer ${getCookie("access_token")}`,
-        },
-      });
+      await axiosInstance().delete(`/events/${result.id}`);
       toast.success("Success!, chosen event deleted");
       router.push("/dashboard");
     } catch (error) {

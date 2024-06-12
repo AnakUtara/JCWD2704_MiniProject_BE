@@ -64,6 +64,7 @@ class EventServices {
 					{ roster: { contains: filterValue } },
 				],
 			},
+			include: { review: { select: { rating: true } } },
 		})) as TEvent[];
 
 		// const data = {...baseData}
@@ -74,38 +75,49 @@ class EventServices {
 				discountCalculation =
 					e.ticket_price - (e.discount_amount / 100) * e.ticket_price;
 			}
+
+			let ratingCalculation: number = 0;
+
 			return { ...e, discountCalculation };
 		});
 		return { data, totalCount };
 	}
 
-	async getEventsPromotor(req: Request, customSelect = this.customSelect) {
-		const { id_username } = req.params;
-
-		const data = await prisma.$transaction(async (prisma: any) => {
-			try {
-				const findUser = (await prisma.user.findFirst({
-					where: {
-						OR: [{ id: id_username }, { username: id_username }],
-						role: "promotor",
-					},
-					select: { id: true },
-				})) as TUser;
-
-				validator(
-					!findUser || !findUser.id,
-					"User is not found OR the UserID is undefined"
-				);
-
-				return await prisma.event.findMany({
-					where: { user_id: findUser.id },
-					select: customSelect,
-				});
-			} catch (error) {
-				throwError(error);
-			}
+	async getEventsPromotor(req: Request) {
+		const { orderType, order, filterValue, page, limit } = req.query as {
+			orderType: OrderType;
+			order: Prisma.SortOrder;
+			filterValue: string;
+			page: string;
+			limit: string;
+		};
+		const totalCount = await prisma.event.count({
+			where: {
+				OR: [
+					{ city: { equals: filterValue } },
+					{ title: { contains: filterValue } },
+					{ roster: { contains: filterValue } },
+				],
+			},
 		});
-		return data;
+		console.log(totalCount);
+
+		const data = (await prisma.event.findMany({
+			orderBy: [{ [orderType]: order }],
+			skip: Number(limit) * (Number(page) - 1),
+			take: Number(limit),
+			where: {
+				user_id: req.user.id,
+				OR: [
+					{ city: { equals: filterValue } },
+					{ title: { contains: filterValue } },
+					{ roster: { contains: filterValue } },
+				],
+			},
+			include: { review: { select: { rating: true } } },
+		})) as TEvent[];
+
+		return { data, totalCount };
 	}
 
 	async getEventsCustomer(req: Request, customSelect = this.customSelect) {}
@@ -116,8 +128,29 @@ class EventServices {
 
 		const baseData = (await prisma.event.findFirst({
 			where: { id: id },
+			include: {
+				user: {
+					select: {
+						username: true,
+						avatar: true,
+						email: true,
+						phone_no: true,
+						bank_acc_no: true,
+					},
+				},
+				review: { select: { rating: true } },
+			},
 		})) as TEvent;
 		validator(!baseData, "event not found");
+
+		const ratingCalculation = await prisma.review.aggregate({
+			_avg: { rating: true },
+			where: { event_id: id },
+		});
+
+		const { ["_avg"]: average } = ratingCalculation;
+		const { rating: ratingEvent } = average;
+		console.log(average);
 
 		let discountCalculation: number = 0;
 		if (baseData?.discount_amount && baseData.ticket_price) {
@@ -126,7 +159,7 @@ class EventServices {
 				(baseData.discount_amount / 100) * baseData.ticket_price;
 		}
 
-		const data = { ...baseData, discountCalculation };
+		const data = { ...baseData, discountCalculation, ratingEvent };
 
 		return data;
 	}
