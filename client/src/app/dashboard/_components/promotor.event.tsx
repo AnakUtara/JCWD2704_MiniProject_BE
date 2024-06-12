@@ -112,7 +112,7 @@ export default function PromotorEvent() {
         {data.map((event: any) => {
           // console.log(event.id);
           return (
-            <Link key={event.id} href={`/event/${event.id}`}>
+            <Link key={event.id} href={`/event/update/${event.id}`}>
               <div className=" w-full rounded-md border-[1px] border-gray-400 transition-transform duration-200 hover:scale-105">
                 <div className=" relative h-[130px] w-full">
                   <Image

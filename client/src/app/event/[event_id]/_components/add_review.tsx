@@ -52,24 +52,27 @@ export default function CreateReview({ data }: Props) {
   }, []);
 
   return (
-    <div className="flex h-full w-full flex-col">
-      <div>
+    <div className="flex h-full w-full flex-col gap-4 md:gap-0">
+      <div className="overflow-y-scroll">
         <EventReview result={result} />
       </div>
 
-      <form onSubmit={formik.handleSubmit} className="flex w-full self-end ">
-        <div className="flex flex-col md:flex-row ">
+      <form
+        onSubmit={formik.handleSubmit}
+        className="flex w-full flex-col md:flex-row md:items-center md:justify-between"
+      >
+        <div className="flex flex-row items-center gap-2">
           <input
             name="review"
             type="text"
             placeholder="type your review here!"
             value={formik.values.review}
             onChange={formik.handleChange}
-            className="flex-1 "
+            className="h-[6vh] md:w-[75vh]"
           />
 
           <div className="flex flex-col items-center">
-            <p className="font-semibold">Rate our event!</p>
+            <p className="md:text-md text-xs font-semibold">Rate our event!</p>
 
             <div className="rating rating-md">
               <input

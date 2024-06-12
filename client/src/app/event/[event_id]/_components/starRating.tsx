@@ -1,6 +1,8 @@
+"use client";
 type Props = { rating: any; size: string; colour: string; name: string };
 const StarRating = ({ rating, size, colour, name }: Props) => {
   const getCheckedIndex = () => {
+    if (rating == null || rating === 0) return 0;
     return Math.round(rating * 2) - 1;
   };
   const checkedIndex = getCheckedIndex();
