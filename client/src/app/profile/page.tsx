@@ -4,8 +4,8 @@ import Search from "../_components/search";
 import { sort_order, sort_via } from "../_models/sort.model";
 import { TTransaction, trans_status } from "../_models/transaction.model";
 import { Suspense } from "react";
-import { axiosInstance } from "../_libs/axios.config";
 import { cookies } from "next/headers";
+import { fetchSearchData } from "../_utils/fetch";
 
 type Props = {
   searchParams: {
@@ -17,15 +17,12 @@ type Props = {
   };
 };
 export default async function Profile({ searchParams }: Props) {
-  const res = await axiosInstance().get("/transactions/v1", {
-    params: {
-      ...searchParams,
-    },
-    headers: {
-      Authorization: `Bearer ${cookies().get("access_token")?.value}`,
-    },
-  });
-  const { data }: { data: TTransaction[] } = await res.data;
+  const token = cookies().get("access_token");
+  const { data }: { data: TTransaction[] } = await fetchSearchData(
+    "/transactions/v1",
+    searchParams,
+    token?.value || "",
+  );
 
   const ProfileTabs = dynamic(() => import("./_components/profile.tabs"), {
     loading: () => (
