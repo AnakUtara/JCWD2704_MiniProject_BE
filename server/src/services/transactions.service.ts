@@ -9,28 +9,16 @@ import { sendPaymentNotice, sendTicket } from "../libs/nodemailer";
 
 class TransactionService {
 	async getChartData(req: Request) {
-		const { range } = req.body;
-		const data = await prisma.transaction.groupBy({
-			by: ["event_id"],
-			where: {
-				user_id: req.user.id,
-				created_at: {
-					equals: range,
-				},
-			},
-			_sum: {
-				total_price: true,
-				ticket_bought: true,
-			},
-			orderBy: {
-				_sum: {
-					total_price: "desc",
-					ticket_bought: "desc",
-				},
-			},
-			take: 6,
-		});
-		return data;
+		const { month, year, type } = req.chart_query;
+		if (type === "month") {
+			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id where month(t.created_at) = ${month} and year(t.created_at) = ${year} group by e.category`;
+		} else if (type === "day") {
+			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id where date(t.created_at) = date(now()) group by e.category`;
+		} else if (type === "year") {
+			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id where year(t.created_at) = ${year} group by e.category`;
+		}
+
+		throw new Error("invalid type");
 	}
 	async getCustomerTransactions(req: Request) {
 		const { sort_by, sort, search, status, page } = req.query as {
@@ -42,6 +30,21 @@ class TransactionService {
 		};
 		const limit = 10;
 		const { id: user_id } = req?.user;
+		const total = await prisma.transaction.count({
+			where: {
+				user_id,
+				status,
+				AND: [
+					{
+						OR: [
+							{ invoice_code: { contains: search } },
+							{ event: { title: { contains: search } } },
+							{ event: { user: { username: { contains: search } } } },
+						],
+					},
+				],
+			},
+		});
 		const data = await prisma.transaction.findMany({
 			where: {
 				user_id,
@@ -80,7 +83,7 @@ class TransactionService {
 			skip: (Number(page) - 1) * limit,
 		});
 		throwErrorMessageIf(!data, "Transaction not found.");
-		return data;
+		return { data, total: Math.ceil(total / limit) };
 	}
 
 	async getPromotorTransactions(req: Request) {
@@ -93,6 +96,29 @@ class TransactionService {
 		};
 		const limit = 10;
 		const { id: user_id } = req?.user;
+		const total = await prisma.transaction.count({
+			where: {
+				event: {
+					user_id,
+				},
+				status,
+				OR: [
+					{ invoice_code: { contains: search } },
+					{
+						event: {
+							title: { contains: search },
+						},
+					},
+					{
+						user: {
+							username: {
+								contains: search,
+							},
+						},
+					},
+				],
+			},
+		});
 		const data = await prisma.transaction.findMany({
 			where: {
 				event: {
@@ -144,7 +170,7 @@ class TransactionService {
 			skip: (Number(page) - 1) * limit,
 		});
 		throwErrorMessageIf(!data, "Transaction not found.");
-		return data;
+		return { data, total: Math.ceil(total / limit) };
 	}
 	async create(req: Request) {
 		const { id: event_id } = req.event as TEvent;

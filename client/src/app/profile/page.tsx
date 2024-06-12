@@ -3,7 +3,6 @@ import TransactionList from "./_components/transaction.list";
 import Search from "../_components/search";
 import { sort_order, sort_via } from "../_models/sort.model";
 import { TTransaction, trans_status } from "../_models/transaction.model";
-import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { fetchSearchData } from "../_utils/fetch";
 
@@ -35,12 +34,7 @@ export default async function Profile({ searchParams }: Props) {
   return (
     <ProfileTabs>
       <Search placeholder="Search purchases..." />
-      <Suspense
-        key={searchParams.search + searchParams.page}
-        fallback={<span className="loading loading-bars"></span>}
-      >
-        <TransactionList data={data} />
-      </Suspense>
+      <TransactionList data={data} />
     </ProfileTabs>
   );
 }

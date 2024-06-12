@@ -3,6 +3,7 @@ import { maxAvatarSize, uploader } from "../libs/multer";
 import { verifyAccessToken } from "../middlewares/auth.middleware";
 import { checkPromotor } from "../middlewares/event.middleware";
 import {
+	checkChartQuery,
 	checkEventOwner,
 	checkEventStatus,
 	checkTicketAmount,
@@ -28,6 +29,13 @@ class TransactionsRouter extends EntityRouter {
 			verifyAccessToken,
 			checkPromotor,
 			this.transactionController.getPromotorTransactions
+		);
+		this.router.get(
+			"/v3",
+			verifyAccessToken,
+			checkPromotor,
+			checkChartQuery,
+			this.transactionController.getChartData
 		);
 		this.router.post(
 			"/",

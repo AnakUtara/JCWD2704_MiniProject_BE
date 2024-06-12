@@ -66,3 +66,22 @@ export const eventSchema = Yup.object().shape({
   discount_amount: Yup.string().required(),
   image_url: Yup.string().required(),
 });
+
+export const editEventSchema = Yup.object().shape({
+  title: Yup.string().trim().min(4).max(200),
+  location: Yup.string().trim().min(1).max(500),
+  city: Yup.string().trim().min(4).max(50),
+  zip_code: Yup.number().min(5),
+  venue_type: Yup.string(),
+  details: Yup.string().trim().min(1).max(2000),
+  roster: Yup.string().trim(),
+  scheduled_at: Yup.string().trim(),
+  start_time: Yup.string().trim(),
+  end_time: Yup.string().trim(),
+  ticket_price: Yup.string().trim(),
+  ticket_amount: Yup.string().trim(),
+  // assigned_pic: Yup.string().trim(),
+  // pic_phone_no: Yup.string().trim(),
+  category: Yup.string().trim(),
+  discount_amount: Yup.string(),
+});

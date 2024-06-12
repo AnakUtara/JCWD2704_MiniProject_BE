@@ -2,8 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import { prisma } from "../libs/prisma";
 import { throwErrorMessageIf } from "../utils/error";
 import { TEvent } from "../models/event.model";
-import { Role, Status_event, Status_transaction } from "@prisma/client";
+import { Status_event, Status_transaction } from "@prisma/client";
 import { TVoucher } from "../models/voucher.model";
+import { chartQuerySchema } from "../libs/joi";
 
 export async function checkTicketAmount(
 	req: Request,
@@ -114,6 +115,21 @@ export async function checkEventStatus(
 		);
 		console.log(isEventDone?.user);
 		req.event = isEventDone as TEvent;
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function checkChartQuery(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		req.chart_query = await chartQuerySchema.validateAsync(req.query);
+		console.log(req.query, req.chart_query);
+
 		next();
 	} catch (error) {
 		next(error);

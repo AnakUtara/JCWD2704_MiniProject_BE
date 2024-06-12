@@ -2,6 +2,7 @@
 import { dateFormat, monthDateYear } from "@/app/_libs/dayjs";
 import { TTransaction } from "@/app/_models/transaction.model";
 import { Table } from "flowbite-react";
+import Link from "next/link";
 
 type Props = { data: TTransaction[] };
 export default function TransactionList({ data }: Props) {
@@ -34,7 +35,14 @@ export default function TransactionList({ data }: Props) {
               <Table.Cell>
                 {trans.points_used ? trans.points_used : "none"}
               </Table.Cell>
-              <Table.Cell>{trans.event.title}</Table.Cell>
+              <Table.Cell>
+                <Link
+                  className="hover:underline"
+                  href={`/event/${trans.event_id}`}
+                >
+                  {trans.event.title}
+                </Link>
+              </Table.Cell>
               <Table.Cell>{trans.event.user.username}</Table.Cell>
               <Table.Cell>{trans.event.user.bank_acc_no}</Table.Cell>
               <Table.Cell>

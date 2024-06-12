@@ -128,3 +128,14 @@ export const updateEventSchema = Joi.object({
 		Category.Experimental
 	),
 });
+
+export const chartQuerySchema = Joi.object({
+	type: Joi.string()
+		.trim()
+		.lowercase()
+		.valid("month", "year", "day")
+		.required(),
+	month: Joi.number(),
+	year: Joi.number(),
+	day: Joi.date(),
+});

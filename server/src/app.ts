@@ -4,6 +4,7 @@ import { PORT, corsOptions } from "./config/config";
 import usersRouter from "./routers/users.router";
 import eventRouter from "./routers/event.router";
 import transactionsRouter from "./routers/transactions.router";
+import { deleteUnpaidScheduler } from "./libs/node-cron";
 
 export default class App {
 	app: Application;
@@ -11,6 +12,7 @@ export default class App {
 		this.app = express();
 		this.configure();
 		this.routes();
+		deleteUnpaidScheduler();
 		this.errorHandler();
 	}
 	private configure(): void {

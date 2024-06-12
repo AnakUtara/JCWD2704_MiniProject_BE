@@ -2,6 +2,9 @@
 	"name": "minpro-gig",
 	"version": "1.0.0",
 	"main": "index.ts",
+	"prisma": {
+		"seed": "ts-node prisma/seed.ts"
+	},
 	"scripts": {
 		"dev": "nodemon --files ./src/index.ts",
 		"test": "echo \"Error: no test specified\" && exit 1"
@@ -17,6 +20,7 @@
 		"@types/jsonwebtoken": "^9.0.6",
 		"@types/multer": "^1.4.11",
 		"@types/mustache": "^4.2.5",
+		"@types/node-cron": "^3.0.11",
 		"@types/nodemailer": "^6.4.15",
 		"bcrypt": "^5.1.1",
 		"cors": "^2.8.5",
@@ -28,6 +32,7 @@
 		"jsonwebtoken": "^9.0.2",
 		"multer": "^1.4.5-lts.1",
 		"mustache": "^4.2.0",
+		"node-cron": "^3.0.3",
 		"nodemailer": "^6.9.13",
 		"prisma": "^5.14.0",
 		"referral-codes": "^2.0.3",

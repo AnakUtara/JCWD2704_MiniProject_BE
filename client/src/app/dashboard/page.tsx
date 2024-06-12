@@ -5,12 +5,8 @@ import { TTransaction, trans_status } from "../_models/transaction.model";
 import DashboardTabs from "./_components/dashboard.tabs";
 import PromotorTransactionsList from "./_components/promotor.transactions.list";
 import { fetchSearchData } from "../_utils/fetch";
-import { Suspense } from "react";
 import FavCategoryChart from "./_components/favorite.category.chart";
-import { major_mono } from "../_utils/fonts";
-import clsx from "clsx";
 import ChartSettings from "./_components/chart.settings";
-import dynamic from "next/dynamic";
 
 type Props = {
   searchParams: {
