@@ -4,6 +4,7 @@ import { PORT, corsOptions } from "./config/config";
 import usersRouter from "./routers/users.router";
 import eventRouter from "./routers/event.router";
 import transactionsRouter from "./routers/transactions.router";
+import { updateStatusEvent } from "./libs/node-cron";
 
 export default class App {
 	app: Application;
@@ -11,6 +12,7 @@ export default class App {
 		this.app = express();
 		this.configure();
 		this.routes();
+		updateStatusEvent();
 		this.errorHandler();
 	}
 	private configure(): void {
@@ -24,6 +26,10 @@ export default class App {
 		this.app.use(
 			"/images/events",
 			express.static(__dirname + "/public/images/events")
+		);
+		this.app.use(
+			"/images/transfer-proof",
+			express.static(__dirname + "/public/images/transfer_proof")
 		);
 	}
 	private routes(): void {

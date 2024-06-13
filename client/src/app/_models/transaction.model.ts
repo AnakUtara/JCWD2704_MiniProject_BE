@@ -5,6 +5,7 @@ export enum trans_status {
   unpaid = "unpaid",
   pending = "pending",
   success = "success",
+  cancelled = "cancelled",
 }
 
 export type TTransaction = {

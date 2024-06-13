@@ -1,12 +1,19 @@
 import { Request } from "express";
 
 import { throwError, validator } from "../utils/validator";
-import { Category, Event, Prisma, Venue_type } from "@prisma/client";
+import {
+	Category,
+	Event,
+	Prisma,
+	Status_event,
+	Venue_type,
+} from "@prisma/client";
 
 import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
 import { Order, OrderType, TEvent } from "../models/event.model";
 import { user } from "../config/config";
+import dayjs from "dayjs";
 
 class EventServices {
 	private customSelect = {
@@ -34,13 +41,15 @@ class EventServices {
 	}
 
 	async getWithOrder(req: Request) {
-		const { orderType, order, filterValue, page, limit } = req.query as {
-			orderType: OrderType;
-			order: Prisma.SortOrder;
-			filterValue: string;
-			page: string;
-			limit: string;
-		};
+		const { orderType, order, filterValue, page, limit, status } =
+			req.query as {
+				orderType: OrderType;
+				order: Prisma.SortOrder;
+				filterValue: string;
+				page: string;
+				limit: string;
+				status: Status_event;
+			};
 
 		const totalCount = await prisma.event.count({
 			where: {
@@ -51,19 +60,23 @@ class EventServices {
 				],
 			},
 		});
-		// console.log(totalCount);
+		console.log(totalCount);
 
 		const baseData = (await prisma.event.findMany({
 			orderBy: [{ [orderType]: order }],
 			skip: Number(limit) * (Number(page) - 1),
 			take: Number(limit),
 			where: {
-				OR: [
-					{ city: { contains: filterValue } },
-					{ title: { contains: filterValue } },
-					{ roster: { contains: filterValue } },
-				],
+				AND: {
+					status,
+					OR: [
+						{ city: { contains: filterValue } },
+						{ title: { contains: filterValue } },
+						{ roster: { contains: filterValue } },
+					],
+				},
 			},
+			include: { review: { select: { rating: true } } },
 		})) as TEvent[];
 
 		// const data = {...baseData}
@@ -74,47 +87,59 @@ class EventServices {
 				discountCalculation =
 					e.ticket_price - (e.discount_amount / 100) * e.ticket_price;
 			}
+
+			let ratingCalculation: number = 0;
+
 			return { ...e, discountCalculation };
 		});
 		return { data, totalCount };
 	}
 
-	async getEventsPromotor(req: Request, customSelect = this.customSelect) {
-		const { id_username } = req.params;
-
-		const data = await prisma.$transaction(async (prisma: any) => {
-			try {
-				const findUser = (await prisma.user.findFirst({
-					where: {
-						OR: [{ id: id_username }, { username: id_username }],
-						role: "promotor",
-					},
-					select: { id: true },
-				})) as TUser;
-
-				validator(
-					!findUser || !findUser.id,
-					"User is not found OR the UserID is undefined"
-				);
-
-				return await prisma.event.findMany({
-					where: { user_id: findUser.id },
-					select: customSelect,
-				});
-			} catch (error) {
-				throwError(error);
-			}
+	async getEventsPromotor(req: Request) {
+		const { orderType, order, filterValue, page, limit } = req.query as {
+			orderType: OrderType;
+			order: Prisma.SortOrder;
+			filterValue: string;
+			page: string;
+			limit: string;
+		};
+		const totalCount = await prisma.event.count({
+			where: {
+				OR: [
+					{ city: { equals: filterValue } },
+					{ title: { contains: filterValue } },
+					{ roster: { contains: filterValue } },
+				],
+			},
 		});
-		return data;
+		console.log(totalCount);
+
+		const data = (await prisma.event.findMany({
+			orderBy: [{ [orderType]: order }],
+			skip: Number(limit) * (Number(page) - 1),
+			take: Number(limit),
+			where: {
+				user_id: req.user.id,
+				OR: [
+					{ city: { equals: filterValue } },
+					{ title: { contains: filterValue } },
+					{ roster: { contains: filterValue } },
+				],
+			},
+			include: { review: { select: { rating: true } } },
+		})) as TEvent[];
+
+		return { data, totalCount };
 	}
 
 	async getEventsCustomer(req: Request, customSelect = this.customSelect) {}
 
 	async getById(req: Request) {
 		const { id } = req.params;
+		validator(!id, "event not found");
 
 		const baseData = (await prisma.event.findFirst({
-			where: { id },
+			where: { id: id },
 			include: {
 				user: {
 					select: {
@@ -125,9 +150,19 @@ class EventServices {
 						bank_acc_no: true,
 					},
 				},
+				review: { select: { rating: true } },
 			},
 		})) as TEvent;
 		validator(!baseData, "event not found");
+
+		const ratingCalculation = await prisma.review.aggregate({
+			_avg: { rating: true },
+			where: { event_id: id },
+		});
+
+		const { ["_avg"]: average } = ratingCalculation;
+		const { rating: ratingEvent } = average;
+		console.log(average);
 
 		let discountCalculation: number = 0;
 		if (baseData?.discount_amount && baseData.ticket_price) {
@@ -136,7 +171,7 @@ class EventServices {
 				(baseData.discount_amount / 100) * baseData.ticket_price;
 		}
 
-		const data = { ...baseData, discountCalculation };
+		const data = { ...baseData, discountCalculation, ratingEvent };
 
 		return data;
 	}
@@ -161,8 +196,18 @@ class EventServices {
 		);
 
 		const inputs = Object.fromEntries(inputEntries) as TEvent;
-		// console.log(req.file?.fieldname);
+		console.log(req.file?.fieldname);
 		const image = req.file?.filename as string;
+
+		const start_time = dayjs(req.event.scheduled_at)
+			.set("hour", dayjs(req.event.start_time).get("hour"))
+			.set("minute", dayjs(req.event.start_time).get("minute"))
+			.toDate();
+
+		const end_time = dayjs(req.event.scheduled_at)
+			.set("hour", dayjs(req.event.end_time).get("hour"))
+			.set("minute", dayjs(req.event.end_time).get("minute"))
+			.toDate();
 
 		if (req.file?.fieldname && image) inputs.image_url = image;
 
@@ -179,7 +224,12 @@ class EventServices {
 			try {
 				return await prisma.event.update({
 					where: { id },
-					data: { ...inputs, user: { connect: { id: req.user.id } } },
+					data: {
+						...inputs,
+						user: { connect: { id: req.user.id } },
+						start_time,
+						end_time,
+					},
 				});
 			} catch (error) {
 				throwError(error);
@@ -190,6 +240,16 @@ class EventServices {
 	async create(req: Request) {
 		const image = req.file?.filename as string;
 		// console.log(req.user);
+
+		const start_time = dayjs(req.event.scheduled_at)
+			.set("hour", dayjs(req.event.start_time).get("hour"))
+			.set("minute", dayjs(req.event.start_time).get("minute"))
+			.toDate();
+
+		const end_time = dayjs(req.event.scheduled_at)
+			.set("hour", dayjs(req.event.end_time).get("hour"))
+			.set("minute", dayjs(req.event.end_time).get("minute"))
+			.toDate();
 
 		const createNewEvent = await prisma.event.create({
 			data: {
@@ -204,8 +264,8 @@ class EventServices {
 				details: req.event.details,
 				roster: req.event.roster,
 				scheduled_at: req.event.scheduled_at,
-				start_time: req.event.start_time,
-				end_time: req.event.end_time,
+				start_time,
+				end_time,
 				ticket_price: Number(req.event.ticket_price),
 				ticket_amount: Number(req.event.ticket_amount),
 				assigned_pic: `${req.event.assigned_pic}`,
@@ -224,7 +284,7 @@ class EventServices {
 		}
 
 		const data = { ...createNewEvent, discountCalculation };
-
+		console.log(data);
 		return data;
 	}
 

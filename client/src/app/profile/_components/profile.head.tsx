@@ -9,7 +9,6 @@ import { FaCamera } from "react-icons/fa";
 
 type Props = { activeUser: TUser; onClick: () => void };
 export default function ProfileHeader({ activeUser, onClick }: Props) {
-  const isVoucherValid = !activeUser.voucher || !activeUser.voucher.is_valid;
   return (
     <>
       <div
@@ -47,6 +46,19 @@ export default function ProfileHeader({ activeUser, onClick }: Props) {
           <h4 className="mt-1 bg-black p-2 text-center text-sm font-bold text-white">
             {activeUser.referral_code}
           </h4>
+          <div className="mt-2 flex flex-col gap-2 text-[10px] leading-3">
+            *Share this code <br /> to gain more points!
+            <br />
+            <div className="bg-gray-500 p-1 leading-4 text-white">
+              10k pts./ea. referral made.
+              <br />
+              Equivalent to IDR10k,-.
+            </div>
+            Use collected points
+            <br />
+            to buy tickets!
+            <br />
+          </div>
         </div>
         <div>
           <p className="my-0 text-xs">Points:</p>
@@ -64,7 +76,7 @@ export default function ProfileHeader({ activeUser, onClick }: Props) {
             {`${activeUser.points_expiry_date ? dateFormat(activeUser.points_expiry_date, dayDateMonthYear) : ""}`}
           </p>
         </div>
-        <div className={clsx(isVoucherValid && "hidden")}>
+        <div className={clsx(!activeUser.voucher?.is_valid && "hidden")}>
           <p className="my-0 text-xs">10% off referral voucher:</p>
           <h4 className="mt-1 bg-black p-2 text-center text-sm font-bold text-white">
             {activeUser.voucher?.id}
