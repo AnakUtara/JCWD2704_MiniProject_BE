@@ -5,28 +5,42 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Enjoy your ticket!</title>
 	</head>
+	<style>
+		html {
+			font-family: Arial, Helvetica, sans-serif;
+			letter-spacing: -0.2pt;
+		}
+		table {
+			border-collapse: collapse;
+		}
+		.tbl {
+			text-align: left;
+			border: 1px solid;
+			padding: 5px;
+		}
+	</style>
 	<body>
 		<h2>Thank for your purchase, {{username}}!</h2>
 		<p>You can keep & show this email to the event's staff on the spot.</p>
 		<p>Or show the ticket from your purchases tab on the website.</p>
 		<h4>Ticket Summary:</h4>
-		<table className="table">
+		<table>
 			<thead>
 				<tr>
-					<th>Event</th>
-					<th>Tickets</th>
-					<th>Location</th>
-					<th>Date</th>
-					<th>Time</th>
+					<th class="tbl">Event</th>
+					<th class="tbl">Tickets</th>
+					<th class="tbl">Location</th>
+					<th class="tbl">Date</th>
+					<th class="tbl">Time</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>{{title}}</td>
-					<td>{{tickets}}x</td>
-					<td>{{location}}</td>
-					<td>{{date}}</td>
-					<td>{{time}}</td>
+					<td class="tbl">{{title}}</td>
+					<td class="tbl">{{tickets}}x</td>
+					<td class="tbl">{{location}}</td>
+					<td class="tbl">{{date}}</td>
+					<td class="tbl">{{time}}</td>
 				</tr>
 			</tbody>
 		</table>

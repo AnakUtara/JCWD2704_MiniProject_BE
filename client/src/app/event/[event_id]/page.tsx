@@ -39,13 +39,6 @@ export default async function EventDetails({ params }: Props) {
               Event Description :
             </p>
             {data.details}
-            <div className="flex justify-end ">
-              <Link href={`/event/update/${data.id}`}>
-                <button className="btn btn-accent mt-6  rounded-none text-white hover:bg-zinc-800">
-                  Edit event
-                </button>
-              </Link>
-            </div>
           </div>
           <div className="flex flex-col gap-4 md:flex-row md:gap-6">
             <div className=" flex w-full flex-col gap-2 rounded-md border-[1px] border-slate-500 p-2 md:gap-4">
@@ -129,7 +122,7 @@ export default async function EventDetails({ params }: Props) {
                 {data.ticket_amount}
               </div>
               {data.status === "published" ? (
-                <Link href={`/`}>
+                <Link href={`/transaction/${event_id}`}>
                   <button
                     type="button"
                     className="btn btn-accent btn-block mb-2 rounded-none text-white hover:bg-zinc-800"

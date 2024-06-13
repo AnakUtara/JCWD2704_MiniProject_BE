@@ -7,6 +7,7 @@ import {
 	checkEventOwner,
 	checkEventStatus,
 	checkTicketAmount,
+	checkTransactionStatus,
 	checkVoucher,
 } from "../middlewares/transaction.middleware";
 import { EntityRouter } from "./entity.router";
@@ -47,9 +48,17 @@ class TransactionsRouter extends EntityRouter {
 			this.transactionController.create
 		);
 		this.router.patch(
+			"/v4/:id",
+			verifyAccessToken,
+			checkPromotor,
+			checkTransactionStatus,
+			this.transactionController.confirm
+		);
+		this.router.patch(
 			"/:id",
 			verifyAccessToken,
 			checkPromotor,
+			checkTransactionStatus,
 			uploader("PROOF", maxAvatarSize, "transfer_proof").single(
 				"transfer_proof"
 			),
@@ -59,6 +68,7 @@ class TransactionsRouter extends EntityRouter {
 			"/:id",
 			verifyAccessToken,
 			checkPromotor,
+			checkTransactionStatus,
 			this.transactionController.delete
 		);
 	}

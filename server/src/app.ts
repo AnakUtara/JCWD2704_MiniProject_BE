@@ -27,6 +27,10 @@ export default class App {
 			"/images/events",
 			express.static(__dirname + "/public/images/events")
 		);
+		this.app.use(
+			"/images/transfer-proof",
+			express.static(__dirname + "/public/images/transfer_proof")
+		);
 	}
 	private routes(): void {
 		this.app.get("/", (req: Request, res: Response) => {

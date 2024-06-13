@@ -42,13 +42,13 @@ export default async function Dashboard({ searchParams }: Props) {
       </div>
       <FavCategoryChart data={chartData} />
       <DashboardTabs
-        tab1={<div>Events</div>}
-        tab2={
+        tab1={
           <div>
             <Search placeholder="Search transactions..." />
             <PromotorTransactionsList data={data} />
           </div>
         }
+        tab2={<div>Events</div>}
         tab3={<div>Attendance</div>}
       />
     </>

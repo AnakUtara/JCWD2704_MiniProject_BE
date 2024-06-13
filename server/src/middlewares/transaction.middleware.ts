@@ -128,8 +128,32 @@ export async function checkChartQuery(
 ) {
 	try {
 		req.chart_query = await chartQuerySchema.validateAsync(req.query);
-		console.log(req.query, req.chart_query);
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
 
+export async function checkTransactionStatus(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		const { id } = req.params;
+		const isSuccess = await prisma.transaction.findFirst({
+			where: {
+				id,
+				AND: {
+					OR: [{ status: Status_transaction.success }, { total_price: 0 }],
+				},
+			},
+		});
+		if (isSuccess) res.status(405);
+		throwErrorMessageIf(
+			isSuccess !== null,
+			"Can't modify successful transaction."
+		);
 		next();
 	} catch (error) {
 		next(error);

@@ -69,7 +69,7 @@ export default function ProfileTabs({ children }: Props) {
     }
   }
   return (
-    <>
+    <div>
       <ProfileHeader activeUser={activeUser} onClick={handleOpenFileInput} />
       <Flowbite theme={{ theme: tabsCustomTheme }}>
         <Tabs aria-label="Tabs with underline" style="underline">
@@ -224,6 +224,6 @@ export default function ProfileTabs({ children }: Props) {
           </Tabs.Item>
         </Tabs>
       </Flowbite>
-    </>
+    </div>
   );
 }

@@ -13,10 +13,10 @@ export default function DashboardTabs({ tab1, tab2, tab3 }: Props) {
   return (
     <Flowbite theme={{ theme: tabsCustomTheme }}>
       <Tabs aria-label="Tabs with underline" style="underline">
-        <Tabs.Item active title="Events" icon={HiClipboardList}>
+        <Tabs.Item active title="Transactions" icon={MdDashboard}>
           {tab1}
         </Tabs.Item>
-        <Tabs.Item title="Transactions" icon={MdDashboard}>
+        <Tabs.Item title="Events" icon={HiClipboardList}>
           {tab2}
         </Tabs.Item>
         <Tabs.Item title="Events Attended" icon={MdEventNote}>

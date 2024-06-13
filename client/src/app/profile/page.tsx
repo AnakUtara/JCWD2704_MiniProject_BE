@@ -5,6 +5,7 @@ import { sort_order, sort_via } from "../_models/sort.model";
 import { TTransaction, trans_status } from "../_models/transaction.model";
 import { cookies } from "next/headers";
 import { fetchSearchData } from "../_utils/fetch";
+import clsx from "clsx";
 
 type Props = {
   searchParams: {
@@ -33,8 +34,15 @@ export default async function Profile({ searchParams }: Props) {
   });
   return (
     <ProfileTabs>
-      <Search placeholder="Search purchases..." />
-      <TransactionList data={data} />
+      {!data.length && (
+        <div className="flex justify-center py-5">
+          No purchase has been made...
+        </div>
+      )}
+      <div className={clsx(!data.length && "hidden")}>
+        <Search placeholder="Search purchases..." />
+        <TransactionList data={data} />
+      </div>
     </ProfileTabs>
   );
 }

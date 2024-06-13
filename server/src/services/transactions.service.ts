@@ -10,12 +10,13 @@ import { sendPaymentNotice, sendTicket } from "../libs/nodemailer";
 class TransactionService {
 	async getChartData(req: Request) {
 		const { month, year, type } = req.chart_query;
+		const { username } = req.user;
 		if (type === "month") {
-			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id where month(t.created_at) = ${month} and year(t.created_at) = ${year} group by e.category`;
+			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id join users as u on u.id = e.user_id where u.username = ${username} and month(t.created_at) = ${month} and year(t.created_at) = ${year} group by e.category`;
 		} else if (type === "day") {
-			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id where date(t.created_at) = date(now()) group by e.category`;
+			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id join users as u on u.id = e.user_id where u.username = ${username} and date(t.created_at) = date(now()) group by e.category`;
 		} else if (type === "year") {
-			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id where year(t.created_at) = ${year} group by e.category`;
+			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id join users as u on u.id = e.user_id where u.username = ${username} and year(t.created_at) = ${year} group by e.category`;
 		}
 
 		throw new Error("invalid type");
@@ -154,6 +155,7 @@ class TransactionService {
 							select: {
 								avatar: true,
 								username: true,
+								bank_acc_no: true,
 							},
 						},
 					},
@@ -266,7 +268,7 @@ class TransactionService {
 					sendTicket({
 						email_to: req.user.email,
 						template_dir: "../templates/ticket.html",
-						subject: `Hi ${req.user.username}! Enjoy your ticket!`,
+						subject: `Ticket issued. Hi ${req.user.username}! Enjoy your tickets!`,
 						username: req.user.username,
 						title: req.event.title,
 						tickets: String(ticket_bought),
@@ -309,22 +311,19 @@ class TransactionService {
 	}
 	async update(req: Request) {
 		const { id } = req.params;
-		const transfer_proof = req.file?.filename;
-		await prisma.$transaction(async (prisma) => {
-			await prisma.transaction.update({
-				where: {
-					id,
-				},
-				data: {
-					status: Status_transaction.pending,
-					transfer_proof,
-				},
-			});
+		const transfer_proof = req.file?.filename as string;
+		await prisma.transaction.update({
+			where: {
+				id,
+			},
+			data: {
+				status: Status_transaction.pending,
+				transfer_proof,
+			},
 		});
 	}
 	async confirm(req: Request) {
 		const { id } = req.params;
-		const { status } = req.body;
 		const data = await prisma.$transaction(async (prisma) => {
 			const res = await prisma.transaction.findFirst({
 				where: {
@@ -332,6 +331,7 @@ class TransactionService {
 				},
 				include: {
 					event: true,
+					user: true,
 				},
 			});
 			await prisma.transaction.update({
@@ -339,19 +339,19 @@ class TransactionService {
 					id,
 				},
 				data: {
-					status,
+					status: Status_transaction.success,
 					paid_at: dayjs().toDate(),
 				},
 			});
 			return res;
 		});
 		sendTicket({
-			email_to: req.user.email,
+			email_to: data?.user.email || "",
 			subject: `Ticket issued. [TicketID:${data?.id}] - We have confirmed your purchase.`,
 			template_dir: "../templates/ticket.html",
-			username: req.user.username,
+			username: data?.user.username || "",
 			title: data?.event.title!,
-			tickets: `${data?.ticket_bought}x`,
+			tickets: `${data?.ticket_bought}`,
 			location: data?.event.location!,
 			date: dayjs(data?.event.scheduled_at).format("YYYY/MM/DD"),
 			time: `${dayjs(data?.event.start_time).format("HH:mm")} - ${dayjs(
@@ -372,6 +372,7 @@ class TransactionService {
 					ticket_bought: true,
 					voucher_id: true,
 					points_used: true,
+					status: true,
 					event: {
 						select: {
 							ticket_amount: true,
@@ -387,8 +388,8 @@ class TransactionService {
 			});
 			throwErrorMessageIf(!payment, "Transaction not found.");
 			throwErrorMessageIf(
-				dayjs(payment?.created_at) > dayjs() && payment?.paid_at !== null,
-				"Not permitted."
+				dayjs(payment?.created_at).get("day") === dayjs().get("day"),
+				"Transaction can be deleted after 24 hours since made."
 			);
 			await prisma.event.update({
 				where: { id: payment?.event_id },
