@@ -9,6 +9,7 @@ export const monthDateYear = "LL";
 export const stdDate = "YYYY-MM-DD";
 export const hourOnly = "LT";
 
+
 export function dateFormat(date: string, format: string) {
   return dayjs(date).format(format);
 }

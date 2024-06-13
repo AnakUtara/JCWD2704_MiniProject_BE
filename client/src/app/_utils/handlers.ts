@@ -3,6 +3,7 @@ import { axiosInstance } from "../_libs/axios.config";
 import { useDebouncedCallback } from "use-debounce";
 import dynamic, { DynamicOptionsLoadingProps } from "next/dynamic";
 
+
 export async function handleVerification(email: string): Promise<void> {
   try {
     await axiosInstance().post("users/v3", { email });
