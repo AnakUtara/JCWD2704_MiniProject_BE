@@ -5,6 +5,7 @@ import usersRouter from "./routers/users.router";
 import eventRouter from "./routers/event.router";
 import transactionsRouter from "./routers/transactions.router";
 import { updateStatusEvent } from "./libs/node-cron";
+import reviewRouter from "./routers/review.router";
 
 export default class App {
 	app: Application;
@@ -39,6 +40,7 @@ export default class App {
 		this.app.use("/users", usersRouter.getRouter());
 		this.app.use("/events", eventRouter.getRouter());
 		this.app.use("/transactions", transactionsRouter.getRouter());
+		this.app.use("/review", reviewRouter.getRouter());
 	}
 	private errorHandler(): void {
 		this.app.use("/*", (req: Request, res: Response) => {

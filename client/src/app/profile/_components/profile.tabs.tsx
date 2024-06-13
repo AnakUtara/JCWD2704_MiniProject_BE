@@ -20,6 +20,7 @@ import { getCookie } from "cookies-next";
 import { toast } from "sonner";
 import clsx from "clsx";
 import { tabsCustomTheme } from "@/app/_libs/flowbite.theme";
+import { AxiosError } from "axios";
 
 type Props = { children: React.ReactNode };
 export default function ProfileTabs({ children }: Props) {
@@ -50,15 +51,17 @@ export default function ProfileTabs({ children }: Props) {
           {
             headers: {
               Authorization: `Bearer ${getCookie("access_token")}`,
-              "content-type": "multipart/form-data",
+              "Content-type": "multipart/form-data",
             },
           },
         );
         toast.success("Profile edit submitted.");
         window.location.reload();
       } catch (error) {
-        if (error instanceof Error) console.error;
-        toast.error("Edit profile failed");
+        if (error instanceof AxiosError) {
+          console.error(error.message);
+          toast.error(error.response?.data.message);
+        }
       }
     },
   });
