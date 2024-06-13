@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import * as Yup from "yup";
 import EventReview from "./event_review";
+import { AxiosError } from "axios";
 
 type Props = { data: TEvent };
 export default function CreateReview({ data }: Props) {
@@ -32,8 +33,10 @@ export default function CreateReview({ data }: Props) {
         fetch();
         toast.success("thank you, your review has been submitted");
       } catch (error) {
-        if (error instanceof Error) console.error;
-        toast.error("failed in adding review data");
+        if (error instanceof AxiosError) {
+          console.error;
+          toast.error(error.response?.data.message);
+        }
       }
     },
   });
@@ -42,8 +45,10 @@ export default function CreateReview({ data }: Props) {
       const res = await axiosInstance().get(`/review/${data.id}`);
       setResult(res.data.data);
     } catch (error) {
-      if (error instanceof Error) console.error;
-      toast.error("failed in adding review data");
+      if (error instanceof AxiosError) {
+        console.error;
+        toast.error(error.response?.data.message);
+      }
     }
   };
 

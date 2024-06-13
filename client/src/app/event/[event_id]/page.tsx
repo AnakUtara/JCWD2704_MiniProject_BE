@@ -20,7 +20,7 @@ export default async function EventDetails({ params }: Props) {
   console.log(data);
 
   return (
-    <div className=" w-full">
+    <div className="container mx-auto w-full">
       <div className="gap-6 md:flex md:flex-row">
         <div className="relative h-[180px] w-full md:h-[100vh] md:w-[40%]">
           <Image
@@ -35,12 +35,16 @@ export default async function EventDetails({ params }: Props) {
           </div>
           <div className="absolute bottom-5 right-5 flex flex-row items-center bg-slate-600 bg-opacity-50 ">
             <p className="text-md  text-white">Event rating :</p>
-            <StarRating
-              rating={data.ratingEvent}
-              size="md"
-              colour="white"
-              name="ratingEvent"
-            />
+            {data.ratingEvent ? (
+              <StarRating
+                rating={data.ratingEvent}
+                size="md"
+                colour="white"
+                name="ratingEvent"
+              />
+            ) : (
+              <p className="text-md font-semibold text-white">Not rated yet</p>
+            )}
           </div>
         </div>
         {/* detail content */}

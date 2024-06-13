@@ -11,12 +11,13 @@ export default async function Home() {
     params: {
       order: "asc",
       orderType: "scheduled_at",
-      filterValue: "Bandung",
+      filterValue: "",
       page: "1",
-      limit: "4",
+      limit: "7",
+      status: "published",
     },
   });
-  const { data}: { data: TEvent[] } = res.data;
+  const { data }: { data: TEvent[] } = res.data;
 
   return (
     <div className="flex justify-center">

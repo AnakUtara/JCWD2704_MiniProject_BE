@@ -14,7 +14,7 @@ const StarRating = ({ rating, size, colour, name }: Props) => {
           key={index}
           type="radio"
           name={name}
-          className={`mask mask-star-2 bg-${colour} border-none text-${colour} shadow-none ${index % 2 === 0 ? "mask-half-1" : "mask-half-2"}`}
+          className={`mask mask-star-2 bg-${colour} border-none text-${colour} shadow-none ${index % 2 === 0 ? "mask-half-1" : index === null ? "" : "mask-half-2"} `}
           checked={checkedIndex === index}
           readOnly
         />

@@ -1,7 +1,13 @@
 import { Request } from "express";
 
 import { throwError, validator } from "../utils/validator";
-import { Category, Event, Prisma, Venue_type } from "@prisma/client";
+import {
+	Category,
+	Event,
+	Prisma,
+	Status_event,
+	Venue_type,
+} from "@prisma/client";
 
 import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
@@ -34,13 +40,15 @@ class EventServices {
 	}
 
 	async getWithOrder(req: Request) {
-		const { orderType, order, filterValue, page, limit } = req.query as {
-			orderType: OrderType;
-			order: Prisma.SortOrder;
-			filterValue: string;
-			page: string;
-			limit: string;
-		};
+		const { orderType, order, filterValue, page, limit, status } =
+			req.query as {
+				orderType: OrderType;
+				order: Prisma.SortOrder;
+				filterValue: string;
+				page: string;
+				limit: string;
+				status: Status_event;
+			};
 
 		const totalCount = await prisma.event.count({
 			where: {
@@ -58,11 +66,14 @@ class EventServices {
 			skip: Number(limit) * (Number(page) - 1),
 			take: Number(limit),
 			where: {
-				OR: [
-					{ city: { contains: filterValue } },
-					{ title: { contains: filterValue } },
-					{ roster: { contains: filterValue } },
-				],
+				AND: {
+					status,
+					OR: [
+						{ city: { contains: filterValue } },
+						{ title: { contains: filterValue } },
+						{ roster: { contains: filterValue } },
+					],
+				},
 			},
 			include: { review: { select: { rating: true } } },
 		})) as TEvent[];

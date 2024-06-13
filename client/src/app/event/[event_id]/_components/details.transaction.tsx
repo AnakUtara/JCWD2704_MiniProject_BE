@@ -1,10 +1,13 @@
+"use client";
 import { dateFormat, hourOnly, monthDateYear } from "@/app/_libs/dayjs";
+import { useAppSelector } from "@/app/_libs/redux/hooks";
 import { TEvent } from "@/app/_models/event.model";
 import { formatPrice } from "@/app/_utils/formatter";
 import Link from "next/link";
 
 type Props = { data: TEvent };
 export default function OrderTab({ data }: Props) {
+  const activeUser = useAppSelector((s) => s.auth);
   return (
     <>
       <div className="">
@@ -58,6 +61,9 @@ export default function OrderTab({ data }: Props) {
           <button
             type="button"
             className="btn btn-accent btn-block mb-2 rounded-none text-white hover:bg-zinc-800"
+            disabled={
+              !activeUser.is_verified && data.ticket_price ? true : false
+            }
           >
             Order Ticket
           </button>
