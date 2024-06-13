@@ -117,6 +117,7 @@ export async function checkCreateEvent(
 				!category,
 			"All necessary fields except discount, and PIC Info must be filled"
 		);
+
 		req.event = await eventSchema.validateAsync(req.body);
 		next();
 	} catch (error) {

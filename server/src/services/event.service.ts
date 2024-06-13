@@ -13,6 +13,7 @@ import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
 import { Order, OrderType, TEvent } from "../models/event.model";
 import { user } from "../config/config";
+import dayjs from "dayjs";
 
 class EventServices {
 	private customSelect = {
@@ -198,6 +199,16 @@ class EventServices {
 		console.log(req.file?.fieldname);
 		const image = req.file?.filename as string;
 
+		const start_time = dayjs(req.event.scheduled_at)
+			.set("hour", dayjs(req.event.start_time).get("hour"))
+			.set("minute", dayjs(req.event.start_time).get("minute"))
+			.toDate();
+
+		const end_time = dayjs(req.event.scheduled_at)
+			.set("hour", dayjs(req.event.end_time).get("hour"))
+			.set("minute", dayjs(req.event.end_time).get("minute"))
+			.toDate();
+
 		if (req.file?.fieldname && image) inputs.image_url = image;
 
 		if (typeof inputs.zip_code === "string")
@@ -213,7 +224,12 @@ class EventServices {
 			try {
 				return await prisma.event.update({
 					where: { id },
-					data: { ...inputs, user: { connect: { id: req.user.id } } },
+					data: {
+						...inputs,
+						user: { connect: { id: req.user.id } },
+						start_time,
+						end_time,
+					},
 				});
 			} catch (error) {
 				throwError(error);
@@ -224,6 +240,16 @@ class EventServices {
 	async create(req: Request) {
 		const image = req.file?.filename as string;
 		// console.log(req.user);
+
+		const start_time = dayjs(req.event.scheduled_at)
+			.set("hour", dayjs(req.event.start_time).get("hour"))
+			.set("minute", dayjs(req.event.start_time).get("minute"))
+			.toDate();
+
+		const end_time = dayjs(req.event.scheduled_at)
+			.set("hour", dayjs(req.event.end_time).get("hour"))
+			.set("minute", dayjs(req.event.end_time).get("minute"))
+			.toDate();
 
 		const createNewEvent = await prisma.event.create({
 			data: {
@@ -238,8 +264,8 @@ class EventServices {
 				details: req.event.details,
 				roster: req.event.roster,
 				scheduled_at: req.event.scheduled_at,
-				start_time: req.event.start_time,
-				end_time: req.event.end_time,
+				start_time,
+				end_time,
 				ticket_price: Number(req.event.ticket_price),
 				ticket_amount: Number(req.event.ticket_amount),
 				assigned_pic: `${req.event.assigned_pic}`,

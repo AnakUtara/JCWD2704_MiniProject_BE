@@ -69,7 +69,7 @@ export default function CreateForm() {
         );
         console.log(values);
         toast.success("New event data created!");
-        router.push("/dashboard");
+        // router.push("/dashboard");
         // window.location.reload();
       } catch (error) {
         if (error instanceof Error) console.error;
@@ -138,7 +138,7 @@ export default function CreateForm() {
   ];
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div>
+      <div className="container mx-auto">
         <div className="bg-slate-900 text-5xl font-bold text-white">
           Create new event .
         </div>
@@ -198,6 +198,7 @@ export default function CreateForm() {
                 className="w-full "
                 id="scheduled_at"
                 value={formik.values.scheduled_at}
+                minDate={new Date()}
                 onSelectedDateChanged={(date) =>
                   formik.setFieldValue(
                     "scheduled_at",
@@ -217,6 +218,8 @@ export default function CreateForm() {
                 name="start_time"
                 defaultValue={dayjs(formik.values.start_time)}
                 onChange={(value: any) => {
+                  console.log(value);
+
                   formik.setFieldValue("start_time", dayjs(value.toString()));
                 }}
               />

@@ -204,6 +204,7 @@ export default function UpdateForm({ result }: Props) {
                 className="w-full "
                 id="scheduled_at"
                 value={formik.values.scheduled_at}
+                minDate={new Date()}
                 onSelectedDateChanged={(date) =>
                   formik.setFieldValue(
                     "scheduled_at",

@@ -5,12 +5,14 @@ import usersRouter from "./routers/users.router";
 import eventRouter from "./routers/event.router";
 import transactionsRouter from "./routers/transactions.router";
 import reviewRouter from "./routers/review.router";
+import { updateStatusEvent } from "./libs/node-cron";
 
 export default class App {
 	app: Application;
 	constructor() {
 		this.app = express();
 		this.configure();
+		updateStatusEvent();
 		this.routes();
 		this.errorHandler();
 	}

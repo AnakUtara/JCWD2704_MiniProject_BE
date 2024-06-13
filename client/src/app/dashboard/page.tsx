@@ -36,15 +36,21 @@ type Props = {
   };
 };
 export default async function Dashboard({ searchParams }: Props) {
-  const res = await axiosInstance().get("/transactions/v2", {
-    params: {
-      ...searchParams,
-    },
-    headers: {
-      Authorization: `Bearer ${cookies().get("access_token")?.value}`,
-    },
-  });
-  const { data }: { data: TTransaction[] } = await res.data;
+  const data: TTransaction[] = await axiosInstance()
+    .get("/transactions/v2", {
+      params: {
+        ...searchParams,
+      },
+      headers: {
+        Authorization: `Bearer ${cookies().get("access_token")?.value}`,
+      },
+    })
+    .then((res) => res.data.data)
+    .catch((err) => {
+      // console.log(err);
+      return [];
+    });
+  // const { data }: { data: TTransaction[] } = await res.data;
   return (
     <DashboardTabs
       tab1={
