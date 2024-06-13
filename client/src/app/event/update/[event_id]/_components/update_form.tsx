@@ -5,7 +5,7 @@ import { dateFormat, monthDateYear } from "@/app/_libs/dayjs";
 import { editEventSchema } from "@/app/_libs/yup";
 import { TEvent, Venue_type } from "@/app/_models/event.model";
 import dayjs from "dayjs";
-import { Datepicker } from "flowbite-react";
+import { Datepicker, Spinner } from "flowbite-react";
 import { useFormik } from "formik";
 import { IoMail } from "react-icons/io5";
 import { toast } from "sonner";
@@ -66,7 +66,6 @@ export default function UpdateForm({ result }: Props) {
           },
           {
             headers: {
-              Authorization: `Bearer ${getCookie("access_token")}`,
               "content-type": "multipart/form-data",
             },
           },
@@ -205,6 +204,7 @@ export default function UpdateForm({ result }: Props) {
                 className="w-full "
                 id="scheduled_at"
                 value={formik.values.scheduled_at}
+                minDate={new Date()}
                 onSelectedDateChanged={(date) =>
                   formik.setFieldValue(
                     "scheduled_at",
@@ -375,7 +375,7 @@ export default function UpdateForm({ result }: Props) {
               className="btn btn-accent mt-6 rounded-none text-white hover:bg-zinc-800"
               disabled={formik.isSubmitting ? true : false}
             >
-              Update event
+              {formik.isSubmitting ? <Spinner></Spinner> : "Update Event"}
             </button>
             <Link href={`/event/${result.id}`}>
               <button

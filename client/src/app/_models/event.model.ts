@@ -57,7 +57,9 @@ export type TEvent = {
 
   created_at?: Date;
   updated_at?: Date;
+
   user: TUser;
+  ratingEvent?: number | null;
 };
 
 export enum Category {

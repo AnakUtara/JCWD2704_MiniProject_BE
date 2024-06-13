@@ -22,20 +22,12 @@ class EventRoute extends EntityRouter {
 		);
 		// ROUTE FOR FETCH EVENT DATA HANDLED BY PROMOTOR
 		this.router.get(
-			"/",
+			"/promotor",
 			verifyAccessToken,
 			checkPromotor,
 			eventController.getEventsPromotor.bind(eventController)
 		);
-		// ROUTE FOR CREATE EVENT DATA
-		this.router.post(
-			"/",
-			verifyAccessToken,
-			checkPromotor,
-			uploader("EVNT", maxEventSize, "events").single("image_url"),
-			checkCreateEvent,
-			eventController.create.bind(eventController)
-		);
+
 		this.router.get("/:id", eventController.getById.bind(eventController));
 
 		// ROUTE FOR UPDATE EVENT DATA
@@ -44,9 +36,19 @@ class EventRoute extends EntityRouter {
 			verifyAccessToken,
 			checkPromotor,
 			checkEventIsExist,
-			uploader("EVNT", maxEventSize, "events").single("image_url"),
+			uploader("EVNT", maxEventSize, "events").single("image"),
 			checkUpdateEventForm,
 			eventController.update.bind(eventController)
+		);
+
+		// ROUTE FOR CREATE EVENT DATA
+		this.router.post(
+			"/",
+			verifyAccessToken,
+			checkPromotor,
+			uploader("EVNT", maxEventSize, "events").single("image"),
+			checkCreateEvent,
+			eventController.create.bind(eventController)
 		);
 
 		// ROUTE FOR DELETE EVENT DATA

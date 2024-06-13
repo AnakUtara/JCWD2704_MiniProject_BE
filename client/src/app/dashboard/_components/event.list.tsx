@@ -1,16 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { axiosInstance } from "../_libs/axios.config";
-import { imageUrl } from "../_utils/config";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { formatDate, formatPrice } from "../_utils/formatter";
-import { orderType } from "../_models/event.model";
 import { useDebouncedCallback } from "use-debounce";
 import Link from "next/link";
+import { axiosInstance } from "@/app/_libs/axios.config";
+import { imageUrl } from "@/app/_utils/config";
+import { orderType } from "@/app/_models/event.model";
+import { formatDate } from "@/app/_utils/formatter";
+import { getCookie } from "cookies-next";
 
-export default function SearchForm() {
+export default function PromotorEvent() {
   const [data, setData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
@@ -18,10 +19,14 @@ export default function SearchForm() {
 
   const fetchData = async (queryParams: any) => {
     try {
-      const res = await axiosInstance().get("/events/orders", {
+      const res = await axiosInstance().get("/events/promotor", {
         params: { ...queryParams, page: currentPage, limit: size },
+        headers: {
+          Authorization: `Bearer ${getCookie("access_token")}`,
+        },
       });
-      setData(res.data.data);
+
+      setData(res.data.result);
       setPages(res.data.total_page);
     } catch (error) {
       console.error(`Error in fetching data`, error);
@@ -51,12 +56,14 @@ export default function SearchForm() {
   };
 
   useEffect(() => {
+    console.log();
+
     debouncedData(formik.values);
   }, [currentPage, size, formik.values]);
 
   return (
-    <div className="container">
-      <div className=" mb-[4vh] mt-4 w-full rounded-md border-[1px] border-gray-400 p-4">
+    <div className="w-full md:px-8 lg:px-12">
+      <div className=" my-[4vh] w-full rounded-md border-[1px] border-gray-400 p-4">
         <form
           onSubmit={formik.handleSubmit}
           className="flex flex-col justify-center gap-8 md:flex-row"
@@ -72,7 +79,7 @@ export default function SearchForm() {
               }
               value={formik.values.orderType}
             >
-              {orderType.map((o) => (
+              {orderType.map((o: any) => (
                 <option key={o.value} value={o.value} className="">
                   {o.name}
                 </option>
@@ -109,62 +116,34 @@ export default function SearchForm() {
         {data.map((event: any) => {
           // console.log(event.id);
           return (
-            <Link key={event.id} href={`/event/${event.id}`}>
+            <Link key={event.id} href={`/event/update/${event.id}`}>
               <div className=" w-full rounded-md border-[1px] border-gray-400 transition-transform duration-200 hover:scale-105">
-                <div className={``}>
-                  <div className=" relative h-[130px] w-full">
-                    <Image
-                      src={imageUrl + "/events/" + event.image_url}
-                      alt="1"
-                      // width={100}
-                      // height={100}
-                      fill={true}
-                      sizes="100%"
-                      className="rounded-t-md object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col justify-between px-4 pt-2">
-                    <p className="text-lg font-semibold"> {event.title}</p>
+                <div className=" relative h-[130px] w-full">
+                  <Image
+                    src={imageUrl + "/events/" + event.image_url}
+                    alt="1"
+                    // width={100}
+                    // height={100}
+                    fill={true}
+                    sizes="100%"
+                    className="rounded-t-md object-cover"
+                  />
+                </div>
+                <div className="flex flex-col justify-between px-4 pt-2">
+                  <p className="text-lg font-semibold"> {event.title}</p>
+
+                  <div className="mb-4">
                     <div className="mb-2 text-sm">
-                      <div className="flex justify-between">
-                        <p
-                          className={`${event.discountCalculation !== 0 ? "text-gray-400 line-through" : "font-semibold"}`}
-                        >
-                          {event.ticket_price !== 0
-                            ? formatPrice(event.ticket_price)
-                            : "Free Event"}
-                        </p>
-                        {event.discountCalculation !== 0 ? (
-                          <div className=" flex items-center justify-between gap-3 rounded-md bg-[#80d1a8] px-2">
-                            <p className="text-[10px] font-semibold text-[#4f6853]">
-                              Disc. {event.discount_amount}%
-                            </p>
-                          </div>
-                        ) : (
-                          ""
-                        )}
-                      </div>
-                      <div className="flex min-h-[20px] items-center">
-                        <p className=" font-semibold">
-                          {event.discountCalculation
-                            ? formatPrice(event.discountCalculation)
-                            : ""}
-                        </p>
-                      </div>
+                      <p> {formatDate(event.scheduled_at)}</p>
+                      <p className="flex">
+                        Available seats:
+                        <p className="ml-2 font-medium">
+                          {event.ticket_amount}
+                        </p>{" "}
+                      </p>
                     </div>
-                    <div className="mb-4">
-                      <div className="mb-2 text-sm">
-                        <p> {formatDate(event.scheduled_at)}</p>
-                        <p className="flex">
-                          Available seats:
-                          <p className="ml-2 font-medium">
-                            {event.ticket_amount}
-                          </p>
-                        </p>
-                      </div>
-                      <div className="text-xs">
-                        <p>{`${event.city}, ${event.location}`}</p>
-                      </div>
+                    <div className="text-xs">
+                      <p>{`${event.city}, ${event.location}`}</p>
                     </div>
                   </div>
                 </div>
@@ -182,7 +161,9 @@ export default function SearchForm() {
         >
           Previous
         </button>
-        <button></button>
+        <p>
+          page {currentPage} of {pages}
+        </p>
         <button
           type="button"
           onClick={() => handlePageChange(currentPage + 1)}
@@ -191,9 +172,6 @@ export default function SearchForm() {
         >
           Next
         </button>
-        <p>
-          page {currentPage} of {pages}
-        </p>
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { getCookie } from "cookies-next";
 import dayjs from "dayjs";
-import { Datepicker } from "flowbite-react";
+import { Datepicker, Spinner } from "flowbite-react";
 import { useFormik } from "formik";
 import Image from "next/image";
 import Link from "next/link";
@@ -63,14 +63,13 @@ export default function CreateForm() {
           },
           {
             headers: {
-              Authorization: `Bearer ${getCookie("access_token")}`,
               "content-type": "multipart/form-data",
             },
           },
         );
         console.log(values);
         toast.success("New event data created!");
-        router.push("/dashboard");
+        // router.push("/dashboard");
         // window.location.reload();
       } catch (error) {
         if (error instanceof Error) console.error;
@@ -84,6 +83,9 @@ export default function CreateForm() {
       eventRef.current.click();
     }
   }
+  // useEffect(() => {
+  //   console.log(formik.values);
+  // }, [formik.values]);
   const formData = [
     {
       label: "Event title :",
@@ -136,7 +138,7 @@ export default function CreateForm() {
   ];
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div>
+      <div className="container mx-auto">
         <div className="bg-slate-900 text-5xl font-bold text-white">
           Create new event .
         </div>
@@ -196,6 +198,7 @@ export default function CreateForm() {
                 className="w-full "
                 id="scheduled_at"
                 value={formik.values.scheduled_at}
+                minDate={new Date()}
                 onSelectedDateChanged={(date) =>
                   formik.setFieldValue(
                     "scheduled_at",
@@ -215,6 +218,8 @@ export default function CreateForm() {
                 name="start_time"
                 defaultValue={dayjs(formik.values.start_time)}
                 onChange={(value: any) => {
+                  console.log(value);
+
                   formik.setFieldValue("start_time", dayjs(value.toString()));
                 }}
               />
@@ -364,7 +369,7 @@ export default function CreateForm() {
               className="btn btn-accent mt-6 rounded-none text-white hover:bg-zinc-800"
               disabled={formik.isSubmitting ? true : false}
             >
-              Create Event
+              {formik.isSubmitting ? <Spinner></Spinner> : "Create Event"}
             </button>
             <Link href={`/dashboard`}>
               <button

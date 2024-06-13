@@ -1,8 +1,9 @@
 import cron from "node-cron";
-import { deleteUnpaidTransaction } from "../utils/scheduler";
+import { changeStatus } from "../utils/scheduler";
 
-export function deleteUnpaidScheduler() {
-	return cron.schedule("*/1 * * * *", async () => {
-		await deleteUnpaidTransaction();
+export function updateStatusEvent() {
+	return cron.schedule("*/3 * * * * *", async () => {
+		// console.log("test");
+		await changeStatus();
 	});
 }

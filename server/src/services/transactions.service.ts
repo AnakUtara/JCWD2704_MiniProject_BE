@@ -12,11 +12,11 @@ class TransactionService {
 		const { month, year, type } = req.chart_query;
 		const { username } = req.user;
 		if (type === "month") {
-			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id join users as u on u.id = e.user_id where u.username = ${username} and month(t.created_at) = ${month} and year(t.created_at) = ${year} group by e.category`;
+			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id join users as u on u.id = e.user_id where u.username = ${username} and t.status = ${Status_transaction.success} and month(t.created_at) = ${month} and year(t.created_at) = ${year} group by e.category`;
 		} else if (type === "day") {
-			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id join users as u on u.id = e.user_id where u.username = ${username} and date(t.created_at) = date(now()) group by e.category`;
+			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id join users as u on u.id = e.user_id where u.username = ${username} and t.status = ${Status_transaction.success} and date(t.created_at) = date(now()) group by e.category`;
 		} else if (type === "year") {
-			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id join users as u on u.id = e.user_id where u.username = ${username} and year(t.created_at) = ${year} group by e.category`;
+			return await prisma.$queryRaw`select e.category, sum(ticket_bought) ticket_sales from transactions as t join events as e on e.id = t.event_id join users as u on u.id = e.user_id where u.username = ${username} and t.status = ${Status_transaction.success} and year(t.created_at) = ${year} group by e.category`;
 		}
 
 		throw new Error("invalid type");

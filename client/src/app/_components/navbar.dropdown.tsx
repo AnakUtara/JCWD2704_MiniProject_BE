@@ -53,7 +53,9 @@ export default function NavbarDropdown() {
         </Dropdown.Header>
         <Dropdown.Header
           className={clsx(
-            !activeUser.voucher || (!activeUser.voucher.is_valid && "hidden"),
+            !activeUser.voucher || !activeUser.voucher.is_valid
+              ? "hidden"
+              : "block",
           )}
         >
           <span className="block truncate">

@@ -21,9 +21,9 @@ export default async function UpdateEvent({ params }: Props) {
   const { data }: { data: TEvent } = await res.data;
 
   return (
-    <>
+    <div className="container mx-auto">
       <UpdateForm result={data} />
       <DeleteEvent result={data} />
-    </>
+    </div>
   );
 }

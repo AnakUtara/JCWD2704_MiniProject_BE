@@ -3,7 +3,6 @@ import Search from "../_components/search";
 import { sort_order, sort_via } from "../_models/sort.model";
 import { TTransaction, trans_status } from "../_models/transaction.model";
 import DashboardTabs from "./_components/dashboard.tabs";
-import PromotorTransactionsList from "./_components/promotor.transactions.list";
 import { fetchSearchData } from "../_utils/fetch";
 import ChartSettings from "./_components/chart.settings";
 import { Paginate } from "../_components/ui/pagination";
@@ -44,6 +43,13 @@ export default async function Dashboard({ searchParams }: Props) {
       ),
     },
   );
+  const PromotorEvent = dynamic(() => import("./_components/event.list"), {
+    loading: () => (
+      <center>
+        <span className="loading loading-bars py-10"></span>
+      </center>
+    ),
+  });
   const token = cookies().get("access_token");
   const { search, sort, sort_by, status, page, month, type, year } =
     searchParams;
@@ -79,7 +85,11 @@ export default async function Dashboard({ searchParams }: Props) {
             </div>
           )
         }
-        tab2={<div>Events</div>}
+        tab2={
+          <div>
+            <PromotorEvent />
+          </div>
+        }
       />
     </>
   );
