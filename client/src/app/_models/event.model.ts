@@ -57,5 +57,27 @@ export type TEvent = {
 
   created_at?: Date;
   updated_at?: Date;
+
   user: TUser;
+  ratingEvent?: number | null;
 };
+
+export enum Category {
+  Acoustic = "Acoustic",
+  Rock = "Rock",
+  Punk = "Punk",
+  metal = "Metal",
+  Pop = "Pop",
+  Electronic = "Electronic",
+  Experimental = "Experimental",
+}
+
+export enum Venue_type {
+  indoor = "indoor",
+  outdoor = "outdoor",
+}
+
+export enum Status_event {
+  published = "published",
+  finished = "finished",
+}

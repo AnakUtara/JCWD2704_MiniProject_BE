@@ -27,13 +27,13 @@ export async function middleware(request: NextRequest) {
   const guestOnlyPaths: boolean =
     pathname === "/sign-in" ||
     pathname === "/sign-up" ||
-    pathname.startsWith("/forgot-password");
+    pathname.startsWith("/forgot_password");
   const userOnlyPaths: boolean =
-    pathname === "/profile" || pathname === "/dashboard";
+    pathname === "/profile" ||
+    pathname === "/dashboard" ||
+    pathname.startsWith("/transaction");
   const verifiedUserOnlyPaths: boolean =
-    pathname.startsWith("/transaction") ||
-    pathname === "/event/create" ||
-    pathname === "/event/update";
+    pathname === "/event/create" || pathname === "/event/update";
   if (guestOnlyPaths && validate) {
     return NextResponse.redirect(new URL("/", request.url));
   }

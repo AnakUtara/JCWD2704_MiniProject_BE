@@ -1,13 +1,12 @@
 import { NextFunction, Request, Response, response } from "express";
 
 import { validator } from "../utils/validator";
-import { FilterType, TEvent } from "../models/event.model";
-import { Role, Status_event, Venue_type } from "@prisma/client";
+import { FilterType } from "../models/event.model";
+import { Venue_type } from "@prisma/client";
 import { TUser } from "../models/user.model";
 import { prisma } from "../libs/prisma";
 import eventService from "../services/event.service";
 import { eventSchema, updateEventSchema } from "../libs/joi";
-import { throwErrorMessageIf } from "../utils/error";
 // import calculateDiscount from "../libs/discount-calculation";
 
 export async function checkFilter(
@@ -68,9 +67,14 @@ export async function checkPromotor(
 	try {
 		const { username } = req.user;
 		const findUser = (await prisma.user.findFirst({
-			where: { username, role: Role.promotor },
+			where: { username: username, role: "promotor" },
 		})) as TUser;
-		validator(!findUser, `Unauthorized.`);
+		// console.log(findUser);
+
+		validator(
+			findUser.role !== "promotor" && !findUser.bank_acc_no,
+			`Account ${username} is not a promotor, unable to post/create event.`
+		);
 		next();
 	} catch (error) {
 		next(error);
@@ -113,6 +117,7 @@ export async function checkCreateEvent(
 				!category,
 			"All necessary fields except discount, and PIC Info must be filled"
 		);
+
 		req.event = await eventSchema.validateAsync(req.body);
 		next();
 	} catch (error) {

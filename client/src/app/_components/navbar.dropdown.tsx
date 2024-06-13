@@ -8,6 +8,7 @@ import { dateFormat, dayDateMonthYear } from "../_libs/dayjs";
 import UserAvatar from "./ui/user.avatar";
 import VerifiedBadge from "./ui/verified.badge";
 import { toast } from "sonner";
+import clsx from "clsx";
 
 type Props = { activeUser: TUser; email: string; refresh_token: string };
 export default function NavbarDropdown() {
@@ -50,25 +51,26 @@ export default function NavbarDropdown() {
             ) : null}
           </div>
         </Dropdown.Header>
+        <Dropdown.Header
+          className={clsx(
+            !activeUser.voucher || !activeUser.voucher.is_valid
+              ? "hidden"
+              : "block",
+          )}
+        >
+          <span className="block truncate">
+            <p>10% Voucher:</p>
+            <h2 className="mt-1 bg-black p-2 text-center font-bold text-white">
+              {activeUser.voucher?.id}
+            </h2>
+          </span>
+        </Dropdown.Header>
         <Dropdown.Header>
           <span className="block truncate">
             <p>Referral Code:</p>
             <h2 className="mt-1 bg-black p-2 text-center font-bold text-white">
               {activeUser.referral_code}
             </h2>
-            <div className="mt-2 flex flex-col gap-2 text-[10px] leading-3">
-              *Share this code <br /> to gain more points!
-              <br />
-              <div className="bg-gray-500 p-1 leading-4 text-white">
-                10k pts./ea. referral made.
-                <br />
-                Equivalent to IDR10k,-.
-              </div>
-              Use collected points
-              <br />
-              to buy tickets!
-              <br />
-            </div>
           </span>
         </Dropdown.Header>
         {activeUser.role === Role.promotor && (

@@ -1,5 +1,4 @@
 "use client";
-import clsx from "clsx";
 import {
   BarChart,
   Bar,
@@ -20,7 +19,7 @@ export default function FavCategoryChart({ data }: Props) {
   ) : (
     <div className="w-full">
       <ResponsiveContainer width={"100%"} height={400}>
-        <BarChart data={data}>
+        <BarChart data={data} maxBarSize={100}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="category" fontSize={11} />
           <YAxis fontSize={11} type="number" domain={[0, max]} />

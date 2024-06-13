@@ -7,6 +7,12 @@ declare global {
 			user: TUser;
 			event: TEvent;
 			discountCalculation?: number;
+			chart_query: {
+				type: string;
+				month: number;
+				year: number;
+				day: Date;
+			};
 		}
 	}
 }

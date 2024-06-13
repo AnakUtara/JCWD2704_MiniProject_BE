@@ -1,5 +1,6 @@
 import { Category, Status_event, User, Venue_type } from "@prisma/client";
 import { TUser } from "./user.model";
+import { TReview } from "./review.model";
 
 export type TEvent = {
 	id: string;
@@ -31,6 +32,7 @@ export type TEvent = {
 	created_at?: Date;
 	updated_at?: Date;
 	user?: TUser | undefined;
+	review?: TReview[] | undefined;
 };
 
 export type FilterType = "venue_type" | "status" | "city";

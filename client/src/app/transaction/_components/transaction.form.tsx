@@ -6,6 +6,7 @@ import { useAppSelector } from "@/app/_libs/redux/hooks";
 import { TEvent } from "@/app/_models/event.model";
 import { formatPrice } from "@/app/_utils/formatter";
 import { AxiosError } from "axios";
+import clsx from "clsx";
 import { getCookie } from "cookies-next";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
@@ -21,7 +22,7 @@ export default function TransactionForm({ data }: Props) {
     initialValues: {
       ticket_bought: 1,
       voucher_id: "",
-      points: 0,
+      points: activeUser.points || 0,
     },
     validationSchema: Yup.object().shape({
       ticket_bought: Yup.number()
@@ -50,8 +51,13 @@ export default function TransactionForm({ data }: Props) {
             },
           },
         );
-        toast.success("Your transaction email has been sent.");
+        toast.success(
+          !data.ticket_price
+            ? "Ticket issue email sent."
+            : "Transaction email sent.",
+        );
         router.push("/");
+        window.location.reload();
       } catch (error) {
         if (error instanceof AxiosError) {
           console.error(error);
@@ -60,9 +66,11 @@ export default function TransactionForm({ data }: Props) {
       }
     },
   });
-
+  const total_price =
+    formik.values.ticket_bought *
+    (data?.discountCalculation || data?.ticket_price || 0);
   return (
-    <form className="mt-4 w-full border p-3" onSubmit={formik.handleSubmit}>
+    <form className="mt-2 w-full border p-3" onSubmit={formik.handleSubmit}>
       <label
         htmlFor="ticket_bought"
         className="flex flex-wrap items-center gap-2"
@@ -110,36 +118,52 @@ export default function TransactionForm({ data }: Props) {
         </button>
       </label>
       <p className={"text-xs text-red-700"}>{formik.errors.ticket_bought}</p>
-      <label htmlFor="voucher_id">
+      <label
+        htmlFor="voucher_id"
+        className={clsx(!data.ticket_price && "hidden")}
+      >
         Gain extra 10% off by using your voucher code here:
         <IconTextInput
           icon={<FaTicket />}
           name="voucher_id"
-          placeholder="Referral Voucher Code"
+          placeholder="Voucher Code"
           value={formik.values.voucher_id}
           onChange={formik.handleChange}
           bottomLabel={formik.errors.voucher_id}
         />
       </label>
-      <label htmlFor="points">
-        Use your points to pay for tickets:
-        <IconTextInput
-          icon={<FaCoins />}
-          name="points"
-          placeholder="Input Your Points"
-          value={formik.values.points}
-          onChange={formik.handleChange}
-          bottomLabel={formik.errors.points}
-        />
+      <label
+        htmlFor="points"
+        className={clsx(
+          !data.ticket_price || !activeUser.points ? "hidden" : "block",
+        )}
+      >
+        Use your points:
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            defaultChecked
+            className="checkbox checkbox-md rounded-none"
+            value={formik.values.points?.toString()}
+            disabled={!activeUser.points ? true : false}
+            onChange={(e) => {
+              formik.setFieldValue(
+                "points",
+                e.target.checked ? activeUser.points : 0,
+              );
+            }}
+          />
+          <div className="ml-2 flex items-center gap-3 font-bold">
+            <FaCoins /> {activeUser.points}pts.
+          </div>
+        </div>
       </label>
-      <h3 className="m-0">Total Price:</h3>
+      <h3 className="m-0 mt-4">Total Price:</h3>
       <h3 className="m-0">
         {formatPrice(
-          data.discountCalculation
-            ? formik.values.ticket_bought * data?.discountCalculation! -
-                formik.values.points
-            : formik.values.ticket_bought * data?.ticket_price! -
-                formik.values.points,
+          formik.values.points >= total_price
+            ? total_price
+            : total_price - formik.values.points,
         )}
       </h3>
       <button

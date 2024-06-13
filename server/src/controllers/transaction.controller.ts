@@ -2,14 +2,24 @@ import { NextFunction, Request, Response } from "express";
 import transactionsService from "../services/transactions.service";
 
 export class TransactionController {
+	async getChartData(req: Request, res: Response, next: NextFunction) {
+		try {
+			const data = await transactionsService.getChartData(req);
+			res.send({ message: "fetch favorite category", data });
+		} catch (error) {
+			next(error);
+		}
+	}
 	async getCustomerTransactions(
 		req: Request,
 		res: Response,
 		next: NextFunction
 	) {
 		try {
-			const data = await transactionsService.getCustomerTransactions(req);
-			res.send({ message: "fetch customer's transactions.", data });
+			const { data, total } = await transactionsService.getCustomerTransactions(
+				req
+			);
+			res.send({ message: "fetch customer's transactions.", data, total });
 		} catch (error) {
 			next(error);
 		}
@@ -20,8 +30,10 @@ export class TransactionController {
 		next: NextFunction
 	) {
 		try {
-			const data = await transactionsService.getPromotorTransactions(req);
-			res.send({ message: "fetch promotor's transactions.", data });
+			const { data, total } = await transactionsService.getPromotorTransactions(
+				req
+			);
+			res.send({ message: "fetch promotor's transactions.", data, total });
 		} catch (error) {
 			next(error);
 		}

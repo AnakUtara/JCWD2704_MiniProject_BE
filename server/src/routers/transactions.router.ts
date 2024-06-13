@@ -3,9 +3,12 @@ import { maxAvatarSize, uploader } from "../libs/multer";
 import { verifyAccessToken } from "../middlewares/auth.middleware";
 import { checkPromotor } from "../middlewares/event.middleware";
 import {
+	checkChartQuery,
 	checkEventOwner,
 	checkEventStatus,
+	checkEventStatusFromTransID,
 	checkTicketAmount,
+	checkTransactionStatus,
 	checkVoucher,
 } from "../middlewares/transaction.middleware";
 import { EntityRouter } from "./entity.router";
@@ -29,6 +32,13 @@ class TransactionsRouter extends EntityRouter {
 			checkPromotor,
 			this.transactionController.getPromotorTransactions
 		);
+		this.router.get(
+			"/v3",
+			verifyAccessToken,
+			checkPromotor,
+			checkChartQuery,
+			this.transactionController.getChartData
+		);
 		this.router.post(
 			"/",
 			verifyAccessToken,
@@ -39,9 +49,17 @@ class TransactionsRouter extends EntityRouter {
 			this.transactionController.create
 		);
 		this.router.patch(
+			"/v4/:id",
+			verifyAccessToken,
+			checkPromotor,
+			checkTransactionStatus,
+			this.transactionController.confirm
+		);
+		this.router.patch(
 			"/:id",
 			verifyAccessToken,
 			checkPromotor,
+			checkTransactionStatus,
 			uploader("PROOF", maxAvatarSize, "transfer_proof").single(
 				"transfer_proof"
 			),
@@ -50,7 +68,8 @@ class TransactionsRouter extends EntityRouter {
 		this.router.delete(
 			"/:id",
 			verifyAccessToken,
-			checkPromotor,
+			checkEventStatusFromTransID,
+			checkTransactionStatus,
 			this.transactionController.delete
 		);
 	}

@@ -15,3 +15,16 @@ export async function fetchSearchData(
   });
   return res.data;
 }
+
+export async function patchMultipartFormData(
+  url: string,
+  body: any,
+  token: string,
+) {
+  await axiosInstance().patch(url, body, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "content-type": "multipart/form-data",
+    },
+  });
+}

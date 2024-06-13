@@ -20,19 +20,15 @@ class EventRoute extends EntityRouter {
 			"/orders",
 			eventController.getWithOrder.bind(eventController)
 		);
-		this.router.get(
-			"/:id",
-			verifyAccessToken,
-			eventController.getById.bind(eventController)
-		);
-
 		// ROUTE FOR FETCH EVENT DATA HANDLED BY PROMOTOR
 		this.router.get(
-			"/",
+			"/promotor",
 			verifyAccessToken,
 			checkPromotor,
 			eventController.getEventsPromotor.bind(eventController)
 		);
+
+		this.router.get("/:id", eventController.getById.bind(eventController));
 
 		// ROUTE FOR UPDATE EVENT DATA
 		this.router.patch(
@@ -40,7 +36,7 @@ class EventRoute extends EntityRouter {
 			verifyAccessToken,
 			checkPromotor,
 			checkEventIsExist,
-			uploader("EVNT", maxEventSize, "events").single("image_url"),
+			uploader("EVNT", maxEventSize, "events").single("image"),
 			checkUpdateEventForm,
 			eventController.update.bind(eventController)
 		);
@@ -50,7 +46,7 @@ class EventRoute extends EntityRouter {
 			"/",
 			verifyAccessToken,
 			checkPromotor,
-			uploader("EVNT", maxEventSize, "events").single("image_url"),
+			uploader("EVNT", maxEventSize, "events").single("image"),
 			checkCreateEvent,
 			eventController.create.bind(eventController)
 		);
