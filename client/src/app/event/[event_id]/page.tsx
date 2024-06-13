@@ -10,11 +10,7 @@ import Link from "next/link";
 type Props = { params: { event_id: string } };
 export default async function EventDetails({ params }: Props) {
   const { event_id } = params;
-  const res = await axiosInstance().get(`/events/${event_id}`, {
-    headers: {
-      Authorization: `Bearer ${cookies().get("access_token")?.value}`,
-    },
-  });
+  const res = await axiosInstance().get(`/events/${event_id}`);
   const { data }: { data: TEvent } = await res.data;
 
   return (

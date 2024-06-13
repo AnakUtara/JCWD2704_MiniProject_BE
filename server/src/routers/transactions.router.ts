@@ -6,6 +6,7 @@ import {
 	checkChartQuery,
 	checkEventOwner,
 	checkEventStatus,
+	checkEventStatusFromTransID,
 	checkTicketAmount,
 	checkTransactionStatus,
 	checkVoucher,
@@ -67,7 +68,7 @@ class TransactionsRouter extends EntityRouter {
 		this.router.delete(
 			"/:id",
 			verifyAccessToken,
-			checkPromotor,
+			checkEventStatusFromTransID,
 			checkTransactionStatus,
 			this.transactionController.delete
 		);

@@ -29,7 +29,7 @@ class TransactionService {
 			status?: Status_transaction;
 			page: string;
 		};
-		const limit = 10;
+		const limit = 5;
 		const { id: user_id } = req?.user;
 		const total = await prisma.transaction.count({
 			where: {
@@ -95,7 +95,7 @@ class TransactionService {
 			status?: Status_transaction;
 			page: string;
 		};
-		const limit = 10;
+		const limit = 5;
 		const { id: user_id } = req?.user;
 		const total = await prisma.transaction.count({
 			where: {
@@ -186,6 +186,10 @@ class TransactionService {
 			voucher_id?: string;
 		} = req.body;
 		throwErrorMessageIf(!ticket_bought, "Specify amount of ticket to buy.");
+		throwErrorMessageIf(
+			req.event.ticket_amount! < ticket_bought,
+			"Limit exceeded."
+		);
 		let total_price = req.event.ticket_price! * Number(ticket_bought);
 		await prisma.$transaction(async (prisma) => {
 			try {
@@ -206,6 +210,29 @@ class TransactionService {
 						},
 					},
 				};
+				if (req.event.discount_amount) {
+					data.ticket_discount = req.event.discount_amount;
+					data.total_price = total_price -= discCalc(
+						total_price,
+						req.event.discount_amount
+					);
+				}
+				let input_points = Number(points);
+				const isPointsGteTotalPrice = input_points >= total_price;
+				if (input_points) {
+					data.total_price = isPointsGteTotalPrice
+						? 0
+						: (total_price -= input_points);
+					data.points_used = input_points;
+					await prisma.user.update({
+						where: {
+							id: req.user.id,
+						},
+						data: {
+							points: isPointsGteTotalPrice ? input_points - total_price : 0,
+						},
+					});
+				}
 				if (voucher_id) {
 					throwErrorMessageIf(
 						!req.event.ticket_price,
@@ -229,41 +256,7 @@ class TransactionService {
 						voucher.amount
 					);
 				}
-				if (req.event.discount_amount) {
-					data.ticket_discount = req.event.discount_amount;
-					data.total_price = total_price -= discCalc(
-						total_price,
-						req.event.discount_amount
-					);
-				}
-				throwErrorMessageIf(
-					req.event.ticket_amount! < ticket_bought,
-					"Limit exceeded."
-				);
-				const input_points = Number(points);
-				if (input_points) {
-					throwErrorMessageIf(
-						input_points > req.user.points! ||
-							input_points < req.user.points! ||
-							req.user.points === 0,
-						"Points usage exceed/below held amount."
-					);
-					throwErrorMessageIf(
-						input_points > total_price || input_points < 0,
-						"Points exceed/below total price."
-					);
-					data.total_price = total_price - input_points;
-					data.points_used = Number(points);
-					await prisma.user.update({
-						where: {
-							id: req.user.id,
-						},
-						data: {
-							points: req?.user.points! - input_points,
-						},
-					});
-				}
-				if (!req.event.ticket_price || input_points === total_price) {
+				if (!req.event.ticket_price || input_points >= total_price) {
 					data.status = Status_transaction.success;
 					sendTicket({
 						email_to: req.user.email,
@@ -388,8 +381,9 @@ class TransactionService {
 			});
 			throwErrorMessageIf(!payment, "Transaction not found.");
 			throwErrorMessageIf(
-				dayjs(payment?.created_at).get("day") === dayjs().get("day"),
-				"Transaction can be deleted after 24 hours since made."
+				req.user.role === "promotor" &&
+					dayjs(payment?.created_at).add(1, "day") >= dayjs(),
+				"Transaction can be cancelled after 24 hours since made."
 			);
 			await prisma.event.update({
 				where: { id: payment?.event_id },
@@ -416,8 +410,11 @@ class TransactionService {
 					},
 				});
 			}
-			await prisma.transaction.delete({
+			await prisma.transaction.update({
 				where: { id },
+				data: {
+					status: Status_transaction.cancelled,
+				},
 			});
 		});
 	}

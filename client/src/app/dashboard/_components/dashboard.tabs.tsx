@@ -7,9 +7,8 @@ import { MdDashboard, MdEventNote } from "react-icons/md";
 type Props = {
   tab1: React.ReactNode;
   tab2: React.ReactNode;
-  tab3: React.ReactNode;
 };
-export default function DashboardTabs({ tab1, tab2, tab3 }: Props) {
+export default function DashboardTabs({ tab1, tab2 }: Props) {
   return (
     <Flowbite theme={{ theme: tabsCustomTheme }}>
       <Tabs aria-label="Tabs with underline" style="underline">
@@ -18,9 +17,6 @@ export default function DashboardTabs({ tab1, tab2, tab3 }: Props) {
         </Tabs.Item>
         <Tabs.Item title="Events" icon={HiClipboardList}>
           {tab2}
-        </Tabs.Item>
-        <Tabs.Item title="Events Attended" icon={MdEventNote}>
-          {tab3}
         </Tabs.Item>
       </Tabs>
     </Flowbite>

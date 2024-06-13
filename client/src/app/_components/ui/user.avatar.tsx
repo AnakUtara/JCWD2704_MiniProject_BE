@@ -15,7 +15,7 @@ export default function UserAvatar({
         !user.avatar
           ? ""
           : (props: AvatarImageProps) => {
-              props.className += " my-0 object-cover w-full";
+              props.className += " my-0 object-cover";
               return (
                 <Image
                   alt={`${user.username}'s avatar`}

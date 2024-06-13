@@ -12,7 +12,6 @@ export default class App {
 		this.app = express();
 		this.configure();
 		this.routes();
-		deleteUnpaidScheduler();
 		this.errorHandler();
 	}
 	private configure(): void {

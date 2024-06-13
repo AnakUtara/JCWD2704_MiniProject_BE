@@ -1,6 +1,6 @@
 "use client";
 import { dateFormat, monthDateYear } from "@/app/_libs/dayjs";
-import { TTransaction } from "@/app/_models/transaction.model";
+import { TTransaction, trans_status } from "@/app/_models/transaction.model";
 import { Table } from "flowbite-react";
 import ViewProofModal from "./view.proof.modal";
 import { useEffect, useState } from "react";
@@ -11,12 +11,11 @@ import { axiosInstance } from "@/app/_libs/axios.config";
 import { getCookie } from "cookies-next";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
-import { FaTrash } from "react-icons/fa6";
+import { ImCross } from "react-icons/im";
 
 type Props = { data: TTransaction[] };
 export default function PromotorTransactionsList({ data }: Props) {
   const [tr, setTr] = useState<TTransaction>();
-  const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const token = getCookie("access_token");
   useEffect(() => {
     if (document && tr) {
@@ -38,8 +37,8 @@ export default function PromotorTransactionsList({ data }: Props) {
           <Table.HeadCell>Applied Voucher</Table.HeadCell>
           <Table.HeadCell>Transfer Proof</Table.HeadCell>
           <Table.HeadCell>Status</Table.HeadCell>
+          <Table.HeadCell>Cancel</Table.HeadCell>
           <Table.HeadCell>Transaction Date</Table.HeadCell>
-          <Table.HeadCell> </Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
           {data.map((trans: TTransaction) => (
@@ -98,10 +97,8 @@ export default function PromotorTransactionsList({ data }: Props) {
                   <button
                     type="button"
                     className="btn btn-accent rounded-none text-white hover:bg-zinc-800"
-                    disabled={isSubmit ? true : false}
                     onClick={async (e) => {
                       try {
-                        setIsSubmit(!isSubmit);
                         await axiosInstance().patch(
                           `/transactions/v4/${trans.id}`,
                           {},
@@ -128,37 +125,40 @@ export default function PromotorTransactionsList({ data }: Props) {
                 )}
               </Table.Cell>
               <Table.Cell>
-                {dateFormat(trans.created_at.toString(), monthDateYear)}
+                <button
+                  type="button"
+                  className="btn btn-square btn-error rounded-none text-white"
+                  disabled={
+                    trans.status === trans_status.unpaid ||
+                    trans.status === trans_status.pending
+                      ? false
+                      : true
+                  }
+                  onClick={async (e) => {
+                    try {
+                      await axiosInstance().delete(
+                        `/transactions/${trans.id}`,
+                        {
+                          headers: {
+                            Authorization: `Bearer ${token}`,
+                          },
+                        },
+                      );
+                      toast.success("Transaction cancelled.");
+                      window.location.reload();
+                    } catch (error) {
+                      if (error instanceof AxiosError) {
+                        console.error(error.message);
+                        toast.error(error.response?.data.message);
+                      }
+                    }
+                  }}
+                >
+                  <ImCross />
+                </button>
               </Table.Cell>
               <Table.Cell>
-                {trans.status !== "success" && (
-                  <button
-                    type="button"
-                    className="btn btn-square btn-error rounded-none text-white"
-                    disabled={isSubmit ? true : false}
-                    onClick={async (e) => {
-                      try {
-                        setIsSubmit(!isSubmit);
-                        await axiosInstance().delete(
-                          `/transactions/${trans.id}`,
-                          {
-                            headers: {
-                              Authorization: `Bearer ${token}`,
-                            },
-                          },
-                        );
-                        toast.success("Transaction deleted.");
-                      } catch (error) {
-                        if (error instanceof AxiosError) {
-                          console.error(error.message);
-                          toast.error(error.response?.data.message);
-                        }
-                      }
-                    }}
-                  >
-                    <FaTrash />
-                  </button>
-                )}
+                {dateFormat(trans.created_at.toString(), monthDateYear)}
               </Table.Cell>
             </Table.Row>
           ))}

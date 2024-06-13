@@ -6,6 +6,8 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import TransactionForm from "../_components/transaction.form";
 import { major_mono } from "@/app/_utils/fonts";
+import UserAvatar from "@/app/_components/ui/user.avatar";
+import dynamic from "next/dynamic";
 
 type Props = { params: { event_id: string } };
 export default async function Transaction({ params }: Props) {
@@ -18,23 +20,43 @@ export default async function Transaction({ params }: Props) {
     },
   });
   const { data: event }: { data: TEvent } = res.data;
+  const TransactionForm = dynamic(
+    () => import("../_components/transaction.form"),
+    {
+      loading: () => (
+        <span className="mt-2 grid h-[367px] w-full place-items-center">
+          <span className="loading loading-bars"></span>
+        </span>
+      ),
+      ssr: false,
+    },
+  );
   return (
     <div className="flex justify-center">
       <div className="prose">
-        <h2 className={clsx(major_mono.className, "text-2xl sm:text-5xl")}>
+        <h2
+          className={clsx(
+            major_mono.className,
+            "my-0 mb-2 text-2xl sm:text-5xl",
+          )}
+        >
           Transaction Details:
         </h2>
-        <div className="flex items-start gap-5">
+        <div className="flex flex-col gap-1">
           <Image
             src={`${process.env.NEXT_PUBLIC_API_IMAGES_URL}/events/${event.image_url}`}
             width={320}
             height={240}
             alt={`${event.title} image`}
-            className="my-0 aspect-square w-28 object-cover md:aspect-video md:w-40"
+            className="my-0 aspect-video w-full object-cover"
           />
           <div>
             <h3 className="m-0">{event.title}</h3>
-            <p className="m-0 text-xs">An event by: {event.user.username}</p>
+            <div className="flex items-center gap-2">
+              <p className="m-0 text-xs">An event by:</p>
+              <UserAvatar user={event.user} size="sm" />
+              <p className="m-0 text-xs">{event.user.username}</p>
+            </div>
             <h5 className={clsx(!event.discount_amount && "hidden", "m-0")}>
               {formatPrice(event.discountCalculation!)}{" "}
               <span className="badge badge-accent text-white">
@@ -47,7 +69,7 @@ export default async function Transaction({ params }: Props) {
                 "m-0",
               )}
             >
-              {formatPrice(event.ticket_price!)}
+              {!event.ticket_price ? "Free" : formatPrice(event.ticket_price!)}
             </p>
           </div>
         </div>

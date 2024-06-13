@@ -95,6 +95,32 @@ export async function checkVoucher(
 	}
 }
 
+export async function checkEventStatusFromTransID(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		const { id } = req.params;
+		const isEventDone = await prisma.transaction.findFirst({
+			where: {
+				id,
+			},
+			include: {
+				event: true,
+			},
+		});
+		if (isEventDone?.event.status === Status_event.finished) res.send(405);
+		throwErrorMessageIf(
+			isEventDone?.event.status === Status_event.finished,
+			"Not allowed to cancel finished event."
+		);
+		next();
+	} catch (error) {
+		next(error);
+	}
+}
+
 export async function checkEventStatus(
 	req: Request,
 	res: Response,
@@ -113,7 +139,6 @@ export async function checkEventStatus(
 			isEventDone?.status === Status_event.finished || !isEventDone,
 			"Event has ended."
 		);
-		console.log(isEventDone?.user);
 		req.event = isEventDone as TEvent;
 		next();
 	} catch (error) {
@@ -141,18 +166,21 @@ export async function checkTransactionStatus(
 ) {
 	try {
 		const { id } = req.params;
-		const isSuccess = await prisma.transaction.findFirst({
+		const isCancelled = await prisma.transaction.findFirst({
 			where: {
 				id,
 				AND: {
-					OR: [{ status: Status_transaction.success }, { total_price: 0 }],
+					OR: [
+						{ status: Status_transaction.cancelled },
+						{ status: Status_transaction.success },
+					],
 				},
 			},
 		});
-		if (isSuccess) res.status(405);
+		if (isCancelled) res.status(405);
 		throwErrorMessageIf(
-			isSuccess !== null,
-			"Can't modify successful transaction."
+			isCancelled !== null,
+			"Can't modify successful/cancelled transaction."
 		);
 		next();
 	} catch (error) {

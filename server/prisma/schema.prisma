@@ -123,6 +123,7 @@ enum Status_transaction {
   unpaid
   pending
   success
+  cancelled
 }
 
 model Transaction {
