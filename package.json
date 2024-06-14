@@ -2,9 +2,12 @@
 	"scripts": {
 		"server": "cd server && nodemon --files ./src/index.ts",
 		"client": "cd client && npm run dev",
+		"build": "cd client && npm run build",
+		"start": "cd client && npm run start",
 		"migrate": "cd server && npx prisma migrate dev",
 		"studio": "cd server && npx prisma studio",
 		"dev": "concurrently \"npm run client\" \"npm run server\"",
+		"prod": "concurrently \"npm run start\" \"npm run server\"",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"icl": "cd client && npm install",
 		"isrv": "cd server && npm install",

@@ -1,6 +1,7 @@
 "use client";
 import IconTextInput from "@/app/_components/icon.text.input";
 import { axiosInstance } from "@/app/_libs/axios.config";
+import { AxiosError } from "axios";
 import { useFormik } from "formik";
 import { redirect, useRouter } from "next/navigation";
 import { FaKey } from "react-icons/fa6";
@@ -40,10 +41,13 @@ export default function UpdatePassword({ token }: Props) {
         );
         toast.success("Password successfully changed!");
         formik.resetForm();
-        redirect("/");
+        router.push("/");
       } catch (error) {
-        toast.error("Session expired.");
-        redirect("/");
+        if (error instanceof AxiosError) {
+          console.error(error.message);
+          toast.error(error.response?.data.message);
+        }
+        router.push("/");
       }
     },
   });
@@ -65,16 +69,6 @@ export default function UpdatePassword({ token }: Props) {
         disabled={!formik.values.password || formik.isSubmitting ? true : false}
       >
         Submit
-      </button>
-      <button
-        className="btn btn-outline btn-accent ml-2 rounded-none"
-        onClick={(e) => {
-          e.preventDefault();
-          router.push("/");
-        }}
-        disabled={!formik.values.password || formik.isSubmitting ? true : false}
-      >
-        Cancel{" "}
       </button>
     </form>
   );
