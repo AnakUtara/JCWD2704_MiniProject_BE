@@ -58,7 +58,7 @@ class TransactionsRouter extends EntityRouter {
 		this.router.patch(
 			"/:id",
 			verifyAccessToken,
-			checkPromotor,
+			// checkPromotor,
 			checkTransactionStatus,
 			uploader("PROOF", maxAvatarSize, "transfer_proof").single(
 				"transfer_proof"
