@@ -66,6 +66,7 @@ export default function UpdateForm({ result }: Props) {
           },
           {
             headers: {
+              Authorization: `Bearer ${getCookie("access_token")}`,
               "content-type": "multipart/form-data",
             },
           },

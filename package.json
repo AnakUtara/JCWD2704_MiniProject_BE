@@ -2,7 +2,7 @@
 	"scripts": {
 		"server": "cd server && nodemon --files ./src/index.ts",
 		"client": "cd client && npm run dev",
-		"build": "cd client && npm run build",
+		"build": "concurrently \"cd client && npm run build\" \"npm run server\"",
 		"start": "cd client && npm run start",
 		"migrate": "cd server && npx prisma migrate dev",
 		"studio": "cd server && npx prisma studio",
