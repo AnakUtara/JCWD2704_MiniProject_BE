@@ -29,7 +29,7 @@ export default async function Home() {
             <span
               className={clsx(
                 major_mono.className,
-                "self-center whitespace-nowrap border-b-[2px] text-4xl font-semibold dark:text-white",
+                "self-center border-b-[2px] text-4xl font-semibold dark:text-white",
               )}
             >
               Event in the nearest time!
@@ -42,7 +42,7 @@ export default async function Home() {
           <span
             className={clsx(
               major_mono.className,
-              "self-center whitespace-nowrap border-b-[2px] text-4xl font-semibold dark:text-white",
+              "self-center border-b-[2px] text-4xl font-semibold dark:text-white",
             )}
           >
             Choose event that u want to visit!

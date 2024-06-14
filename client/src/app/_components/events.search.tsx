@@ -182,7 +182,9 @@ export default function SearchForm() {
         >
           Previous
         </button>
-        <button></button>
+        <p>
+          page {currentPage} of {pages}
+        </p>
         <button
           type="button"
           onClick={() => handlePageChange(currentPage + 1)}
@@ -191,9 +193,6 @@ export default function SearchForm() {
         >
           Next
         </button>
-        <p>
-          page {currentPage} of {pages}
-        </p>
       </div>
     </div>
   );
