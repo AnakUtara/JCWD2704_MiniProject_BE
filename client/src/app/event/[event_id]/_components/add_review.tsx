@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import * as Yup from "yup";
 import EventReview from "./event_review";
 import { AxiosError } from "axios";
+import { getCookie } from "cookies-next";
 
 type Props = { data: TEvent };
 export default function CreateReview({ data }: Props) {
@@ -26,10 +27,18 @@ export default function CreateReview({ data }: Props) {
     onSubmit: async (values) => {
       try {
         console.log(values);
-        await axiosInstance().post(`/review/${data.id}`, {
-          ...values,
-          rating: Number(values.rating),
-        });
+        await axiosInstance().post(
+          `/review/${data.id}`,
+          {
+            ...values,
+            rating: Number(values.rating),
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${getCookie("access_token")}`,
+            },
+          },
+        );
         fetch();
         toast.success("thank you, your review has been submitted");
       } catch (error) {
