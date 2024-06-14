@@ -70,6 +70,7 @@ class TransactionService {
 						end_time: true,
 						ticket_price: true,
 						discount_amount: true,
+						status: true,
 						user: {
 							select: {
 								avatar: true,
@@ -151,6 +152,7 @@ class TransactionService {
 						end_time: true,
 						ticket_price: true,
 						discount_amount: true,
+						status: true,
 						user: {
 							select: {
 								avatar: true,

@@ -63,7 +63,7 @@ export default function PromotorEvent() {
 
   return (
     <div className="w-full md:px-8 lg:px-12">
-      <div className=" my-[4vh] w-full rounded-md border-[1px] border-gray-400 p-4">
+      <div className="w-full rounded-md border-[1px] border-gray-400 p-4">
         <form
           onSubmit={formik.handleSubmit}
           className="flex flex-col justify-center gap-8 md:flex-row"
@@ -130,20 +130,29 @@ export default function PromotorEvent() {
                   />
                 </div>
                 <div className="flex flex-col justify-between px-4 pt-2">
-                  <p className="text-lg font-semibold"> {event.title}</p>
+                  <p className="overflow-hidden text-ellipsis whitespace-nowrap text-lg font-semibold">
+                    {event.title}
+                  </p>
 
                   <div className="mb-4">
                     <div className="mb-2 text-sm">
-                      <p> {formatDate(event.scheduled_at)}</p>
-                      <p className="flex">
-                        Available seats:
-                        <p className="ml-2 font-medium">
-                          {event.ticket_amount}
-                        </p>{" "}
-                      </p>
+                      <div className="flex">
+                        <p className="whitespace-nowrap text-xs">
+                          Available seats:
+                        </p>
+                        {event.ticket_amount == 0 ? (
+                          <p className="ml-2 whitespace-nowrap text-xs font-semibold text-blue-800">
+                            Fully booked.
+                          </p>
+                        ) : (
+                          <p className="ml-2 font-medium">
+                            {event.ticket_amount}
+                          </p>
+                        )}
+                      </div>
                     </div>
                     <div className="text-xs">
-                      <p>{`${event.city}, ${event.location}`}</p>
+                      <p className="overflow-hidden text-ellipsis whitespace-nowrap">{`${event.city}, ${event.location}`}</p>
                     </div>
                   </div>
                 </div>

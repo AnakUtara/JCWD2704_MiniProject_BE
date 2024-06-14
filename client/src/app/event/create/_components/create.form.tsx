@@ -9,6 +9,7 @@ import { categoryData, discountOption } from "@/app/_utils/event.data";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { AxiosError } from "axios";
 import { getCookie } from "cookies-next";
 import dayjs from "dayjs";
 import { Datepicker, Spinner } from "flowbite-react";
@@ -63,29 +64,23 @@ export default function CreateForm() {
           },
           {
             headers: {
+              Authorization: `Bearer ${getCookie("access_token")}`,
               "content-type": "multipart/form-data",
             },
           },
         );
-        console.log(values);
         toast.success("New event data created!");
-        // router.push("/dashboard");
-        // window.location.reload();
+        window.location.reload();
+        router.push("/dashboard");
       } catch (error) {
-        if (error instanceof Error) console.error;
-        toast.error("failed in creating event data");
+        if (error instanceof AxiosError) {
+          console.error;
+          toast.error(error.response?.data.message);
+        }
       }
     },
   });
   const eventRef = useRef<HTMLInputElement>(null);
-  function handleOpenFileinput() {
-    if (eventRef.current) {
-      eventRef.current.click();
-    }
-  }
-  // useEffect(() => {
-  //   console.log(formik.values);
-  // }, [formik.values]);
   const formData = [
     {
       label: "Event title :",
@@ -150,7 +145,7 @@ export default function CreateForm() {
                   src={
                     formik.values.image
                       ? window.URL.createObjectURL(formik.values.image)
-                      : imageUrl + "/events/"
+                      : imageUrl + "/events/placeholder.png"
                   }
                   alt="1"
                   fill={true}

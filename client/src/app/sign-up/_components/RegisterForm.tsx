@@ -5,6 +5,7 @@ import { accordionCustomTheme } from "@/app/_libs/flowbite.theme";
 import { registerSchema } from "@/app/_libs/yup";
 import { initRegister } from "@/app/_models/user.model";
 import { plex_mono } from "@/app/_utils/fonts";
+import { AxiosError } from "axios";
 import clsx from "clsx";
 import { Accordion, Flowbite } from "flowbite-react";
 import { useFormik } from "formik";
@@ -34,8 +35,10 @@ export default function RegisterForm({}: Props) {
         formik.resetForm();
         router.push("/");
       } catch (error) {
-        if (error instanceof Error) console.log(error.message);
-        toast.error("User might already exist.");
+        if (error instanceof AxiosError) {
+          console.error(error.message);
+          toast.error(error.response?.data.message);
+        }
       }
     },
   });

@@ -11,6 +11,7 @@ import {
 import { footerCustomTheme } from "../_libs/flowbite.theme";
 import clsx from "clsx";
 import { major_mono } from "../_utils/fonts";
+import Link from "next/link";
 
 export default function LlamsFooter() {
   return (
@@ -32,8 +33,12 @@ export default function LlamsFooter() {
               <div>
                 <Footer.Title title="Company" />
                 <Footer.LinkGroup col>
-                  <Footer.Link href="#">Home</Footer.Link>
-                  <Footer.Link href="#">About Us</Footer.Link>
+                  <Footer.Link as={Link} href="/">
+                    Home
+                  </Footer.Link>
+                  <Footer.Link as={Link} href="/about-us">
+                    About Us
+                  </Footer.Link>
                 </Footer.LinkGroup>
               </div>
               <div>

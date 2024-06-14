@@ -116,8 +116,9 @@ export default function ProfileTabs({ children }: Props) {
               <label>
                 Date of birth:
                 <Datepicker
-                  maxDate={dayjs().subtract(17, "year").toDate()}
-                  value={formik.values.date_of_birth}
+                  minDate={dayjs().subtract(99, "years").toDate()}
+                  maxDate={dayjs().subtract(17, "years").toDate()}
+                  defaultDate={dayjs(formik.values.date_of_birth).toDate()}
                   onSelectedDateChanged={(date) =>
                     formik.setFieldValue(
                       "date_of_birth",

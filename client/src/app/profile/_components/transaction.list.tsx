@@ -32,6 +32,7 @@ export default function TransactionList({ data }: Props) {
           <Table.HeadCell>Total Price</Table.HeadCell>
           <Table.HeadCell>Event</Table.HeadCell>
           <Table.HeadCell>Event Discount</Table.HeadCell>
+          <Table.HeadCell>Event Status</Table.HeadCell>
           <Table.HeadCell>Points Used</Table.HeadCell>
           <Table.HeadCell>Event Creator</Table.HeadCell>
           <Table.HeadCell>Payment Bank Acc No.</Table.HeadCell>
@@ -64,6 +65,7 @@ export default function TransactionList({ data }: Props) {
                   "none"
                 )}
               </Table.Cell>
+              <Table.Cell>{trans.event.status}</Table.Cell>
               <Table.Cell>
                 {trans.points_used ? trans.points_used : "none"}
               </Table.Cell>
@@ -98,7 +100,10 @@ export default function TransactionList({ data }: Props) {
                         setTr(trans);
                       }}
                       disabled={
-                        trans.status === trans_status.cancelled ? true : false
+                        trans.status === trans_status.cancelled ||
+                        trans.event.status === Status_event.finished
+                          ? true
+                          : false
                       }
                     >
                       Upload
@@ -115,11 +120,10 @@ export default function TransactionList({ data }: Props) {
                   type="button"
                   className="btn btn-square btn-error rounded-none text-white"
                   disabled={
-                    trans.status === trans_status.cancelled ||
-                    trans.status === trans_status.success ||
-                    trans.event.status === Status_event.finished
-                      ? true
-                      : false
+                    trans.status === trans_status.unpaid &&
+                    trans.event.status !== Status_event.finished
+                      ? false
+                      : true
                   }
                   onClick={async (e) => {
                     e.preventDefault();

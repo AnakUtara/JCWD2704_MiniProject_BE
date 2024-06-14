@@ -12,6 +12,7 @@ import { getCookie } from "cookies-next";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 import { ImCross } from "react-icons/im";
+import { Status_event } from "@/app/_models/event.model";
 
 type Props = { data: TTransaction[] };
 export default function PromotorTransactionsList({ data }: Props) {
@@ -33,6 +34,7 @@ export default function PromotorTransactionsList({ data }: Props) {
           <Table.HeadCell>Event Discount</Table.HeadCell>
           <Table.HeadCell>Points Used</Table.HeadCell>
           <Table.HeadCell>Event</Table.HeadCell>
+          <Table.HeadCell>Event Status</Table.HeadCell>
           <Table.HeadCell>Purchased By</Table.HeadCell>
           <Table.HeadCell>Applied Voucher</Table.HeadCell>
           <Table.HeadCell>Transfer Proof</Table.HeadCell>
@@ -66,6 +68,7 @@ export default function PromotorTransactionsList({ data }: Props) {
                   {trans.event.title}
                 </Link>
               </Table.Cell>
+              <Table.Cell>{trans.event.status}</Table.Cell>
               <Table.Cell>
                 <div className="flex flex-col items-center gap-2">
                   <UserAvatar user={trans.user} />
@@ -86,7 +89,8 @@ export default function PromotorTransactionsList({ data }: Props) {
                   >
                     View
                   </button>
-                ) : trans.status === "success" || !trans.total_price ? (
+                ) : trans.status === trans_status.success ||
+                  !trans.total_price ? (
                   "Free"
                 ) : (
                   "none"
@@ -97,6 +101,11 @@ export default function PromotorTransactionsList({ data }: Props) {
                   <button
                     type="button"
                     className="btn btn-accent rounded-none text-white hover:bg-zinc-800"
+                    disabled={
+                      trans.event.status === Status_event.finished
+                        ? true
+                        : false
+                    }
                     onClick={async (e) => {
                       try {
                         await axiosInstance().patch(
@@ -129,8 +138,10 @@ export default function PromotorTransactionsList({ data }: Props) {
                   type="button"
                   className="btn btn-square btn-error rounded-none text-white"
                   disabled={
-                    trans.status === trans_status.unpaid ||
-                    trans.status === trans_status.pending
+                    (trans.status === trans_status.unpaid &&
+                      trans.event.status !== Status_event.finished) ||
+                    (trans.status === trans_status.pending &&
+                      trans.event.status !== Status_event.finished)
                       ? false
                       : true
                   }

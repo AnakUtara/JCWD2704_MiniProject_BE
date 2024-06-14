@@ -49,16 +49,6 @@ export default function EmailForm({}: Props) {
       >
         Submit
       </button>
-      <button
-        className="btn btn-outline btn-accent ml-2 rounded-none"
-        onClick={(e) => {
-          e.preventDefault();
-          router.push("/");
-        }}
-        disabled={!formik.values.email || formik.isSubmitting ? true : false}
-      >
-        Cancel
-      </button>
     </form>
   );
 }
