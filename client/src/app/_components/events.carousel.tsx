@@ -4,23 +4,28 @@ import { imageUrl } from "../_utils/config";
 import dayjs from "dayjs";
 import { Carousel } from "flowbite-react";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import Link from "next/link";
 dayjs.extend(localizedFormat);
 
-type Props = { result: TEvent[] };
+type Props = { data: TEvent[] };
 
-export default function EventsCarousel({ result }: Props) {
+export default function EventsCarousel({ data }: Props) {
   return (
     <div className="h-[400px]">
       <Carousel slideInterval={5000}>
-        {result.map((e: TEvent) => (
-          <div className="relative size-full" key={e.id}>
+        {data.map((e: TEvent) => (
+          <Link
+            href={`/event/${e.id}`}
+            className="relative size-full"
+            key={e.id}
+          >
             <Image
               src={imageUrl + "/events/" + e.image_url}
               alt={`${e.title} image`}
-              width={320}
-              height={320}
+              layout="fill"
+              objectFit="cover"
               priority
-              className="size-full object-cover"
+              className="size-full "
             />
             <div className="absolute left-5 top-5">
               <p className=" bg-gray-600 bg-opacity-70 text-xl text-white md:text-4xl">
@@ -47,7 +52,7 @@ export default function EventsCarousel({ result }: Props) {
                 {e.roster}
               </p>
             </div>
-          </div>
+          </Link>
         ))}
       </Carousel>
     </div>

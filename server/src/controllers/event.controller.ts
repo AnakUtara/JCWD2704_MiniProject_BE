@@ -12,10 +12,10 @@ class EventControllers extends EntityController {
 	async getWithOrder(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { data, totalCount } = await eventService.getWithOrder(req);
-			const result = data.map((e: any) => EventDto.fromEntity(e));
+			// const result = data.map((e: any) => EventDto.fromEntity(e));
 			res.send({
 				message: "data fetched successfully",
-				result,
+				data,
 				total_page: Math.ceil(totalCount / Number(req.query.limit)),
 			});
 		} catch (error) {
@@ -25,8 +25,13 @@ class EventControllers extends EntityController {
 
 	async getEventsPromotor(req: Request, res: Response, next: NextFunction) {
 		try {
-			const data = await eventService.getEventsPromotor(req);
-			res.send({ message: "data fetched successfully", data });
+			const { data, totalCount } = await eventService.getEventsPromotor(req);
+			const result = data.map((e: any) => EventDto.fromEntity(e));
+			res.send({
+				message: "data fetched successfully",
+				result,
+				total_page: Math.ceil(totalCount / Number(req.query.limit)),
+			});
 		} catch (error) {
 			next(error);
 		}
