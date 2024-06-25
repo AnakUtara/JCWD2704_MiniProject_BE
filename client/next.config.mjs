@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["localhost", "api-minpro.riady.pw"],
+    domains: ["api-minpro.riady.pw"],
   },
 };
 
