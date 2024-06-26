@@ -6,7 +6,6 @@ import { fetchAuth } from "./app/_utils/fetch.validate";
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
   const refresh_token = request.cookies.get("refresh_token")?.value || "";
-  const access_token = request.cookies.get("access_token")?.value || "";
   const { pathname } = request.nextUrl;
   const {
     message,
@@ -18,10 +17,7 @@ export async function middleware(request: NextRequest) {
     })
       .then(async (res: Response) => {
         const data = await res.json();
-        if (refresh_token){
-          access_token && response.cookies.delete("access_token");
-          response.cookies.set("access_token", data.accessToken);
-        }
+        if (refresh_token) response.cookies.set("access_token", data.accessToken);
         return data;
       })
       .catch((error) => false);
