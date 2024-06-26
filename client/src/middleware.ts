@@ -17,8 +17,7 @@ export async function middleware(request: NextRequest) {
     })
       .then(async (res: Response) => {
         const data = await res.json();
-        if (refresh_token)
-          response.cookies.set("access_token", data.accessToken);
+        if (refresh_token) response.cookies.set({name: "access_token", value: data.accessToken, path: "/", domain: "riady.pw", secure: true});
         return data;
       })
       .catch((error) => false);

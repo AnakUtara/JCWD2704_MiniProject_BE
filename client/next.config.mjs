@@ -1,7 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["localhost"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api-minpro.riady.pw',
+        port: '8001',
+        pathname: '/images/**',
+      },
+    ],
   },
 };
 
