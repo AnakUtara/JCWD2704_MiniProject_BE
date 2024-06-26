@@ -5,7 +5,7 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'api-minpro.riady.pw',
-        port: '8001',
+        port: '',
         pathname: '/images/**',
       },
     ],
