@@ -3,10 +3,10 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'api-minpro.riady.pw',
-        port: '',
-        pathname: '/images/**',
+        protocol: "https",
+        hostname: "api-minpro.riady.pw",
+        port: "",
+        pathname: "/images/**",
       },
     ],
   },
