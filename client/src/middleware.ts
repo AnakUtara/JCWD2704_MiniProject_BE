@@ -18,9 +18,10 @@ export async function middleware(request: NextRequest) {
     })
       .then(async (res: Response) => {
         const data = await res.json();
-        if (refresh_token)
+        if (refresh_token){
           access_token && response.cookies.delete("access_token");
           response.cookies.set("access_token", data.accessToken);
+        }
         return data;
       })
       .catch((error) => false);
