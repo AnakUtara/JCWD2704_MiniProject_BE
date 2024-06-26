@@ -40,9 +40,9 @@ export default function Navigation() {
           </span>
         </Navbar.Brand>
         <NavbarDropdown />
-        <div
+        {/* <div
           className={`flex size-6 bg-black p-5 md:order-2 ${activeUser.id && "hidden"}`}
-        />
+        /> */}
         <Navbar.Collapse>
           {navLinks.map(({ path, label }, key) => (
             <Navbar.Link
