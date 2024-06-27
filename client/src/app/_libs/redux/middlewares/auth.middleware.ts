@@ -1,6 +1,6 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../axios.config";
-import { login } from "../features/auth/auth.slice";
+import { login, logout } from "../features/auth/auth.slice";
 import { deleteCookie, getCookie } from "cookies-next";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
