@@ -13,7 +13,7 @@ export const authSlice = createSlice({
     },
     logout: (state) => {
       deleteCookie("access_token", {
-        path: "/", 
+        path: "/",
         domain: "riady.pw",
         secure: true,
       });
