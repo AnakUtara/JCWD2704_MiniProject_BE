@@ -26,8 +26,7 @@ export function userLogin({
       window.location.reload();
     } catch (error: unknown) {
       if (error instanceof Error) console.log(error.message);
-      deleteCookie("access_token");
-      deleteCookie("refresh_token");
+      dispatch(logout());
       toast.error("Invalid Username/Password");
     }
   };
@@ -42,8 +41,7 @@ export function keepLogin() {
       }
     } catch (error: any) {
       console.log(error.message);
-      deleteCookie("access_token");
-      deleteCookie("refresh_token");
+      dispatch(logout());
     }
   };
 }
