@@ -18,7 +18,7 @@ export const authSlice = createSlice({
         secure: true,
       });
       deleteCookie("refresh_token", {
-        path: "/",
+        path: "/", 
         domain: "riady.pw",
         secure: true,
       });
